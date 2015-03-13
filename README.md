@@ -63,8 +63,7 @@ Credits for Omnitool
 
 Dependencies
 ============
-Be sure to grab these modules in pip:
 
-* Phil's Game Utilities
-* Pygame
-* Pillow
+* [Phil's Game Utilities](http://www.pygame.org/project-PGU+-+Phil's+pyGame+Utilities-108-.html)
+
+The rest of the dependencies can be grabbed on pip using the requirements.txt file.
