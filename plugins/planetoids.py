@@ -1,0 +1,774 @@
+from pygments.styles import default
+
+config = {
+    "name": "Planetoids",  # plugin name
+    "type": "generator",  #plugin type
+    "description": ["Planetoids & Terra"]  #description
+}
+import sys
+
+if __name__ == "__main__":
+    sys.path.extend(["."])
+    import os
+
+    os.chdir("..")
+    del (os)
+from tinterface import *
+import database as db
+from math import sqrt, cos, sin, pi
+from collections import defaultdict
+from random import *
+import pygame
+from tlib import *
+from binarysplit import join, cleanup
+import plugins.planetoids_lib.terragui as terragui
+from plugins.planetoids_lib.tree import make_tree
+from plugins.planetoids_lib.terradata import *
+from os.path import join as osjoin
+
+
+class Generator():
+    def __init__(self):
+        db.itemlist["Life Crystal"] = 1
+        db.itemlist["Fallen Star"] = 10
+        db.itemlist["Wood"] = 100
+        db.itemlist['Swiftness Potion'] = 5
+        db.itemlist['Battle Potion'] = 5
+        db.itemlist['Shine Potion'] = 5
+        db.itemlist['Gravitation Potion'] = 5
+        db.itemlist['Water Walking Potion'] = 5
+        db.itemlist['Invisibility Potion'] = 5
+        db.itemlist['Night Owl Potion'] = 5
+        db.itemlist['Magic Power Potion'] = 5
+        db.itemlist['Thorns Potion'] = 5
+        db.itemlist['Mana Regeneration Potion'] = 5
+        db.itemlist['Archery Potion'] = 5
+        db.itemlist['Hunter Potion'] = 5
+        db.itemlist['Restoration Potion'] = 5
+        db.itemlist['Lesser Healing Potion'] = 5
+        db.itemlist['Featherfall Potion'] = 5
+        db.itemlist['Obsidian Skin Potion'] = 5
+        db.itemlist['Spelunker Potion'] = 5
+        db.itemlist['Ironskin Potion'] = 5
+        db.itemlist['Gold Bar'] = 10
+        db.itemlist['Meteorite Bar'] = 10
+        db.itemlist['Silver Bar'] = 10
+        db.itemlist['Iron Bar'] = 10
+        db.itemlist['Copper Bar'] = 10
+        db.itemlist["Meteorite"] = 30
+
+    def run(self):
+        # print ("Welcome to the Planetoids & Terra World Generator V12")
+        is_exe = hasattr(sys, "frozen")
+        terramode = False
+        if is_exe:
+            import os
+
+            path = os.path.dirname((sys.executable))
+            sys.path = [path] + sys.path
+
+        def draw_chasm(sur, pos, rmin, rmax, amin, amax):
+            points = [
+                (int(pos[0] + rmin * cos(amin)), int(pos[1] + rmin * sin(amin))),
+                (int(pos[0] + rmin * cos((amin + amax) / 2)), int(pos[1] + rmin * sin((amin + amax) / 2))),
+                (int(pos[0] + rmin * cos(amax)), int(pos[1] + rmin * sin(amax))),
+                (int(pos[0] + rmax * cos(amax)), int(pos[1] + rmax * sin(amax))),
+                (int(pos[0] + rmax * cos((amin + amax) / 2)), int(pos[1] + rmax * sin((amin + amax) / 2))),
+                (int(pos[0] + rmax * cos(amin)), int(pos[1] + rmax * sin(amin)))]
+            pygame.draw.polygon(sur, (233, 233, 233), points)
+            steps = 70
+            pygame.draw.circle(sur, (23, 23, 23), points[-1], 8)
+            pygame.draw.circle(sur, (23, 23, 23), points[3], 8)
+            orb = randint(steps // 2, steps)
+            for x in range(steps + 1):
+
+                x = float(x)
+                cpos = (int(points[0][0] * x / steps + points[-1][0] * (steps - x) / steps),
+                        int(points[0][1] * x / steps + points[-1][1] * (steps - x) / steps))
+                ra = randint(4, 8)  #
+                #pygame.draw.circle(sur, (32,32,32), cpos, ra, 4) #vines
+                pygame.draw.circle(sur, (23, 23, 23), cpos, ra, 2)  #grass
+                pygame.draw.circle(sur, (25, 25, 25), cpos, ra)  #ebonstone
+
+                cpos2 = (int(points[2][0] * x / steps + points[3][0] * (steps - x) / steps),
+                         int(points[2][1] * x / steps + points[3][1] * (steps - x) / steps))
+                ra = randint(4, 8)
+                #pygame.draw.circle(sur, (32,32,32), cpos2, ra, 4) #vines
+                pygame.draw.circle(sur, (23, 23, 23), cpos2, ra, 2)  #grass
+                pygame.draw.circle(sur, (25, 25, 25), cpos2, ra)  #ebonstone
+
+                if x == orb:
+                    cpos = (cpos[0] + cpos2[0]) // 2, (cpos[1] + cpos2[1]) // 2
+                    pygame.draw.circle(sur, (25, 25, 25), cpos, 3)  #ebonstone
+                    sur.blit(multis["shadoworb"], (cpos[0] - 1, cpos[1] - 1))
+
+            return sur
+
+
+        d = terragui.run(None)
+        if not d == False:
+            name, mode, starttype, sun, atlantis, merch, loot, hard, mirrored, pre = d
+            sizetype = mode[0]
+            terramode = mode[1]
+        else:
+            hard = 0
+            name = "Planetoids"
+            ## ask the user what kind of world he/she wants.
+            print("Select world type")
+            print("Terra mode only available on large and square")
+            print("1: planetoids")
+            print("2: terra & planetoids; implies large world size")
+            print("3: terra; implies square world size")
+            valid = [1, 2, 3]
+            terramode = 0
+            while terramode not in valid:
+                try:
+                    terramode = int(raw_input("World type:"))
+                except:
+                    pass
+                if terramode not in valid:
+                    print("Please put in 1,2, or 3 and then hit enter, cant be that hard, right?")
+            print("")
+            terramode -= 1
+            if not terramode:
+                print("Select world size")
+                print("1: small  (4200 x 1200)")
+                print("2: medium (6300 x 1800)")
+                print("3: large  (8400 x 2400)")
+                print("4: square (2400 x 2400)")
+                valid = [1, 2, 3, 4]
+                sizetype = 0
+                while sizetype not in valid:
+                    try:
+                        sizetype = int(raw_input("World size:"))
+                    except:
+                        pass
+                    if sizetype not in valid:
+                        print("Please put in 1,2,3 or 4 and then hit enter, cant be that hard, right?")
+                print("")
+
+            valid = [1, 2, 3, 4]
+            print("Select start condition")
+            print("1: Day (Standard Terraria)")
+            print("2: Morning")
+            print("3: Night")
+            print("4: Bloodmoon")
+            starttype = 0
+            while starttype not in valid:
+                try:
+                    starttype = int(raw_input("Start condition:"))
+                except:
+                    pass
+                if starttype not in valid:
+                    print("Please put in 1,2,3 or 4 and then hit enter, cant be that hard, right?")
+            print("")
+            valid = [1, 2, 3, 4]
+            print("Select extra difficulty, you may select multiple by entering multiple numbers.")
+            print("By entering nothing you play normal")
+            print("1: Darkness! I dont need a puny sun!")
+            print("2: Less loot! I want to keep exploring!")
+            print("3: Atlantis, I want to conquer the world from my sunken planet!")
+            print("4: No merchant at the start, I want to earn him!")
+            dif = raw_input("Difficulty:")
+
+            if "1" in dif:
+                sun = False
+            else:
+                sun = True
+            if "2" in dif:
+                loot = True
+            else:
+                loot = False
+            if "3" in dif:
+                atlantis = True
+            else:
+                atlantis = False
+            if "4" in dif:
+                merch = False
+            else:
+                merchant = True
+        #if terramode == 1:
+        #    sizetype = 3
+        #elif terramode == 2: sizetype = 4
+        sizetype -= 1
+        starttype -= 1
+        #people dont like to start counting at 0, so its decremented afterwards
+
+        #for people used to python this part of code should be obvious
+        #otherwise: [1,2,3][0] returns 1, as that is at part 1
+        #this is a cpu intense way of doing it, but its the less typing
+        #execution time at this point is also pretty much unimportant
+        is_day = [1, 1, 0, 0][starttype]
+        is_blood = [0, 0, 0, 1][starttype]
+        time = [13000.0, 0.0, 0.0, 0.0][starttype]
+        size = [(4200, 1200), (6300, 1800), (8400, 2400), (2400, 2400)][sizetype]
+        if terramode:
+            border = 200
+            spawn = (size[0] // 2, border)
+            superradius = 1200 - border
+        else:
+            spawn = [(2100, 200), (3150, 300), (4200, 400), (1200, 200)][sizetype]
+
+        if not sun:  #if no sun
+            ground = [-1200.0, -1800.0, -2400.0, -2400.0][sizetype]
+            rock = [385.0, 385.0, 385.0, 385.0][sizetype]
+        else:
+            ground = [385.0, 385.0, 385.0, 385.0][sizetype]
+            rock = [487.0, 703.0, 907.0, 907.0][sizetype]
+
+        if sizetype == 3:
+            #square world has almost the same amount of tiles as small
+            # so in the following code it will be regarded as a small world.
+            sizetype = 0
+        elif sizetype == 2 and terramode:  #large world - terra = contents of medium planetoids
+            sizetype = 1
+
+        chestcount = [250, 500, 800][sizetype]
+        #I would prefer [500,1000,1500] chests
+        #but terraria only allows 1000 chests as well as 1000 signs, never forget that limit
+
+        large_planets = [10, 50, 100][sizetype]
+        dungeon_planets = [5, 10, 20][sizetype]
+        small_planets = [250, 500, 1000][sizetype]
+        stone_planets = [25, 50, 100][sizetype]
+        #header data
+        header = {'spawn': spawn, 'groundlevel': ground, 'is_bloodmoon': is_blood,
+                  'dungeon_xy': spawn, 'worldrect': (0, size[0] * 16, 0, size[1] * 16),
+                  'is_meteor_spawned': 0, 'gob_inv_time': 0, 'rocklevel': rock,
+                  'gob_inv_x': 0.0, 'is_day': is_day, 'shadow_orbs_broken': 0,
+                  'width': size[0], 'version': 39, 'gob_inv_type': 0,
+                  'bosses_slain': (0, 0, 0), "npcs_saved": (0, 0, 0), "special_slain": (0, 0, 0),
+                  'gob_inv_size': 0, 'height': size[1],
+                  'ID': randint(10, 10000000), 'moonphase': 0, 'name': name, "hardmode": int(hard),
+                  "altars_broken": 0,
+                  'is_a_shadow_orb_broken': 0, 'time': time}
+
+        if sizetype == 0:
+            for item in itemdata:
+                itemdata[item] = itemdata[item] // 2 + itemdata[item] % 2
+        elif sizetype == 2:
+            for item in itemdata:
+                itemdata[item] = itemdata[item] * 2
+        if mirrored:
+            for item in itemdata:
+                itemdata[item] = itemdata[item] // 2 + itemdata[item] % 2
+            chestcount //= 2
+        if loot:
+            for item in itemdata:
+                itemdata[item] = itemdata[item] // 2 + itemdata[item] % 2
+
+        itemtotal = 0
+        for item in itemdata:
+            itemtotal += itemdata[item]
+        target = itemtotal // chestcount
+        #initialize a texture to hold all tile data
+        #could have used an array as well, like numpy, but I am more familiarized with pygame than numpy
+        surface = pygame.surface.Surface(size)
+        if atlantis:  #if waterworld
+            surface.fill((254, 0, 255))
+            pygame.draw.rect(surface, (54, 54, 54), ((0, size[0]), (-1 + size[1] - size[1] // 6, size[1] // 6)))
+            pygame.draw.rect(surface, (255, 255, 255), ((0, size[0]), (size[1] - size[1] // 6, size[1] // 6)))
+        else:
+            surface.fill((255, 255, 255))
+
+
+        def on_radius(rad):
+            pos = size[0] // 2, size[1] // 2
+            angle = random() * 2 * pi
+            return (int(pos[0] + rad * cos(angle)),
+                    int(pos[1] + rad * sin(angle)))
+
+        def terrapick(radius):  #picks randomly items for a chest
+            fradius = float(radius)
+            current = 0
+            content = []
+            types = [choice((accessoires, weapons)), choice((other, potions))]
+            for typ in types:
+                while 1:
+                    item = choice(list(typ.keys()))
+                    #print item, fradius/superradius
+                    if typ[item] > fradius / superradius:
+                        break
+                content.append((randint(1, db.itemlist[item]), item))
+            for x in range(randint(*healthperchest)):
+                content.append((1, "Life Crystal"))
+            stars = randint(*starsperchest)
+            if stars:
+                content.append((stars, "Fallen Star"))
+            content.append((1, "Acorn"))
+            #print 
+            #print radius
+            #for item in content:
+            #    print item[1], item[0]
+            for x in range(20 - len(content)):  #chests always have 20 slots
+                content.append((0, None))
+
+            return (on_radius(radius), content)
+
+        def pick(items, targetnumber):  #picks randomly items for a chest planetoids
+            current = 0
+            content = []
+            while targetnumber > current:
+                #print (items)
+                item = choice(list(items.keys()))
+                #print (targetnumber,current)
+                if item in db.itemlist:
+                    amount = randint(1, min(db.itemlist[item], items[item], targetnumber - current))
+                else:
+                    amount = randint(1, min(3, items[item], targetnumber - current))
+                items[item] -= amount
+                if items[item] < 1:
+                    del (items[item])
+                content.append((amount, item))
+                current += amount
+                if len(content) > 19:
+                    break
+            for x in range(20 - len(content)):  #chests always have 20 slots
+                content.append((0, None))
+            return content, current, items
+
+        chests = []
+        if terramode:
+            rad = superradius // 50
+            step = (float(superradius) - superradius // 16 - 30) / terrachestcount
+            while len(chests) < terrachestcount:
+                rad += step
+                chests.append(terrapick(rad))
+
+        chestcontents = []
+
+        while itemtotal > 0:  # fill those chests with something useful.. or not, angel statue ftw.
+            i, c, itemdatabase = pick(itemdata, min(target, itemtotal))
+            chestcontents.append(i)
+            itemtotal -= c
+        #for chest in chestcontents:print(chest)
+
+        #print str(len(chestcontents))+" chests filled" # give the user a sign of life every once a while
+
+        planets = []
+        center_pos = complex(header["spawn"][0], header["spawn"][1] + 50)  #mid of spawn planet
+
+        def make_planet(c, rmin=20, rmax=50, surround=None):  # function to literally draw the planets onto the world
+            r = randint(rmin, rmax)
+
+            if terramode:
+                if randint(0, 1) or mirrored:
+                    pos = (randint(50, size[0] // 2 - border // 2 - superradius), randint(50, size[1] - 50))
+                else:
+                    pos = (randint(size[0] // 2 + border // 2 + superradius, size[0] - 50), randint(50, size[1] - 50))
+            else:
+
+                if mirrored:
+                    pos = (randint(50, size[0] // 2 - 50), randint(50, size[1] - 50))
+                    while abs(complex(pos[0], pos[1]) - center_pos) < r + 200:
+                        pos = (randint(50, size[0] // 2 - 50), randint(50, size[1] - 50))
+                else:
+                    pos = (randint(50, size[0] - 50), randint(50, size[1] - 50))
+                    while abs(complex(pos[0], pos[1]) - center_pos) < r + 200:
+                        pos = (randint(50, size[0] - 50), randint(50, size[1] - 50))
+            # a few special planets.. like glass, jungle donuts etc.
+            if c == 59:
+                pygame.draw.circle(surface, (c, c, c), pos, r)
+                pygame.draw.circle(surface, (60, 60, 60), pos, r, 1)  #jungle grass
+
+                pygame.draw.circle(surface, (255, 255, 255), pos, r - 30)
+
+                pygame.draw.circle(surface, (60, 60, 60), pos, r - 30, 1)  #jungle grass
+            elif c == 54:
+                pygame.draw.circle(surface, (c, c, c), pos, r)
+                pygame.draw.circle(surface, (254, randint(0, 1), 255), pos, r - 2)
+            elif c == 53:
+                pygame.draw.circle(surface, (40, 40, 40), (pos[0], pos[1] + 1), r)
+                pygame.draw.circle(surface, (c, c, c), pos, r)
+
+            elif c == 0:
+                pygame.draw.circle(surface, (c, c, c), pos, r)
+                pygame.draw.circle(surface, (2, 2, 2), pos, r, 1)
+                pygame.draw.circle(surface, (30, 30, 30), pos, r - 3, 1)
+            else:
+                if surround != None:
+                    pygame.draw.circle(surface, (surround, surround, surround), pos, r + 7)
+                pygame.draw.circle(surface, (c, c, c), pos, r)
+            return (pos[0] - 1, pos[1] - 1)
+
+        def make_hub_planet():
+
+            r = randint(75, 125)
+            if terramode:
+                if randint(0, 1):
+                    pos = (randint(50, size[0] // 2 - border // 2 - superradius), randint(50, size[1] - 50))
+                else:
+                    pos = (randint(size[0] // 2 + border // 2 + superradius, size[0] - 50), randint(50, size[1] - 50))
+            else:
+                if mirrored:
+                    pos = (randint(50, size[0] // 2 - 50), randint(50, size[1] - 50))
+                    while abs(complex(pos[0], pos[1]) - center_pos) < r + 200:
+                        pos = (randint(50, size[0] // 2 - 50), randint(50, size[1] - 50))
+                else:
+                    pos = (randint(50, size[0] - 50), randint(50, size[1] - 50))
+                    while abs(complex(pos[0], pos[1]) - center_pos) < r + 200:
+                        pos = (randint(50, size[0] - 50), randint(50, size[1] - 50))
+
+            valuables = (r // 25) ** 2
+            pygame.draw.circle(surface, (0, 0, 0), pos, r)  #dirt
+            pygame.draw.circle(surface, (1, 1, 1), pos, r // 3)  #stone
+            pygame.draw.circle(surface, (2, 2, 2), pos, r, 2)  #grassring
+            pygame.draw.circle(surface, (30, 30, 30), pos, r - 3, 2)  #woodring
+            for x in range(valuables * 5):
+                rad = randint(1, 10)
+                npos = get_randrad(pos, r - 10 - rad)
+                pygame.draw.circle(surface, (252, 2, 252), npos, rad)  #air
+            for x in range(valuables):
+                rad = randint(4, 7)
+                npos = get_randrad(pos, r - 5 - rad)
+                pygame.draw.circle(surface, choice(valuable), npos, rad)
+
+        def get_randrad(pos, radius):
+            radius = random() * radius
+            angle = random() * 2 * pi
+            return (int(pos[0] + radius * cos(angle)),
+                    int(pos[1] + radius * sin(angle)))
+
+        def get_randradrange(pos, minradius, maxradius):
+            radius = randint(minradius, maxradius)
+            angle = random() * 2 * pi
+            return (int(pos[0] + radius * cos(angle)),
+                    int(pos[1] + radius * sin(angle)))
+
+        def make_terra(surface, size):
+
+            #pos = (randint(0+5,size[0]-5),randint(0+5,size[1]-5))
+            #r = randint(75,125)
+            pos = (size[0] // 2, size[1] // 2)
+            r = superradius
+
+            #while abs(complex(pos[0],pos[1])-center_pos) < r+120:
+            #    pos = (randint(0+5,size[0]-5),randint(0+5,size[1]-5))
+            valuables = (r // 25) ** 2
+
+            pygame.draw.circle(surface, (0, 0, 0), pos, r)  #dirt
+            pygame.draw.circle(surface, (30, 30, 30), pos, 3 * r // 4, r // 100)  #wood
+            pygame.draw.circle(surface, (1, 1, 1), pos, r // 2)  #stone
+            pygame.draw.circle(surface, (59, 59, 59), pos, r // 5)  #jungle
+            pygame.draw.circle(surface, (2, 2, 2), pos, r, 2)  #grassring
+
+            for name, minradius, maxradius, amount, size in planetdata:
+                minradius = int(r * minradius)
+                maxradius = int(r * maxradius)
+                for x in range(int(amount * valuables)):
+                    npos = get_randradrange(pos, minradius, maxradius)
+                    c = db.ntiles[name]
+                    usize = randint(size[0], size[1])
+                    if usize > 1:
+                        pygame.draw.circle(surface, (c, c, c), npos, usize)  #air
+                    else:
+                        surface.set_at(npos, (c, c, c))
+
+            #caverns
+            for x in range(int(caverns * valuables)):
+                npos = get_randradrange(pos, r * 0.25, r * 0.75)
+                pygame.draw.circle(surface, (255, 255, 255), npos, randint(*cavernsize))
+            for x in range(int(dirtcaverns * valuables)):
+                npos = get_randradrange(pos, r * 0.75, r * 0.9)
+                pygame.draw.circle(surface, (252, 2, 255), npos, randint(*dirtcavernsize))
+            #liquids
+            for x in range(int(water * valuables)):
+                npos = get_randradrange(pos, r // 3, r * 0.9)
+                pygame.draw.circle(surface, (254, 0, 255), npos, randint(watersize[0], watersize[1]))
+            for x in range(int(lava * valuables)):
+                npos = get_randradrange(pos, r // 4, r // 3)
+                pygame.draw.circle(surface, (254, 1, 255), npos, randint(lavasize[0], lavasize[1]))
+            for x in range(chasms):
+                if x == 0:
+                    a = random() * pi + pi
+                    while abs(a - 1.5 * pi) < 0.2 * pi:
+                        a = random() * pi + pi
+                else:
+                    a = random() * pi * 2
+                    while abs(a - 1.5 * pi) < 0.2 * pi:
+                        a = random() * pi + pi
+                #corruption
+                deep = randint(chasmdeepness[0], chasmdeepness[1]) * 0.01 * r
+                surface = draw_chasm(surface, pos, deep, r + 5, a, a + chasmthickness)
+                #pygame.image.save(surface, "mask2.png")
+
+            ##jungle
+            for x in range(int(valuables * jcircle)):
+                npos = get_randradrange(pos, 5, r // 5)
+                pygame.draw.circle(surface, (255, 255, 255), npos, randint(*jcirclesize))
+                #pygame.draw.circle(surface, (60,60,60), npos, randint(*jcirclesize), 1)
+            for x in range(int(valuables * jrect)):
+                rect = pygame.rect.Rect((0, 0), (randint(*jrectsize), randint(*jrectsize)))
+                rect.center = get_randradrange(pos, 5, r // 4)
+                pygame.draw.rect(surface, (254, 1, 255), rect)
+            for x in range(int(valuables * jdot)):
+                npos = get_randradrange(pos, 5, r // 5)
+                surface.set_at(npos, (48, 48, 48))
+            for x in range(int(valuables * jarc)):
+                npos = get_randradrange(pos, r // 10, r // 5)
+                pygame.draw.circle(surface, (60, 60, 60), npos, randint(*jarcsize), 1)
+            ##trees
+            for x in range(trees):
+                a = random() * pi + pi
+                npos = (int(pos[0] + r * cos(a)),
+                        int(pos[1] + r * sin(a)))
+                while npos[1] > border + 100:
+                    a = random() * pi + pi
+                    npos = (int(pos[0] + r * cos(a)),
+                            int(pos[1] + r * sin(a)))
+                h = randint(5, 25)
+                surface.blit(make_tree(h), (npos[0] - 1, npos[1] - h - 1))
+                s = pygame.surface.Surface((5, 2))
+                s.fill((2, 2, 2))
+                surface.blit(s, (npos[0] - 2, npos[1] - 1))
+
+            ##altars
+            for x in range(altar_count):
+                npos = get_randradrange(pos, r // 5, r // 2)
+                surface.blit(multis["altar"], npos)
+
+        chestpos = []
+        if mirrored:
+            stone_planets //= 2
+            large_planets //= 2
+            small_planets //= 2
+            mul = 3
+        else:
+            mul = 5
+        if not terramode or sizetype == 1:
+            for x in range(stone_planets):
+                make_hub_planet()
+            for x in range(large_planets):
+                chestpos.append(make_planet(*choice(data1)))
+            for x in range(0, (sizetype + 1) * mul):
+                for d in data1:
+                    chestpos.append(make_planet(*d))
+            for x in range(dungeon_planets):
+                chestpos.append(make_planet(*choice(data3)))
+            for x in range(0, (sizetype + 1) * mul):
+                for d in data2:
+                    chestpos.append(make_planet(*d))
+
+            for x in range(small_planets):
+                chestpos.append(make_planet(*choice(data2)))
+
+        if mirrored:
+            mirror = surface.subsurface(0, 0, size[0] // 2, size[1])
+            mirror = pygame.transform.flip(mirror, 1, 0)
+            surface.blit(mirror, (size[0] // 2, 0))
+            #chestpos.extend([(size[0]-chest[0], chest[1]) for chest in chestpos])
+
+        multis = get_multis()
+
+        #surface.blit(multis["shadoworb"], (header["spawn"][0]-1,header["spawn"][1]+20))
+        chestsurflist = (multis["woodchest"],
+                         multis["goldchest"],
+                         multis["shadowchest"],
+                         multis["barrelchest"],
+                         multis["canchest"])
+        if terramode:
+            if atlantis:
+                pygame.draw.circle(surface, (255, 255, 255), (header["spawn"][0], header["spawn"][1]), 50)
+                pygame.draw.circle(surface, (54, 54, 54), (header["spawn"][0], header["spawn"][1]), 50, 2)
+
+            make_terra(surface, size)
+
+
+        else:  #spawnplanet
+            items = [(20, "Torch"), (25, "Acorn"), (5, "Daybloom Seeds"), (5, "Moonglow Seeds"),
+                     (5, "Blinkroot Seeds"), (5, "Waterleaf Seeds"), (5, "Fireblossom Seeds"),
+                     (5, "Deathweed Seeds"), (1, "Life Crystal"), (2, "Mana Crystal"), (50, "Book"),
+                     (200, "Cobweb"), (5, "Mushroom Grass Seeds"), (1, "Snow Globe"), (10, "Mud Block"),
+                     (250, "Dirt Block"), (250, "Dirt Block"),
+                     (1, choice(("Magic Mirror", "Shiny Red Balloon", "Orb of Light")))]
+            for x in range(20 - len(items)):
+                items.append((0, None))
+            # draw the spawn planet
+            radius = 100
+            #pygame.draw.circle(surface, (255,255,255), (header["spawn"][0],header["spawn"][1]+50), radius+50)
+            if atlantis:
+                pygame.draw.circle(surface, (255, 255, 255), (header["spawn"][0], header["spawn"][1] + 50), radius + 50)
+                pygame.draw.circle(surface, (54, 54, 54), (header["spawn"][0], header["spawn"][1] + 50), radius + 50, 2)
+            pygame.draw.circle(surface, (52, 52, 52), (header["spawn"][0], header["spawn"][1] + 55), radius)
+            pygame.draw.circle(surface, (2, 2, 2), (header["spawn"][0], header["spawn"][1] + 50), radius)
+            pygame.draw.circle(surface, (0, 0, 0), (header["spawn"][0], header["spawn"][1] + 50), radius - 2)
+            pygame.draw.circle(surface, (1, 1, 1), (header["spawn"][0], header["spawn"][1] + 50), radius // 2)
+            pygame.draw.circle(surface, (30, 30, 30), (header["spawn"][0], header["spawn"][1] + 50), radius // 4)
+            r = random() * 2 * pi
+            pos = (
+            int(header["spawn"][0] + 0.8 * radius * cos(r)), int(header["spawn"][1] + 50 + 0.8 * radius * sin(r)))
+            pygame.draw.circle(surface, (53, 53, 53), pos, 7)
+            r = random() * 2 * pi
+            pos = (
+            int(header["spawn"][0] + 0.77 * radius * cos(r)), int(header["spawn"][1] + 50 + 0.77 * radius * sin(r)))
+            pygame.draw.circle(surface, (40, 40, 40), pos, 7)
+            r = random() * 2 * pi
+            pos = (
+            int(header["spawn"][0] + 0.4 * radius * cos(r)), int(header["spawn"][1] + 50 + 0.4 * radius * sin(r)))
+            pygame.draw.circle(surface, (6, 6, 6), pos, 4)
+            chests.append(((header["spawn"][0] - 1, header["spawn"][1] + 49), items))
+
+            header["spawn"] = header["spawn"][0], header["spawn"][1] - radius + 50
+            #multis = get_multis()
+
+            surface.blit(make_tree(25), (header["spawn"][0] + 1, header["spawn"][1] - 25))
+        surface.blit(multis["altar"], (header["spawn"][0] - 2, header["spawn"][1] - 2))
+
+        if terramode != 2:
+            #ocean planetoids
+            pygame.draw.circle(surface, (53, 53, 53), (0, 500), 500)
+            pygame.draw.circle(surface, (54, 54, 54), (0, 500), 500, 1)
+            pygame.draw.circle(surface, (253, 0, 255), (0, 301), 300)
+
+            pygame.draw.circle(surface, (53, 53, 53), (size[0], 500), 500)
+            pygame.draw.circle(surface, (54, 54, 54), (size[0], 500), 500, 1)
+            pygame.draw.circle(surface, (253, 0, 255), (size[0], 301), 300)
+
+            a = len(chestcontents)
+            b = max_altar_planet
+
+            if mirrored:
+                double = chestcontents[:]
+                for pos in chestpos:
+                    pos = size[0] - pos[0], pos[1]
+                    tile = surface.get_at(pos)[0]
+                    if tile == 25 or tile == 23:
+                        surface.blit(multis["shadoworb"], pos)  #place shadoworb into corruption
+                    elif tile == 58:  #hellfurnace into hellstone
+                        surface.blit(multis["hellfurnace"], pos)
+                    elif b:
+                        #print ("altar")
+                        b -= 1
+                        surface.blit(multis["altar"], pos)
+                    elif a:
+                        chests.append((pos, chestcontents.pop()))  #place chests
+                        a -= 1
+
+                    else:
+                        break  # we usually have more planets than chests, so lets get out of here
+                chestcontents = double
+            a = len(chestcontents)
+            b = max_altar_planet
+            for pos in chestpos:
+                tile = surface.get_at(pos)[0]
+                if tile == 25 or tile == 23:
+                    surface.blit(multis["shadoworb"], pos)  #place shadoworb into corruption
+                elif tile == 58:  #hellfurnace into hellstone
+                    surface.blit(multis["hellfurnace"], pos)
+                elif b:
+                    #print ("altar")
+                    b -= 1
+                    surface.blit(multis["altar"], pos)
+                elif a:
+                    chests.append((pos, chestcontents.pop()))  #place chests
+                    a -= 1
+
+                else:
+                    break  # we usually have more planets than chests, so lets get out of here
+
+            if a:
+                print("Warning: unallocated chests")
+                import time
+
+                time.sleep(1)
+
+        #draw the lower border of the world. Falling into the void was fun in minecraft,
+        #not su much here, as it will just make "splat"
+        pygame.draw.rect(surface, (57, 57, 57), ((0, size[1] - 30), (size[0], 30)))
+        pygame.draw.rect(surface, (254, 1, 255), ((0, size[1] - 50), (size[0], 20)))
+
+        for chest in chests:
+            #draw the chests into the world texture
+            surface.blit(choice(chestsurflist), chest[0])
+            # below is to make sure every chest stands on something, so they dont glitch
+            d = surface.get_at((chest[0][0], chest[0][1] + 2))[0]
+            if d > 250 or d == 51:
+                surface.set_at((chest[0][0], chest[0][1] + 2), (0, 0, 0))
+            d = surface.get_at((chest[0][0] + 1, chest[0][1] + 2))[0]
+            if d > 250 or d == 51:
+                surface.set_at((chest[0][0] + 1, chest[0][1] + 2), (0, 0, 0))
+
+        # save the "source" of the world. Helped plenty with debugging.
+        #pygame.image.save(surface, "mask.png")
+
+        for x in range(1000 - len(chests)):  #fill in nonechests, as terraria always has 1000 chests
+            chests.append(None)
+
+        self.header = header
+
+        z = header["width"] * header["height"]  #tileamount
+        total = z
+
+        #list of tiles : walls
+        walls = defaultdict(lambda: None, {0: 2,
+                                           25: 3,
+                                           9: 11,
+                                           8: 10,
+                                           7: 12,
+                                           30: 4,
+                                           58: 13,
+                                           21: 2,
+                                           31: 3,
+                                           51: 1,
+                                           40: 6,
+                                           })
+
+        def count(checks):
+            c = {}
+            for t_id in checks:
+                c[t_id] = 0
+            for x in range(size[0]):
+                for y in range(size[1]):
+                    tid = surface.get_at((x, y))[0]
+                    if tid in c:
+                        c[tid] += 1
+            for tid in c:
+                amount = c[tid]
+                print("%-10s : %d" % (db.tiles[tid], amount))
+
+        #count(range(6,10))
+        self.tiles = write_tiles(surface, header, walls, True)
+        #with open(osjoin(temp, "2.part"), "wb") as a:#write chestdata
+        #    set_chests(a,chests)
+        self.chests = chests
+        #print ("done writing chests")
+        #with open(osjoin(temp, "3.part"), "wb") as f:
+        #    for sign in [None]*1000:
+        #        set_sign(f, sign)
+        self.signs = [None] * 1000
+        ##        print ("done writing signs")
+        ##        with open(osjoin(temp, "4.part"), "wb") as f:
+        ##            set_npc(f, ('Guide', (header["spawn"][0]*16, (header["spawn"][1]-3)*16), 1, (header["spawn"][0], header["spawn"][1]-3)))
+        ##            set_npc(f, ('Old Man', (header["spawn"][0]*16-16, (header["spawn"][1]-3)*16), 1, (header["spawn"][0], header["spawn"][1]-3)))
+        ##            if merch:
+        ##                set_npc(f, ('Merchant', (header["spawn"][0]*16-16, (header["spawn"][1]-3)*16), 1, (header["spawn"][0], header["spawn"][1]-3)))
+        ##            for x in range(npcsets):
+        ##                for npc in db.npclist[:-1]:
+        ##                    set_npc(f, (npc, (header["spawn"][0]*16, (header["spawn"][1]-3)*16), 1, (header["spawn"][0], header["spawn"][1]-3)))
+        ##            set_npc(f, None)
+        ##            set_npc_names(f, db.names)
+        self.names = db.names
+        self.npcs = [('Guide', (header["spawn"][0] * 16, (header["spawn"][1] - 3) * 16), 1,
+                      (header["spawn"][0], header["spawn"][1] - 3)),
+                     ('Old Man', (header["spawn"][0] * 16 - 16, (header["spawn"][1] - 3) * 16), 1,
+                      (header["spawn"][0], header["spawn"][1] - 3))]
+        if merch: self.npcs.append(
+            ('Merchant', (header["spawn"][0] * 16 - 16, (header["spawn"][1] - 3) * 16), 1,
+             (header["spawn"][0], header["spawn"][1] - 3)))
+
+
+        #print ("done writing npcs")
+        #with open(osjoin(temp, "5.part"), "wb") as f:
+        #    set_trail(f, (1, header["name"], header["ID"]))
+        #print ("done writing trail")
+        #name = get_next_world(db.cmod)
+        #join(name, True, path = temp)#this just puts all the binary parts into one world file
+        #print ("done joining world "+name)#yay!
+        #print ("A world has been created!")
+        #import time
+        #time.sleep(10)
+
+
+if __name__ == "__main__":
+    gen = Generator()
+    gen.run()

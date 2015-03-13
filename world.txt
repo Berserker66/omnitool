@@ -1,0 +1,112 @@
+There are 6 sections.  The first is the Header,
+the second is the Tile Data, the third is the Chests, the fourth is
+the Signs, and the fifth is the NPCs.
+The sixth is the trail which mirrors some of the header data.
+Each section follows immediately after the other in the file.
+
+Data Types----
+There are 8 data types, all stored in little-endian format:
+bool    - a single byte that only stores 0 or 1.
+byte    - 8-bit unsigned integer
+word    - 16-bit unsigned integer
+dword  - 32-bit unsigned integer
+pstring - pascal string, (a byte that contains the length of the string,
+                      followed by that many bytes of string data)
+float  - 32-bit floating point
+double  - 64-bit floating point
+rect    - 4 dwords that make a rectangle (left,right,top,bottom)
+
+Header---
+dword    map version
+pstring  world title
+dword    world ID
+rect    world bounds
+dword    tiles high
+dword    tiles wide
+dword    spawn x
+dword    spawn y
+double  ground level
+double  rock level
+double  time of day
+bool    night time
+dword    moon phase
+bool    blood moon
+dword    dungeon x
+dword    dungeon y
+bool    beat boss 1
+bool    beat boss 2
+bool    beat boss 3
+bool    broke shadow orb
+bool    meteor spawned
+byte    number of shadow orbs
+dword    goblin invasion time
+dword    goblin invasion size
+dword    goblin invasion type
+double  goblin invasion x
+
+Tile Data---
+There are tilesWide * tilesHigh tiles stored here.  In top-down, left-right order.
+Each tile has a dynamic format.  That is, the value of some variables dictate
+whether or not additional data is present.
+
+bool      tile present
+if tile is present:
+    byte      tile type
+    if tile type has multiple states:
+        word      texture U
+        word      texture V
+bool    lighted  (seems this means it gets hit by sunlight)
+bool    hasWall  (does it have a back wall?)
+if has wall:
+    byte      wall type
+bool      hasLiquid  (does it have liquid?)
+if liquid present:
+    byte      liquid amount
+    bool      liquid is lava
+
+That's the tile format.  Whether or not tiles have multiple states is simply
+stored in a lookup table by the various map programs.
+
+Chests----
+Chest      chests[1000];
+
+Chest format:
+bool      valid
+if chest is valid:
+    dword    x
+    dword    y
+    Item      items[20]
+
+Item format:
+byte      stack
+if stack is not 0:
+    pstring  item name
+
+Signs---
+Sign      signs[1000];
+
+Sign format:
+bool      valid
+if sign is valid:
+    pstring  text
+    dword    x
+    dword    y
+
+NPCs----
+Unlike signs and chests, there are no fixed number of NPC "spots".
+Basically loop through until you find the first "invalid" NPC.
+But there is a maximum of 1000.
+
+bool      valid
+if npc is valid:
+    pstring  name
+    float    x
+    float    y
+    bool      homeless
+    dword    home x
+    dword    home y
+
+Trail----
+bool always true
+pstring world title
+dword world ID

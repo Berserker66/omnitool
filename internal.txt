@@ -1,0 +1,48 @@
+header example:
+headerdata = {'spawn': (2100, 150), 'groundlevel': 385.0, 'is_bloodmoon': 0, 'dungeon_xy': (2100, 200), 'worldrect': (0, 67200, 0, 19200), 'is_meteor_spawned': 0, 'gob_inv_time': 0, 'rocklevel': 487.0, 'gob_inv_x': 0.0, 'is_day': 1, 'shadow_orbs_broken': 0, 'width': 4200, 'version': 22, 'gob_inv_type': 0, 'bosses_slain': (0, 0, 0), 'gob_inv_size': 0, 'height': 1200, 'ID': 1394008700, 'moonphase': 0, 'name': 'imthename', 'is_a_shadow_orb_broken': 0, 'time': 13000.0}
+
+'version' is the minimal Terraria version required to load it;
+here are some numbers:
+versions = {22 : "1.0.6.1",
+            12 : "1.0.5"}
+bosses_slain : (EoC, EoW, Skeletron)
+'ID': *unique* Identication umber of world
+
+
+tile = (tile_id_or_null,
+	wall_id_or_null,
+	liquid,
+	multitiledata_or_null)
+liquid= 0 equals nothing
+255 -> max water
+-255 -> max lava
+liquid cant be null, it needs to be integer type
+
+multitiledata = (x,y)
+xy = postion on texture
+
+itemdata = (amount,item)
+if a itemdata is empty, its (0, null)
+
+chestdata = ((x,y),
+	 itemdata, itemdata,itemdata,itemdata,itemdata,
+	 itemdata, itemdata,itemdata,itemdata,itemdata,
+	 itemdata, itemdata,itemdata,itemdata,itemdata,
+	 itemdata, itemdata,itemdata,itemdata,itemdata)
+chest = chestdata_or_null
+
+sign = ((x,y), text)
+
+npc = (name, (pos_x, pos_y), has_home, (x,y))
+usually pos_x and pos_y = x*16 and y*16
+
+All x/y values are the top left tile of the object
+
+
+all =
+{tiles : width*height amount of tile,
+header : headerdata,
+chests : exactly 1000 times chest,
+signs : up to 1000 times sign,
+npcs : up to 1000 times npc
+}
