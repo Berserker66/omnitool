@@ -309,9 +309,7 @@ class Generator():
             current = 0
             content = []
             while targetnumber > current:
-                #print (items)
-                item = choice(list(items.keys()))
-                #print (targetnumber,current)
+                item = choice(tuple(items.keys()))
                 if item in db.itemlist:
                     amount = randint(1, min(db.itemlist[item], items[item], targetnumber - current))
                 else:

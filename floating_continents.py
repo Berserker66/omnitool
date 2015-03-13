@@ -26,7 +26,7 @@ valid = [1, 2, 3, 4]
 sizetype = 0
 while sizetype not in valid:
     try:
-        sizetype = int(raw_input("World size:"))
+        sizetype = int(input("World size:"))
     except:
         pass
     if sizetype not in valid:
@@ -41,7 +41,7 @@ print("4: Bloodmoon")
 starttype = 0
 while starttype not in valid:
     try:
-        starttype = int(raw_input("Start condition:"))
+        starttype = int(input("Start condition:"))
     except:
         pass
     if starttype not in valid:
@@ -53,7 +53,7 @@ print("By entering nothing you play normal")
 print("1: Darkness! I dont need a puny sun!")
 print("2: Less loot! I want to keep exploring!")
 print("3: Atlantis, I want to conquer the world from my sunken planet!")
-dif = raw_input("Difficulty:")
+dif = input("Difficulty:")
 
 sizetype -= 1
 starttype -= 1
@@ -99,7 +99,7 @@ header = {'spawn': spawn, 'groundlevel': ground, 'is_bloodmoon': is_blood,
           'width': size[0], 'version': 12, 'gob_inv_type': 0,
           'bosses_slain': (0, 0, 1), 'gob_inv_size': 0, 'height': size[1],
           'ID': 1394008879, 'moonphase': 0, 'name': 'Planetoids',
-          'is_a_shadow_orb_broken': 0, 'time': time}
+          'is_a_shadow_orb_broken': 0, 'time': time, "npcs_saved" = (0,0,0)}
 
 #initialize a texture to hold all tile data
 #could have used an array as well, like numpy, but I am more familiarized with pygame than numpy
@@ -145,13 +145,13 @@ itemdata = {'Swiftness Potion': 10, 'Cloud in a Bottle': 50,
 #so we overfill medium/large chests
 if sizetype == 0:
     for item in itemdata:
-        itemdata[item] = itemdata[item] / 2
+        itemdata[item] = itemdata[item] // 2  + itemdata[item] % 2
 elif sizetype == 2:
     for item in itemdata:
         itemdata[item] = itemdata[item] * 2
 if "2" in dif:
     for item in itemdata:
-        itemdata[item] = itemdata[item] / 2 + itemdata[item] % 2
+        itemdata[item] = itemdata[item] // 2 + itemdata[item] % 2
 # list of items that dont stack beyond 1.. if you stack more than that they still work fine
 # but I dont like people screaming haxors
 no_stack = ["Lucky Horseshoe", 'Cloud in a Bottle', 'Shiny Red Balloon', 'Wooden Boomerang',
@@ -166,21 +166,20 @@ itemtotal = 0
 for item in itemdata:
     itemtotal += itemdata[item]
 
-print
-str(len(itemdata)) + " different items loaded for chests"
+print(str(len(itemdata)) + " different items loaded for chests")
 
-target = itemtotal / chestcount  #target amount of items per chest
+target = itemtotal // chestcount  #target amount of items per chest
 
 
-def pick(items, targetnumber, no_stack):  #picks randomly items for a chest
+def pick(items, targetnumber):  #picks randomly items for a chest planetoids
     current = 0
     content = []
     while targetnumber > current:
-        item = choice(items.keys())
-        if item in no_stack:
-            amount = 1
+        item = choice(tuple(items.keys()))
+        if item in db.itemlist:
+            amount = randint(1, min(db.itemlist[item], items[item], targetnumber - current))
         else:
-            amount = randint(1, min(50, items[item], targetnumber - current))
+            amount = randint(1, min(3, items[item], targetnumber - current))
         items[item] -= amount
         if items[item] < 1:
             del (items[item])
@@ -196,12 +195,12 @@ def pick(items, targetnumber, no_stack):  #picks randomly items for a chest
 chestcontents = []
 
 while itemtotal > 0:  # fill those chests with something useful.. or not, angel statue ftw.
-    i, c, itemdatabase = pick(itemdata, min(target, itemtotal), no_stack)
+    i, c, itemdatabase = pick(itemdata, min(target, itemtotal))
     chestcontents.append(i)
+    print(c)
     itemtotal -= c
 
-print
-str(len(chestcontents)) + " chests filled"  # give the user a sign of life every once a while
+print (str(len(chestcontents)) + " chests filled")  # give the user a sign of life every once a while
 import time
 
 s = time.clock()
@@ -224,10 +223,8 @@ def find_rects(size, amount):
 chestpos = []
 
 areas = find_rects(size, 100)
-print
-time.clock() - s
-print
-areas
+print (time.clock() - s)
+print (areas)
 for area in areas:
     #pygame.draw.rect(surface, (0,0,0), area)
     pygame.draw.ellipse(surface, (0, 0, 0), area, 0)
@@ -324,8 +321,7 @@ pygame.image.save(surface, "mask.png")
 for x in range(1000 - len(chests)):  #fill in nonechests, as terraria always has 1000 chests
     chests.append(None)
 #world.make_split()
-print
-"World fully generated"  #five another lifesign
+print ("World fully generated")  #give another lifesign
 header["groundlevel"] = header["groundlevel"] + 500  #push down backgrounds a bit, they are annoying
 header["rocklevel"] = header["rocklevel"] + 500
 with open("0.part", "wb") as f:  #write the header
@@ -377,26 +373,20 @@ with open("1.part", "wb") as a:  #write the tile data
 print("done writing tiles")
 with open("2.part", "wb") as a:  #write chestdata
     set_chests(a, chests)
-print
-"done writing chests"
+print ("done writing chests")
 with open("3.part", "wb") as f:
     for sign in [None] * 1000:
         set_sign(f, sign)
-print
-"done writing signs"
+print("done writing signs")
 with open("4.part", "wb") as f:
     set_npc(f, (
     'Guide', (header["spawn"][0] * 16, (header["spawn"][1] - 3) * 16), 1, (header["spawn"][0], header["spawn"][1] - 3)))
     set_npc(f, None)
-print
-"done writing npcs"
+print("done writing npcs")
 with open("5.part", "wb") as f:
     set_trail(f, (1, header["name"], header["ID"]))
-print
-"done writing trail"
+print("done writing trail")
 name = "world1.wld"
 join(name)  #this just puts all the binary parts into one world file
-print
-"done joining world " + name  #yay!
-print
-"A world has been created!"
+print ("done joining world " + name)  #yay!
+print ("A world has been created!")
