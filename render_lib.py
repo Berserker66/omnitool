@@ -70,17 +70,23 @@ def render(s, pos, header, tiles, blendmap, wblendmap, rmap):
                     if blendmap[lx, ly][0] == 1:
                         get_tile_detail(tiles, blendmap, rmap, lx, ly)
                     s.blit(tex[t[0]], tpos, area=(blendmap[lx, ly], (16, 16)))
+            if t[2]:
+                if t[2] > 512:
+                    pygame.gfxdraw.box(s,
+                                       ((x * 16 - xp, y * 16 - yp),
+                                        (16, 16)),
+                                       (255, 255, 127, 150))
+                elif t[2] > 256:
+                    pygame.gfxdraw.box(s,
+                                       ((x * 16 - xp, y * 16 - yp),
+                                        (16, 16)),
+                                       (200, 0, 0, 150))
+                else:
+                    pygame.gfxdraw.box(s,
+                                       ((x * 16 - xp, y * 16 - yp),
+                                        (16, 16)),
+                                       (0, 50, 255, 100))
 
-            if t[2] > 0:
-                pygame.gfxdraw.box(s,
-                                   ((x * 16 - xp, y * 16 - yp),
-                                    (16, 16)),
-                                   (0, 50, 255, 100))
-            elif t[2] < 0:
-                pygame.gfxdraw.box(s,
-                                   ((x * 16 - xp, y * 16 - yp),
-                                    (16, 16)),
-                                   (200, 0, 0, 150))
             y += 1
         x += 1
     return s

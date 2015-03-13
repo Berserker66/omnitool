@@ -1,18 +1,11 @@
 from __future__ import with_statement
-import os
-import pickle
-from random import choice
 import time
-import sys
-import json
-import zipfile
-
 import pygame
 import numpy
-
-from tlib import *
 from tinterface import *
-import database as db
+minimap_limits = 400,300
+
+
 
 # from blendmapper import *
 
@@ -88,7 +81,28 @@ def run(header, path, mapping, data):
     pygame.init()
     pygame.display.init()
 
-    #
+    try:
+        imageloc = os.path.join(get_myterraria(), "WorldImages", os.path.basename(path).split(".")[0]+".png")
+        mapimage = pygame.image.load(imageloc)
+        mi_size = mapimage.get_size()
+        mi_scale = 1
+        print("size", mi_size)
+        if mi_size[0] > minimap_limits[0]:
+            mi_scale = 1/(mi_size[0]/minimap_limits[0])
+            print("x Scale: ",mi_scale)
+        if mi_size[1] > minimap_limits[1]:
+            mi_scale = min(1/(mi_size[1]/minimap_limits[1]), mi_scale)
+            print("Scaling minimap with factor "+str(mi_scale))
+        if mi_scale != 1:
+            mapimage = pygame.transform.rotozoom(mapimage, 0, mi_scale)
+        mi_size = mapimage.get_size()
+
+    except:
+        print("Cannot load minimap:")
+        import traceback
+        traceback.print_exc()
+        mapimage = None
+
     start = time.clock()
     f = open(path, "rb")
     f.seek(pos)
@@ -136,13 +150,10 @@ def run(header, path, mapping, data):
     f.close()
 
     rmap = numpy.random.randint(3, size=(header["width"], header["height"]))
-    #blendmap, wblendmap = calc(header, tiles,rmap)
+
     blendmap = numpy.ones((header["width"], header["height"], 2), dtype=numpy.uint16)
     wblendmap = numpy.ones((header["width"], header["height"], 2), dtype=numpy.uint16)
-    #with open("blend.pic", "wb") as f:
-    #    pickle.dump((blendmap, wblendmap), f)
-    #with open("blend.pic", "rb") as f:
-    #    blendmap, wblendmap = pickle.load(f)
+
     mid = time.clock()
     print("World loaded: %5f seconds" % (mid - start))
 
@@ -154,21 +165,19 @@ def run(header, path, mapping, data):
     rfill = pygame.image.load(os.path.join("tImages", "Background_3.png")).convert()
     print("Textures loaded: %5f seconds" % (time.clock() - mid))
 
-    #airbg = pygame.surface.Surface(
     spawn = header["spawn"]
     clock = pygame.time.Clock()
     pos = [spawn[0] * 16 - 256, spawn[1] * 16 - 256]
 
-    #contain = pygame.surface.Surface(res)
     pygame.display.set_caption("Terraria World Render")
     if mapping:
         res = [1600, 1600]
         area = [1600, 1600]
-        s = pygame.surface.Surface(res)
         os.chdir("..")
     else:
         res = [1024, 768]
-        s = pygame.display.set_mode(res, pygame.RESIZABLE)
+        dis = pygame.display.set_mode(res, pygame.RESIZABLE)
+    s = pygame.surface.Surface(res)
     print("initializing render loop...")
     if mapping:
         try:
@@ -205,7 +214,8 @@ def run(header, path, mapping, data):
                 sys.exit()
             elif event.type == 16:
                 res = event.size
-                s = pygame.display.set_mode(res, pygame.RESIZABLE)
+                dis = pygame.display.set_mode(res, pygame.RESIZABLE)
+                s = pygame.surface.Surface(res)
                 dirty.append(pygame.rect.Rect(0, 0, res[0], res[1]))
         if not mapping:
             rel = pygame.mouse.get_rel()
@@ -223,7 +233,7 @@ def run(header, path, mapping, data):
 
                 pos[0] -= rel[0]
                 pos[1] -= rel[1]
-                #print (rel[0] > res[0] and rel[1] > res[1])
+
                 s.blit(s, rel)
 
                 if rel[0] > 0:
@@ -234,8 +244,6 @@ def run(header, path, mapping, data):
                     dirty.append(pygame.rect.Rect(0, 0, res[0], rel[1]))
                 if rel[1] < 0:
                     dirty.append(pygame.rect.Rect(0, res[1] + rel[1], res[0], -rel[1]))
-                    #for rect in dirty:
-                    #    pygame.draw.rect(s, (0,0,0), rect)
 
         for rect in dirty:
             b = render_lib.render(pygame.surface.Surface(rect.size),
@@ -274,20 +282,29 @@ def run(header, path, mapping, data):
                     sys.exit()
 
             if (mx + 1) * area[0] > wi and not (mx * area[0] > wi):
-                #print (mx*area[0], header["width"]*16)
+
                 res[0] = -mx * area[0] + wi
             if (my + 1) * area[1] > he and not (my * area[1] > he):
-                #print (my*area[1], header["height"]*16)
+
                 res[1] = -my * area[1] + he
-            #print (res)
+
             dirty = [pygame.rect.Rect(0, 0, res[0], res[1])]
             if s.get_size() != res: s = pygame.surface.Surface(res)
             res = [area[0], area[1]]
             pos = [mx * res[0], my * res[1]]
+
         else:
             dirty = []
-        pygame.display.update()
+            dis.blit(s, (0,0))
+            if mapimage:
+                dis.blit(mapimage, (res[0]-mi_size[0], 1))
+                #draw minimap viewport borders:
+                bpos = pos[0]//16, pos[1]//16
+                topleft = bpos[0]*mi_scale+res[0]-mi_size[0], bpos[1]*mi_scale
+                viewsize = mi_scale*res[0]//16, (res[1]//16)*mi_scale
+                pygame.gfxdraw.rectangle(dis, (topleft, viewsize), (127,30,30, 127))
 
+        pygame.display.update()
         clock.tick(100)
 
 

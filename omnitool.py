@@ -116,7 +116,6 @@ if sys.platform.startswith("win"):
     from ctypes import windll
 import struct
 import tempfile
-import zipfile
 import json
 from itertools import product
 
@@ -536,9 +535,6 @@ def gen_slice(path, start, size, levels, version, queue=None):
             else:  #0>x>256 is water, the higher x is the more water is there
                 s.set_at((xi, yi), (19, 86, 134))
 
-                #pygame.image.saves, "image.png")
-                #raise AssertionError()
-
         pos = f.tell()
         f.seek(start)
     if queue:
@@ -585,9 +581,7 @@ class PLoader(threading.Thread):
         pool.close()
         self.update_thumb()
         self.image.repaint()
-        #pygame.image.save(self.raw, os.path.join(appdata,self.filename[:-3]+"png"))
-        #shutil.copyfile(os.path.join(appdata,self.filename[:-3]+"png"),
-        #                os.path.join(images,self.filename[:-3]+"png"))
+
         pygame.image.save(self.raw, os.path.join(images, self.filename[:-3] + "png"))
 
         self.cache["time"] = os.path.getmtime(self.file)
