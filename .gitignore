@@ -232,3 +232,4 @@ Output/
 *.dll
 pgu/
 desktop.ini
+.dropbox.attr
