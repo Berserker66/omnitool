@@ -99,7 +99,7 @@ header = {'spawn': spawn, 'groundlevel': ground, 'is_bloodmoon': is_blood,
           'width': size[0], 'version': 12, 'gob_inv_type': 0,
           'bosses_slain': (0, 0, 1), 'gob_inv_size': 0, 'height': size[1],
           'ID': 1394008879, 'moonphase': 0, 'name': 'Planetoids',
-          'is_a_shadow_orb_broken': 0, 'time': time, "npcs_saved" = (0,0,0)}
+          'is_a_shadow_orb_broken': 0, 'time': time, "npcs_saved" : (0,0,0)}
 
 #initialize a texture to hold all tile data
 #could have used an array as well, like numpy, but I am more familiarized with pygame than numpy

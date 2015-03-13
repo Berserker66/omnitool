@@ -1,7 +1,5 @@
 import os
-
 import pygame
-
 
 colors = {}
 for p in os.listdir(os.getcwd()):
@@ -25,17 +23,22 @@ for p in os.listdir(os.getcwd()):
             color = (int(colorsum[0] / float(i)),
                      int(colorsum[1] / float(i)),
                      int(colorsum[2] / float(i)))
-            print(p[6:].strip(".png"), color)
-            colors[int(p[6:].strip(".png"))] = color
+            try:
+                colors[int(p[6:].strip(".png"))] = color
+            except ValueError:
+                print("Encountered non ID tile, skipped : "+p)
 rcolors = []
 for i in range(len(colors)):
     rcolors.append(colors[i])
-# print rcolors
+
 print(colors)
-colors = {}
+
+print("-"*70)
+colors = {0: (0, 0, 0)}
 for p in os.listdir(os.getcwd()):
     if p[-3:] == "png":
-        if p[:4] == "Wall":
+        if p[:4] == "Wall" and p != "WallOfFlesh.png" and p != "Wall_Outline.png":
+
             colorsum = [0, 0, 0]
             image = pygame.image.load(p)
             size = image.get_size()
@@ -54,9 +57,9 @@ for p in os.listdir(os.getcwd()):
             color = (int(colorsum[0] / float(i)),
                      int(colorsum[1] / float(i)),
                      int(colorsum[2] / float(i)))
-            print(p[5:].strip(".png"), color)
             colors[int(p[5:].strip(".png"))] = color
 rcolors = []
-for i in range(1, len(colors)):
+for i in range(len(colors)):
     rcolors.append(colors[i])
+
 print(colors)
