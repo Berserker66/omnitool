@@ -23,10 +23,20 @@ Usage
 
 FAQ
 ===
-
+Is there a better way to view my world as a map?
+------------------------------------------------
 You can render a world similar to how Terraria shows them by clicking on a world's image.
+
+Do I need admin rights to use Omnitool?
+---------------------------------------
 Depending on where your Terraria is saved, Steamfree Terraria launch may require Omnitool to be started in administrator mode. Everything else works without admin.
-If Omnitool is unable to find your Terraria, take a look here: Link
+
+Omnitool can't find my Terraria install.
+----------------------------------------
+If Omnitool is unable to find your Terraria, take a look here: [Link](http://www.terrariaonline.com/threads/omnitool-world-mapping-backups-creation-and-more-released.61654/page-19#post-1501847)
+
+How can I tell when the world generators have finished? Is there a progress bar?
+--------------------------------------------------------------------------------
 World Generators do not have a progress bar, they will tell you when they are done in the console.
 
 Available Languages
