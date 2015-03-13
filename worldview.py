@@ -160,10 +160,6 @@ def make_map(path, outputpath=None, mark=False, name=None, cmod=False):
 if __name__ == "__main__":
     freeze_support()
     # sys.argv.append("mark")# remove the # if you dont want to specify mark via command line
-    if "cmod" in sys.argv:
-        db.add_cmod()
-        db.parse()
-        db.cmod = True
 
     if "mark" in sys.argv:
         mark = True
@@ -193,15 +189,9 @@ if __name__ == "__main__":
             buf = ctypes.create_unicode_buffer(300)
             dll.SHGetSpecialFolderPathW(None, buf, 0x0005, False)
 
-            if db.cmod:
-                p = os.path.join(buf.value, "My Games", "Terraria", "CmodWorlds")
-            else:
-                p = os.path.join(buf.value, "My Games", "Terraria", "Worlds")
+            p = os.path.join(buf.value, "My Games", "Terraria", "Worlds")
         except:
-            if db.cmod:
-                p = os.path.expanduser("~/My Games/Terraria/CmodWorlds")
-            else:
-                p = os.path.expanduser("~/My Games/Terraria/Worlds")
+            p = os.path.expanduser("~/My Games/Terraria/Worlds")
         processes = []
         for item in os.listdir(p):
             if item[-3:] == "wld":
@@ -214,7 +204,6 @@ if __name__ == "__main__":
                               args=(os.path.join(p, item), pos, mark, item, db.cmod))
                 pro.start()
                 processes.append(pro)
-                #make_map(os.path.join(p,item), item, mark)
         while len(processes) > 0:
 
             dead = []

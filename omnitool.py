@@ -224,7 +224,7 @@ if __name__ == "__main__":
 
 
 def runrender(world):
-    args = (world.header, world.file, False, (world.header, world.pos), None)
+    args = (world.header, world.file, False, (world.header, world.pos))
     p = multiprocessing.Process(target=render.run, name="WorldRender", args=args)
     p.start()
     processes.append(p)

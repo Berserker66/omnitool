@@ -83,7 +83,7 @@ def load(tiles=None, walls=None, colors=None, wallcolors=None):
     return tex, walltex, npc_tex
 
 
-def run(header, path, mapping, data, txt=None):
+def run(header, path, mapping, data):
     header, pos = data
     pygame.init()
     pygame.display.init()
@@ -292,41 +292,22 @@ def run(header, path, mapping, data, txt=None):
 
 
 if __name__ == "__main__":
-    print("Select mode:")
-    print("1 : Vanilla (Terraria 1.1.2)")
-    print("2 : tConfig")
-    mode = int(input("Mode:")) - 1
-    x = 1
+    path, worlds = get_worlds(False)
     b = {}
-    if mode == 0:
-        path, worlds = get_worlds(False)
+    x = 0
+    for w in worlds:
+        with open(os.path.join(path, w), "rb") as f:
+            header = get_header(f)[0]
+            b[w] = header, f.tell()
+        name = header["name"]
 
-        for w in worlds:
-            with open(os.path.join(path, w), "rb") as f:
-                header = get_header(f)[0]
-                b[w] = header, f.tell()
-            name = header["name"]
+        print(x, ":", name)
+        x += 1
 
-            print(x, ":", name)
-            x += 1
-    elif mode == 1:
-        path, worlds = get_worlds(True)
-        for w in worlds:
-            with zipfile.ZipFile(os.path.join(path, w)) as z:
-                txt = json.loads(z.read("world.txt").decode())
-
-            header = txt["header"]
-            name = header["name"]
-            b[w] = header, 0
-            print(x, ":", name)
-            x += 1
-    else:
-        print("Invalid mode")
-        sys.exit()
     x = input("World Number:")
     world = worlds[int(x) - 1]
     if "super" in sys.argv:
         image = True
     else:
         image = False
-    run(os.path.join(path, world), image, mode, b[world], txt if mode else None)
+    run(os.path.join(path, world), image, b[world])
