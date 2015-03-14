@@ -55,6 +55,7 @@ Available Languages
 More detailed info in the Language thread [here](http://www.terrariaonline.com/threads/omnitool-language-thread.62981/).
 
 Plugins
+-------
 More plugins to add features to Omnitool can be found [here](http://www.terrariaonline.com/threads/omnitool-plugin-compendium.82677/#post-1625952).
 You can also check out the [documentation](http://www.terrariaonline.com/threads/omnitool-plugin-system-documentation.80960/) to make your own.
 
