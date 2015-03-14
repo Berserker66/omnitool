@@ -135,7 +135,12 @@ def run(header, path, mapping, data):
                 rect.w = nw
                 pygame.draw.rect(surface, (200, 200, 200), rect)
                 pygame.display.update(tup)
-                pygame.event.pump()
+
+                for event in pygame.event.get():
+                    if event.type == 12:
+                        pygame.quit()
+                        import sys
+                        sys.exit()
 
                 #chests = [get_chest(f) for x in range(1000)]
                 #signs = [get_sign(f) for x in range(1000)]
