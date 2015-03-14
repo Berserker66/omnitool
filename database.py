@@ -2,7 +2,10 @@ version = 39
 versions = {22: "1.0.6.1",
             12: "1.0.5",
             36: "1.1",
-            39: "1.1.2"}
+            39: "1.1.2",
+            100 : "1.2.4",
+            102 : "1.2.4.1",
+            }
 cmod = False
 
 npclist = ["Merchant", "Nurse", "Arms Dealer", "Dryad", "Guide", "Clothier",
