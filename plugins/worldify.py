@@ -21,6 +21,7 @@ from random import randint
 from time import sleep
 from os.path import join as osjoin
 import tempfile
+from pgu_override import MyFileDialog
 
 
 class Generator():
@@ -63,7 +64,9 @@ class Generator():
 
                 app = gui.Desktop(theme=blue)
                 app.connect(gui.QUIT, exit_prog, None)
-                main = gui.FileDialog()
+                app.connect(gui.CLOSE, exit_prog, None)
+                main = MyFileDialog()
+                main.connect(gui.CLOSE, app.quit, main)
                 main.connect(gui.CHANGE, app.quit, main)
                 main.open()
                 app.run(main)

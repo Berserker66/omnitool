@@ -1,6 +1,6 @@
 import os
 
-from pgu.gui import Desktop, basic, container
+from pgu.gui import Desktop, basic, container, FileDialog
 from pgu.gui.const import *
 from pygame.locals import *
 
@@ -50,6 +50,25 @@ class MyApp(Desktop):
 def change_image(self, value):
     self.value = value
     self.style.width, self.style.height = value.get_width(), value.get_height()
+
+class MyFileDialog(FileDialog):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.input_dir.connect(ACTIVATE, self._button_okay_clicked_, None)
+
+    def _button_okay_clicked_(self, arg):
+        if self.input_dir.value != self.curdir:
+            if os.path.isdir(self.input_dir.value):
+                self.input_file.value = ""
+                self.curdir = os.path.abspath(self.input_dir.value)
+                self.list.clear()
+                self._list_dir_()
+            else:
+                self.input_dir.value = self.curdir
+        else:
+            self.value = os.path.join(self.curdir, self.input_file.value)
+            self.send(CHANGE)
+            self.close()
 
 
 basic.Image.change_image = change_image
