@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Omnitool"
-#define MyAppVersion "17"
+#define MyAppVersion "17.0.0"
 #define MyAppPublisher "Fabian Dill"
 #define MyAppURL "http://www.terrariaonline.com/threads/omnitool-world-mapping-backups-creation-and-more-released.61654/"
 #define MyAppExeName "omnitool.exe"
