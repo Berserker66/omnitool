@@ -76,6 +76,7 @@ def load(tiles=None, walls=None, colors=None, wallcolors=None):
     return tex, walltex, npc_tex
 
 
+
 def run(header, path, mapping, data):
     header, pos = data
     pygame.init()
@@ -86,10 +87,8 @@ def run(header, path, mapping, data):
         mapimage = pygame.image.load(imageloc)
         mi_size = mapimage.get_size()
         mi_scale = 1
-        print("size", mi_size)
         if mi_size[0] > minimap_limits[0]:
             mi_scale = 1/(mi_size[0]/minimap_limits[0])
-            print("x Scale: ",mi_scale)
         if mi_size[1] > minimap_limits[1]:
             mi_scale = min(1/(mi_size[1]/minimap_limits[1]), mi_scale)
             print("Scaling minimap with factor "+str(mi_scale))
@@ -178,6 +177,25 @@ def run(header, path, mapping, data):
         res = [1024, 768]
         dis = pygame.display.set_mode(res, pygame.RESIZABLE)
     s = pygame.surface.Surface(res)
+    def relmove(rel):
+        nonlocal s
+        nonlocal pos
+        nonlocal dirty
+        pos[0] -= rel[0]
+        pos[1] -= rel[1]
+
+        s.blit(s, rel)
+        if abs(rel[0]) > res[0] or abs(rel[1])> res[1]:
+            dirty = [pygame.rect.Rect(0, 0, res[0], res[1])]
+        else:
+            if rel[0] > 0:
+                dirty.append(pygame.rect.Rect(0, 0, rel[0], res[1]))
+            elif rel[0] < 0:
+                dirty.append(pygame.rect.Rect(res[0] + rel[0], 0, -rel[0], res[1]))
+            if rel[1] > 0:
+                dirty.append(pygame.rect.Rect(0, 0, res[0], rel[1]))
+            elif rel[1] < 0:
+                dirty.append(pygame.rect.Rect(0, res[1] + rel[1], res[0], -rel[1]))
     print("initializing render loop...")
     if mapping:
         try:
@@ -203,6 +221,10 @@ def run(header, path, mapping, data):
     render_lib.rborder = rborder
     render_lib.rfill = rfill
     wi, he = header["width"] * 16 - 64, header["height"] * 16 - 64
+    movemode = None
+    #movemodes:
+    MAP = 2
+    CURSOR = 1
     while 1:
 
         events = pygame.event.get()
@@ -217,39 +239,47 @@ def run(header, path, mapping, data):
                 dis = pygame.display.set_mode(res, pygame.RESIZABLE)
                 s = pygame.surface.Surface(res)
                 dirty.append(pygame.rect.Rect(0, 0, res[0], res[1]))
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    if event.pos[0]>(res[0]-mi_size[0]) and event.pos[1] < mi_size[1]:
+                        movemode = MAP
+                    else:
+                        movemode = CURSOR
+            elif event.type == pygame.MOUSEBUTTONUP:
+                if event.button == 1:
+                    movemode = None
         if not mapping:
             rel = pygame.mouse.get_rel()
-            if pygame.mouse.get_pressed()[0]:
-                if pygame.key.get_pressed()[pygame.K_SPACE]:
-                    rel = rel[0] * 10, rel[1] * 10
-                if -rel[0] + pos[0] < 0:
-                    rel = pos[0], rel[1]
-                elif -rel[0] + pos[0] + res[0] > header["width"] * 16 - 64:
-                    rel = header["width"] * 16 - 64 - pos[0] - res[0], rel[1]
-                if -rel[1] + pos[1] < 0:
-                    rel = rel[0], pos[1]
-                elif -rel[1] + pos[1] + res[1] > header["height"] * 16 - 64:
-                    rel = rel[0], header["height"] * 16 - 64 - pos[1] - res[1]
+            if pygame.mouse.get_pressed()[0] and movemode:
+                if movemode == CURSOR:
+                    if pygame.key.get_pressed()[pygame.K_SPACE]:
+                        rel = rel[0] * 10, rel[1] * 10
+                    if -rel[0] + pos[0] < 0:
+                        rel = pos[0], rel[1]
+                    elif -rel[0] + pos[0] + res[0] > header["width"] * 16 - 64:
+                        rel = header["width"] * 16 - 64 - pos[0] - res[0], rel[1]
+                    if -rel[1] + pos[1] < 0:
+                        rel = rel[0], pos[1]
+                    elif -rel[1] + pos[1] + res[1] > header["height"] * 16 - 64:
+                        rel = rel[0], header["height"] * 16 - 64 - pos[1] - res[1]
 
-                pos[0] -= rel[0]
-                pos[1] -= rel[1]
-
-                s.blit(s, rel)
-
-                if rel[0] > 0:
-                    dirty.append(pygame.rect.Rect(0, 0, rel[0], res[1]))
-                if rel[0] < 0:
-                    dirty.append(pygame.rect.Rect(res[0] + rel[0], 0, -rel[0], res[1]))
-                if rel[1] > 0:
-                    dirty.append(pygame.rect.Rect(0, 0, res[0], rel[1]))
-                if rel[1] < 0:
-                    dirty.append(pygame.rect.Rect(0, res[1] + rel[1], res[0], -rel[1]))
+                    relmove(rel)
+                else:
+                    mpos = pygame.mouse.get_pos()
+                    mpos = (mpos[0]-res[0]+mi_size[0])*16/mi_scale,mpos[1]*16/mi_scale
+                    rel = (pos[0]-mpos[0], pos[1]-mpos[1])
+                    if any(rel):relmove(rel)
 
         for rect in dirty:
-            b = render_lib.render(pygame.surface.Surface(rect.size),
-                                  (pos[0] + rect.x, pos[1] + rect.y),
-                                  header, tiles, blendmap, wblendmap, rmap)
-            s.blit(b, rect.topleft)
+            try:
+                b = render_lib.render(pygame.surface.Surface(rect.size),
+                                      (pos[0] + rect.x, pos[1] + rect.y),
+                                      header, tiles, blendmap, wblendmap, rmap)
+            except IndexError:
+                print("Out of bounds rendering attempt.")
+            else:
+                s.blit(b, rect.topleft)
+
         if len(dirty):
             rect = pygame.rect.Rect(pos, res)
             for npc in npcs:
@@ -301,7 +331,7 @@ def run(header, path, mapping, data):
                 #draw minimap viewport borders:
                 bpos = pos[0]//16, pos[1]//16
                 topleft = bpos[0]*mi_scale+res[0]-mi_size[0], bpos[1]*mi_scale
-                viewsize = mi_scale*res[0]//16, (res[1]//16)*mi_scale
+                viewsize = (mi_scale*res[0])//16, (res[1]*mi_scale)//16
                 pygame.gfxdraw.rectangle(dis, (topleft, viewsize), (127,30,30, 127))
 
         pygame.display.update()
