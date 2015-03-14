@@ -90,10 +90,11 @@ class Generator():
         pygame.display.set_caption("Worldify")
         colors = colorlib.data
         #bad = [4,49, 53, 32, 62, 52, 80, 19]#torch, blue candle, sand, corruption vines, wooden platform
-        colors[None] = (250, 250, 250)  #air
+
         for tile in colors:
             if tile in db.multitiles or tile > 255:
                 colorlib.bad.append(tile)
+        colors[None] = (250, 250, 250)  #air
         for b in colorlib.bad:
             if b in colors: del (colors[b])
         rcolors = {}

@@ -8,6 +8,7 @@ from pygame.locals import *
 class MyApp(Desktop):
     def __init__(self, **params):
         Desktop.__init__(self, **params)
+        self.queue = []
         self.zoomed = False
         self.first = True
 
@@ -45,7 +46,24 @@ class MyApp(Desktop):
                 pass
             self.on_resize(self, ev)
             self.repaint()
+    #override
+    def run(self, widget=None, screen=None, delay=10):
+        """Run an application.
 
+        Automatically calls App.init and then forever loops while
+        calling App.event and App.update
+
+        Keyword arguments:
+            widget -- the top-level widget to use
+            screen -- the pygame surface to render to
+            delay -- the delay between updates (in milliseconds)
+        """
+        self.init(widget, screen)
+        while not self._quit:
+            for row in self.queue:
+                row[0](*row[1:])
+            self.loop()
+            pygame.time.wait(delay)
 
 def change_image(self, value):
     self.value = value

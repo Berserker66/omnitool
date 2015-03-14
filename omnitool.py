@@ -7,7 +7,7 @@ if __name__ == "__main__":
 import sys
 import os
 from version import Version
-__version__ = Version(170000)
+__version__ = Version(170100)
 if "APPDATA" in os.environ:
     appdata = os.path.join(os.environ["APPDATA"], "Omnitool")
 else:
@@ -276,13 +276,18 @@ class GenButton(gui.Button):
     def __init__(self, name, gen, width=100, disabled=False):
         gui.Button.__init__(self, name, width=width)
 
-        self.connect(gui.CLICK, start_proc, bind[gen])
+        self.connect(gui.CLICK, start_proc, bind[gen], True)
         self.disabled = disabled
         self.blur()
 
-
-def start_proc(func):
-    #print(func)
+last_gen_start = 0
+def start_proc(func, delay = False):
+    global last_gen_start
+    if delay:
+        now = time.time()
+        if now-last_gen_start < 0.1:
+            return
+        last_gen_start = time.time()
     if func[1].__class__.__name__ == "list":
         p = multiprocessing.Process(target=func[0], name=func[1][0],
                                     args=(func[1][1],))
@@ -748,6 +753,30 @@ class Backupper(threading.Thread):
         save_cache()
 
 
+
+class Redrawer(threading.Thread):
+    def __init__(self):
+        threading.Thread.__init__(self)
+        self.daemon = True
+
+    def run(self):
+        new = []
+        dropped = []
+        while 1:
+            time.sleep(1)
+            if new or dropped:
+                "World File Change Detected!"
+
+                for name in new:
+                    get_world(path, name, worlds)
+                app.queue.append((display_worlds,))
+            path, newnames = get_worlds()
+            new = set(newnames)-set(worldnames)
+            dropped = set(worldnames)-set(newnames)
+            if new:
+                worldnames.extend(new)
+
+
 def launch_terraria(arg=""):
     dest = os.path.join(appdata, "Terraria")
     source = get_t_path()
@@ -816,12 +845,10 @@ class Updater(threading.Thread):
 
 
 def proxyload(file):
-    #print ("proxy loading")
     ext = file.split(".")[-1]
     with open(file, "rb") as f:
         d = pygame.image.load(f, ext)
     return d
-
 
 def get_t_path(verbal=False):
     done = False
@@ -902,6 +929,10 @@ def get_world(path, world, worlds):
 
 
 def run():
+    global app
+    global worldnames
+    global worlds
+    global display_worlds
     try:
         loc = os.path.join(myterraria, "Game Launcher", "omnitool.gli3")
         data = {
@@ -995,65 +1026,76 @@ def run():
     main.td(update, col=1, colspan=5, align=-1)
 
     main.tr()
-    if len(worldnames) > 5:
-        print("Warning: You have more than five worlds, Terraria will not be able to list all!")
-    newtable = gui.Table()
     width = 190
     worldify = GenButton(lang.worldify, IMAGE, width=width)
     planetoids = GenButton(lang.planetoids, PLANET, width=width)
     dungeon = GenButton(lang.arena, DUNGEON, width=width)
     flat = GenButton(lang.flat, FLAT, width=width)
-    #start = time.clock()
+
     tuple(t.join() for t in ts)
     expected_h = 170 * len(worlds) // cache["columns"] + 100
     pygame.display.init()
     available_h = max([res[1] for res in pygame.display.list_modes()])
     if expected_h > available_h:
         print("GUI expected to be higher than monitor height, adding columns")
-        #print((170*len(worlds)),(expected_h-100))
         cache["columns"] = max(cache["columns"] + 1, 1 + (170 * len(worlds)) // (available_h - 100))
     del (ts)
-    #print(time.clock()-start)
-    for w in worlds:
-        if x % cache["columns"] == 0:
-            main.tr()
-        wtab = gui.Table()
-        wtab.td(w.info, colspan=2)
-        wtab.tr()
-        if thumbsize:
-            wtab.td(w.image, colspan=2)
-        else:
-            wtab.td(gui.Spacer(1, 20))
-        wtab.tr()
-        wtab.td(gui.Spacer(pad, pad))
-        wtab.tr()
-
-        wtab.td(gui.Spacer(420, 25), colspan=2)
-        wtab.tr()
-
-        main.td(gui.Spacer(pad, 1))
-        main.td(wtab)
-        #main.td(gui.Spacer(pad,1))
-
-        x += 1
-    if x % cache["columns"] == 0:
-        main.tr()
-    newtable.td(gui.Label(lang.new), align=-1)
-    newtable.tr()
-    newtable.td(gui.Spacer(1, 10), colspan=3)
-    newtable.tr()
-    newtable.td(worldify)
-    newtable.td(gui.Spacer(12, 12))
-    newtable.td(planetoids)
-    newtable.tr()
-    newtable.td(gui.Spacer(1, 10), colspan=3)
-    newtable.tr()
-    newtable.td(dungeon)
-    newtable.td(gui.Spacer(12, 12))
-    newtable.td(flat)
-    main.td(newtable, colspan=3)
+    newworldtable = gui.Table()
+    newworldtable.td(gui.Spacer(10, 10))
+    newworldtable.td(gui.Label(lang.new), align=-1)
+    newworldtable.tr()
+    newworldtable.td(gui.Spacer(10, 10))
+    newworldtable.td(worldify)
+    newworldtable.td(gui.Spacer(10, 10))
+    newworldtable.td(planetoids)
+    newworldtable.td(gui.Spacer(10, 10))
+    newworldtable.td(dungeon)
+    newworldtable.td(gui.Spacer(10, 10))
+    newworldtable.td(flat)
+    newworldtable.tr()
+    newworldtable.td(gui.Spacer(10, 10))
+    main.td(newworldtable, colspan = 6)
     main.tr()
-    main.td(gui.Spacer(12, 12))
+    worldtable = gui.Table()
+    main.td(worldtable, colspan = 6)
+    def display_worlds():
+        worldtable.clear()
+        x = 0
+        for w in worlds:
+            if x % cache["columns"] == 0:
+                worldtable.tr()
+            wtab = gui.Table()
+            wtab.td(w.info, colspan=2)
+            wtab.tr()
+            if thumbsize:
+                wtab.td(w.image, colspan=2)
+            else:
+                wtab.td(gui.Spacer(1, 20))
+            wtab.tr()
+            wtab.td(gui.Spacer(pad, pad))
+            wtab.tr()
+
+            wtab.td(gui.Spacer(420, 25), colspan=2)
+            wtab.tr()
+
+            worldtable.td(gui.Spacer(pad, 1))
+            worldtable.td(wtab)
+
+            x += 1
+        if x % cache["columns"] == 0:
+            worldtable.tr()
+        #worldtable.td(newworldtable, colspan=3)
+        #worldtable.tr()
+        worldtable.td(gui.Spacer(12, 12))
+        if app.widget:
+            app.resize()
+            app.repaint()
+            size = pygame.display.get_surface().get_size()
+            data = {"size" : size, "w" : size[0], "h" : size[1]}
+            pygame.event.post(pygame.event.Event(pygame.VIDEORESIZE, data))
+
+
+    display_worlds()
     print("GUI Matrix created, initializing..")
     pygame.display.quit()
     pygame.display.init()
@@ -1105,8 +1147,11 @@ def run():
     if cache["do_backup"]:
         b = Backupper()
         b.name = "Backup"
-        b.daemon = False
         b.start()
+    if worldnames:
+        redrawer = Redrawer()
+        redrawer.name = "Redrawer"
+        redrawer.start()
     info.start()
     updater.start()
     app.run(main)
