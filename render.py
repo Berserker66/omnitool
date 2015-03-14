@@ -107,7 +107,13 @@ def run(header, path, mapping, data):
     f.seek(pos)
     get = get_tile_buffered_12_masked if header["version"] > 100 else get_tile_buffered
     pygame.display.set_caption("Loading World..")
-    surface = pygame.display.set_mode((300, 20))
+    loadbar_width = minimap_limits[0]
+    if mapimage:
+        if mi_size[0] > 200:loadbar_width = mi_size[0]
+        surface = pygame.display.set_mode((loadbar_width, 20+mi_size[1]))
+        pygame.display.update(surface.blit(mapimage, (0, 20)))
+    else:
+        surface = pygame.display.set_mode((loadbar_width, 20))
     skip = False
     if not skip:
         print("loading and converting world data")
@@ -124,7 +130,7 @@ def run(header, path, mapping, data):
                 data, b = get(f)
                 tiles[xi, yi:yi+b] = (data,)*b
                 yi+=b
-            nw = int(300.0 * xi / w)
+            nw = int(minimap_limits[0] * xi / w)
             if nw != rect.w:
                 rect.w = nw
                 pygame.draw.rect(surface, (200, 200, 200), rect)
