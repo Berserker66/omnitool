@@ -70,7 +70,7 @@ Credits for Omnitool
 * 7UR7L3: testing and ideas
 * Ijwu: translation overseer, testing, ideas & skins (Oasis, Underworld, Overworld)
 * Berserker66(me): programming, testing, bundling, setup, ....
-* translation credits in translation thread: Link
+* Translation credits in translation thread: [Link](http://www.terrariaonline.com/threads/omnitool-world-mapping-backups-creation-and-more-released.61654/page-19#post-1501847)
 
 Dependencies
 ============
