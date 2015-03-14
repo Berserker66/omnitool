@@ -3,10 +3,11 @@ if __name__ == "__main__":
     import multiprocessing
 
     multiprocessing.freeze_support()
-__version__ = 17
+
 import sys
 import os
-
+from version import Version
+__version__ = Version(170000)
 if "APPDATA" in os.environ:
     appdata = os.path.join(os.environ["APPDATA"], "Omnitool")
 else:
@@ -57,6 +58,10 @@ if "columns" not in cache:
 if "lang" not in cache:
     cache["lang"] = "english"
 if "version" not in cache:
+    cache["version"] = __version__
+    cache["worlds"] = {}
+elif cache["version"] < __version__:
+    print("Newer Omnitool version, resetting world image cache.")
     cache["version"] = __version__
     cache["worlds"] = {}
 if os.path.isfile("custom.py"):
@@ -134,8 +139,6 @@ def myupdate(self, s):
             continue
         else:
             sub = pgusur.subsurface(s, w.rect)
-            #if (hasattr(w, "_container_bkgr")):
-            #    sub.blit(w._container_bkgr,(0,0))
             w.paint(sub)
             updates.append(pygame.rect.Rect(w.rect))
     while 1:
@@ -356,15 +359,12 @@ class Settings(gui.Dialog):
         main.td(self.liste, rowspan=5)
         main.td(sizelist)
         main.tr()
-        #main.td(gui.Spacer(1,1))
         main.td(gui.Label(lang.world_columns), col=1, row=3)
         main.tr()
         main.td(self.columns, col=1, row=4)
         main.tr()
         main.td(gui.Label(lang.mk_backups), col=1, row=5)
         main.tr()
-
-        #main.td(gui.Spacer(1,1))
         main.td(backupswitch, col=1, row=6)
 
         self.open()
@@ -386,7 +386,6 @@ class World():
         with open(self.file, "rb") as f:
             self.header, self.multiparts = get_header(f)
             self.pos = f.tell()
-
 
         self.size = gui.Label(str(self.header["width"]) + "X" + str(self.header["height"]) + " tiles")
         self.label = gui.Label(self.header["name"])
@@ -443,16 +442,12 @@ class World():
 
     def get_worldview(self):
         needed = False
-        #i =proxyload(os.path.join(appdata,self.filename[:-3]+"png"))
         try:
-            #raise AssertionError()
             if self.filename in cache["worlds"]:
                 self.cache = cache["worlds"][self.filename]
                 if os.path.getmtime(self.file) == self.cache["time"]:
                     i = proxyload(os.path.join(images, self.filename[:-3] + "png"))
-                    #print ("Loaded Image for "+self.filename)
                 else:
-                    #print ("Image is outdated for "+self.filename)
                     raise IOError("Image is outdated")
 
             else:
@@ -462,7 +457,6 @@ class World():
                 raise IOError("Image does not exist")
 
         except:
-            #print ("Can not load image for "+self.filename)
             needed = True
         else:
             self.raw.blit(i, (0, 0))
@@ -495,7 +489,6 @@ def gen_slice(path, start, size, levels, version, queue=None):
         b = [0]
         f.seek(start)
         x, y = size  #read world size from header cache
-        #s = pygame.surface.Surface((x,y)) #create a software surface to save tile colors in
         s = pygame.surface.Surface(size, depth=24)
         s.fill((200, 200, 255))
         pygame.draw.rect(s, (150, 75, 0),
@@ -510,7 +503,6 @@ def gen_slice(path, start, size, levels, version, queue=None):
             #tiles start from the upper left corner, then go downwards
             # when a slice is complete its starts with the next slice
 
-            #print(tile, wall, liquid, multi)
             if not liquid:  #liquid == 0 means no liquid
                 # there could be a liquid and a tile, like a chest and water,
                 #but I can only set one color to a pixel anyway, so I priotise the tile
@@ -520,13 +512,12 @@ def gen_slice(path, start, size, levels, version, queue=None):
                             s.set_at((xi, yi), colorlib.walldata[wall])
                         else:
                             s.set_at((xi, yi), (wall, wall, wall))
-                            #s.set_at((xi,yi), (255,255,255))#if no tile present, set it white
 
                 elif tile in colorlib.data:
                     s.set_at((xi, yi), colorlib.data[tile])  #if colorlib has a color use it
                 else:
                     tile = min(255, tile)
-                    s.set_at((xi, yi), (tile, tile, tile))  #make a grey
+                    s.set_at((xi, yi), (tile, tile, tile))  #make a grey otherwise
             elif liquid > 512:
                 s.set_at((xi, yi), (245, 219, 27))
             elif liquid > 256:
@@ -556,7 +547,6 @@ class PLoader(threading.Thread):
         w = 50
         self = loader.world
         size = (self.header["width"], self.header["height"])
-        #queue = multiprocessing.Queue()
         with processing:
             pool = multiprocessing.Pool(1)
 
@@ -806,12 +796,11 @@ class Updater(threading.Thread):
 
     def run(self):
         import urllib.request
-
         f = urllib.request.urlopen("http://dl.dropbox.com/u/44766482/ot_version.txt").read()
-        if int(f.decode("utf-8")) > __version__:
-            text = gui.Label("Version " + f.decode("utf-8") + lang.available, color=(255, 0, 0))
+        verint = int(f.decode("utf-8"))
+        if verint > __version__:
+            text = gui.Label("Version " + Version(verint).__repr__() + lang.available, color=(255, 0, 0))
             self.update.td(text, align=-1)
-            #self.update.tr()
             text2 = gui.Label(lang.changelog, color=(100, 100, 255))
             self.update.td(text2, align=1)
 
@@ -919,7 +908,7 @@ def run():
             "appAuthor": "Berserker55",
             "appName": "Omnitool",
             "appPath": os.path.abspath(sys.argv[0]),
-            "appVersion": __version__
+            "appVersion": str(__version__)
         }
         with open(loc, "wt") as f:
             f.write(json.dumps(data, indent=4))
@@ -1068,7 +1057,7 @@ def run():
     print("GUI Matrix created, initializing..")
     pygame.display.quit()
     pygame.display.init()
-    pygame.display.set_caption("Terraria Omnitool V%d | %d Bit" % (__version__, bit))
+    pygame.display.set_caption("Terraria Omnitool V%s | %d Bit" % (__version__.__repr__(), bit))
 
     def make_resize(worlds, app, main):
         def resize(self, ev):

@@ -1,5 +1,3 @@
-from pygments.styles import default
-
 config = {
     "name": "Planetoids",  # plugin name
     "type": "generator",  #plugin type
