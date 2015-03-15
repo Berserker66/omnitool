@@ -188,7 +188,6 @@ cache_lock = threading.Lock()
 
 def save_cache():
     cache_lock.acquire()
-    #print (cache)
     d = zlib.compress(pickle.dumps(cache), 9)
     with open(cachepath, "wb") as f:
         f.write(d)
@@ -764,7 +763,7 @@ class Redrawer(threading.Thread):
         dropped = []
         while 1:
             time.sleep(1)
-            if new or dropped:
+            if new:
                 "World File Change Detected!"
 
                 for name in new:
@@ -1084,10 +1083,10 @@ def run():
             x += 1
         if x % cache["columns"] == 0:
             worldtable.tr()
-        #worldtable.td(newworldtable, colspan=3)
-        #worldtable.tr()
+
         worldtable.td(gui.Spacer(12, 12))
         if app.widget:
+            print("Window Reset!")
             app.resize()
             app.repaint()
             size = pygame.display.get_surface().get_size()
@@ -1119,10 +1118,12 @@ def run():
                 if sys.platform.startswith("win"):
                     if windll.user32.IsZoomed(pygame.display.get_wm_info()['window']):
                         s = pygame.display.set_mode(ev.size, pygame.SWSURFACE | pygame.RESIZABLE)
+                        app.rect.size = pygame.display.get_surface().get_size()
                         app.zoomed = True
                     else:
                         s = pygame.display.set_mode((main.w, main.h), pygame.SWSURFACE | pygame.RESIZABLE)
                         app.zoomed = False
+
                 app.screen = s
                 app.first = True
 

@@ -60,7 +60,9 @@ class MyApp(Desktop):
         """
         self.init(widget, screen)
         while not self._quit:
-            for row in self.queue:
+            todo = self.queue[:]
+            [self.queue.remove(t) for t in todo]
+            for row in todo:
                 row[0](*row[1:])
             self.loop()
             pygame.time.wait(delay)
