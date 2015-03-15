@@ -158,7 +158,6 @@ class Generator():
                 except:
                     pass
                 if starttype not in valid:
-                    print("Please put in 1,2,3 or 4 and then hit enter, cant be that hard, right?")
             print("")
             valid = [1, 2, 3, 4]
             print("Select extra difficulty, you may select multiple by entering multiple numbers.")
@@ -344,7 +343,7 @@ class Generator():
         planets = []
         center_pos = complex(header["spawn"][0], header["spawn"][1] + 50)  #mid of spawn planet
 
-        def make_planet(c, rmin=20, rmax=50, surround=None):  # function to literally draw the planets onto the world
+        def make_planet(c, rmin=20, rmax=50, surround=None, value = False):  # function to literally draw the planets onto the world
             r = randint(rmin, rmax)
 
             if terramode:
@@ -366,10 +365,10 @@ class Generator():
             if c == 59:
                 pygame.draw.circle(surface, (c, c, c), pos, r)
                 pygame.draw.circle(surface, (60, 60, 60), pos, r, 1)  #jungle grass
-
                 pygame.draw.circle(surface, (255, 255, 255), pos, r - 30)
-
                 pygame.draw.circle(surface, (60, 60, 60), pos, r - 30, 1)  #jungle grass
+                for _ in range(10):
+                    draw_valuable(r-25, r-5,pos,(211,211,211),randint(3,7))
             elif c == 54:
                 pygame.draw.circle(surface, (c, c, c), pos, r)
                 pygame.draw.circle(surface, (254, randint(0, 1), 255), pos, r - 2)
@@ -381,10 +380,14 @@ class Generator():
                 pygame.draw.circle(surface, (c, c, c), pos, r)
                 pygame.draw.circle(surface, (2, 2, 2), pos, r, 1)
                 pygame.draw.circle(surface, (30, 30, 30), pos, r - 3, 1)
+                if value:
+                    draw_valuable(r-2, r,pos,choice(valuable),randint(3,7))
             else:
                 if surround != None:
                     pygame.draw.circle(surface, (surround, surround, surround), pos, r + 7)
                 pygame.draw.circle(surface, (c, c, c), pos, r)
+                if value:
+                    draw_valuable(min(10, r), r,pos,choice(valuable),randint(3,7))
             return (pos[0] - 1, pos[1] - 1)
 
         def make_hub_planet():
@@ -542,7 +545,7 @@ class Generator():
             for x in range(stone_planets):
                 make_hub_planet()
             for x in range(large_planets):
-                chestpos.append(make_planet(*choice(data1)))
+                chestpos.append(make_planet(*choice(data1), value=True))
             for x in range(0, (sizetype + 1) * mul):
                 for d in data1:
                     chestpos.append(make_planet(*d))
