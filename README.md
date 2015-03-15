@@ -1,4 +1,4 @@
-Current version : 17.0.0, for Terraria 1.2.4.1 and older.
+Current version : 17.1.0, for Terraria 1.2.4.1 and older.
 
 Features
 ========

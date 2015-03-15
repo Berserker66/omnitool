@@ -841,11 +841,11 @@ class Updater(threading.Thread):
 
             text2.connect(gui.CLICK,
                           webbrowser.open,
-                          "http://www.terrariaonline.com/threads/omnitool-world-mapping-backups-creation-and-more.61654/#post-1155423")
+                          "http://adf.ly/686481/omnitool-github-releases")
 
             text.connect(gui.CLICK,
                          webbrowser.open,
-                         "http://www.terrariaonline.com/threads/omnitool-world-mapping-backups-creation-and-more.61654/")
+                         "http://adf.ly/686481/omnitool-github-releases")
         print("Update notifier done")
         sys.exit()
 
