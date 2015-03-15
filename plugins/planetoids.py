@@ -624,6 +624,11 @@ class Generator():
             surface.blit(make_tree(25), (header["spawn"][0] + 1, header["spawn"][1] - 25))
         surface.blit(multis["altar"], (header["spawn"][0] - 2, header["spawn"][1] - 2))
 
+        #draw the lower border of the world. Falling into the void was fun in minecraft,
+        #not su much here, as it will just make "splat"
+        pygame.draw.rect(surface, (57, 57, 57), ((0, size[1] - 100), (size[0], 100)))
+        pygame.draw.rect(surface, (254, 1, 255), ((0, size[1] - 150), (size[0], 50)))
+
         if terramode != 2:
             #ocean planetoids
             pygame.draw.circle(surface, (53, 53, 53), (0, 500), 500)
@@ -682,10 +687,7 @@ class Generator():
 
                 time.sleep(1)
 
-        #draw the lower border of the world. Falling into the void was fun in minecraft,
-        #not su much here, as it will just make "splat"
-        pygame.draw.rect(surface, (57, 57, 57), ((0, size[1] - 30), (size[0], 30)))
-        pygame.draw.rect(surface, (254, 1, 255), ((0, size[1] - 50), (size[0], 20)))
+
 
         for chest in chests:
             #draw the chests into the world texture
