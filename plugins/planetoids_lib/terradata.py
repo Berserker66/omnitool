@@ -176,7 +176,8 @@ itemdata = {'Swiftness Potion': 100, 'Cloud in a Bottle': 50,
             'Ironskin Potion': 50, "Life Crystal": 150, "Fallen Star": 1000,
             "Suspicious Looking Eye": 250, "Worm Food": 150,
             "Sunfury": 3, "Flower of Fire": 3, "Book": 1000, "Wood": 2000,
-            "Cobweb": 5000, "Bone": 300, "Musket Ball": 1000, "Meteorite": 1200}
+            "Cobweb": 5000, "Bone": 300, "Musket Ball": 1000, "Meteorite": 1200,
+            "Demon Wings" : 2, "Angel Wings" : 2, "Bee Wings" : 2, "Butterfly Wings" : 2, "Fairy Wings" : 2}
 
 statues = ['Angel Statue', 'Anvil Statue', 'Armor Statue', 'Axe Statue', 'Bat Statue', 'Bird Statue', 'Bomb Statue',
            'Boomerang Statue', 'Boot Statue', 'Bow Statue', 'Bunny Statue', 'Chest Statue', 'Corrupt Statue',

@@ -167,7 +167,7 @@ class Generator():
             print("2: Less loot! I want to keep exploring!")
             print("3: Atlantis, I want to conquer the world from my sunken planet!")
             print("4: No merchant at the start, I want to earn him!")
-            dif = raw_input("Difficulty:")
+            dif = input("Difficulty:")
 
             if "1" in dif:
                 sun = False
@@ -582,12 +582,14 @@ class Generator():
 
 
         else:  #spawnplanet
-            items = [(20, "Torch"), (25, "Acorn"), (5, "Daybloom Seeds"), (5, "Moonglow Seeds"),
+            items = [(50, "Torch"), (25, "Acorn"), (5, "Daybloom Seeds"), (5, "Moonglow Seeds"),
                      (5, "Blinkroot Seeds"), (5, "Waterleaf Seeds"), (5, "Fireblossom Seeds"),
                      (5, "Deathweed Seeds"), (1, "Life Crystal"), (2, "Mana Crystal"), (50, "Book"),
                      (200, "Cobweb"), (5, "Mushroom Grass Seeds"), (1, "Snow Globe"), (10, "Mud Block"),
                      (250, "Dirt Block"), (250, "Dirt Block"),
-                     (1, choice(("Magic Mirror", "Shiny Red Balloon", "Orb of Light")))]
+                     (1, "Shiny Red Balloon"),
+                    ]
+
             for x in range(20 - len(items)):
                 items.append((0, None))
             # draw the spawn planet
