@@ -759,10 +759,15 @@ class Redrawer(threading.Thread):
         self.daemon = True
 
     def run(self):
+        global worlds
         new = []
         dropped = []
         while 1:
             time.sleep(1)
+            if dropped:
+                "World File Change Detected!"
+                worlds = list(filter(lambda world : world.filename not in dropped, worlds))
+                app.queue.append((display_worlds,))
             if new:
                 "World File Change Detected!"
 
@@ -774,6 +779,8 @@ class Redrawer(threading.Thread):
             dropped = set(worldnames)-set(newnames)
             if new:
                 worldnames.extend(new)
+            if dropped:
+                [worldnames.remove(w) for w in dropped]
 
 
 def launch_terraria(arg=""):
