@@ -431,6 +431,13 @@ class Generator():
             return (int(pos[0] + radius * cos(angle)),
                     int(pos[1] + radius * sin(angle)))
 
+        def draw_valuable(min_radius, max_radius, planetpos, material, size):
+            r = random() * 2 * pi
+            radius = randint(min_radius, max_radius)
+            pos = (
+            int(planetpos[0] + radius  * cos(r)), int(planetpos[1]+ radius * sin(r)))
+            pygame.draw.circle(surface, material, pos, size)
+
         def make_terra(surface, size):
 
             #pos = (randint(0+5,size[0]-5),randint(0+5,size[1]-5))
@@ -581,35 +588,27 @@ class Generator():
                 items.append((0, None))
             # draw the spawn planet
             radius = 100
+            center = header["spawn"][0], header["spawn"][1] + 50
             if atlantis:
-                pygame.draw.circle(surface, (255, 255, 255), (header["spawn"][0], header["spawn"][1] + 50), radius + 50)
-                pygame.draw.circle(surface, (54, 54, 54), (header["spawn"][0], header["spawn"][1] + 50), radius + 50, 2)
-            pygame.draw.circle(surface, (52, 52, 52), (header["spawn"][0], header["spawn"][1] + 55), radius)
-            pygame.draw.circle(surface, (2, 2, 2), (header["spawn"][0], header["spawn"][1] + 50), radius)
-            pygame.draw.circle(surface, (0, 0, 0), (header["spawn"][0], header["spawn"][1] + 50), radius - 2)
-            pygame.draw.circle(surface, (1, 1, 1), (header["spawn"][0], header["spawn"][1] + 50), radius // 2)
-            pygame.draw.circle(surface, (30, 30, 30), (header["spawn"][0], header["spawn"][1] + 50), radius // 4)
+                pygame.draw.circle(surface, (255, 255, 255), center, radius + 50)
+                pygame.draw.circle(surface, (54, 54, 54), center, radius + 50, 2)
+            pygame.draw.circle(surface, (52, 52, 52), center, radius)
+            pygame.draw.circle(surface, (2, 2, 2), center, radius)
+            pygame.draw.circle(surface, (0, 0, 0), center, radius - 2)
+            pygame.draw.circle(surface, (1, 1, 1), center, radius // 2)
+            pygame.draw.circle(surface, (30, 30, 30), center, radius // 4)
 
             for _ in range(3):#sand
-                r = random() * 2 * pi
-                pos = (
-                int(header["spawn"][0] + 0.8 * radius * cos(r)), int(header["spawn"][1] + 50 + 0.8 * radius * sin(r)))
-                pygame.draw.circle(surface, (53, 53, 53), pos, 7)
-            for _ in range(3):#clay
-                r = random() * 2 * pi
-                pos = (
-                int(header["spawn"][0] + 0.77 * radius * cos(r)), int(header["spawn"][1] + 50 + 0.77 * radius * sin(r)))
-                pygame.draw.circle(surface, (40, 40, 40), pos, 7)
+                draw_valuable(20, 40, center, (53,53,53), 7)
+
+            for _ in range(2):#clay
+                draw_valuable(20,50, center, (40,40,40), 7)
+
             for _ in range(2):#iron
-                r = random() * 2 * pi
-                pos = (
-                int(header["spawn"][0] + 0.4 * radius * cos(r)), int(header["spawn"][1] + 50 + 0.4 * radius * sin(r)))
-                pygame.draw.circle(surface, (6, 6, 6), pos, 4)
+                draw_valuable(20,30, center, (6,6,6), 4)
+
             for _ in range(3):#copper
-                r = random() * 2 * pi
-                pos = (
-                int(header["spawn"][0] + 0.4 * radius * cos(r)), int(header["spawn"][1] + 50 + 0.4 * radius * sin(r)))
-                pygame.draw.circle(surface, (7, 7, 7), pos, 5)
+                draw_valuable(20, 30, center, (7,7,7), 5)
 
             chests.append(((header["spawn"][0] - 1, header["spawn"][1] + 49), items))
 
