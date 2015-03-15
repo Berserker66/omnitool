@@ -158,6 +158,7 @@ class Generator():
                 except:
                     pass
                 if starttype not in valid:
+                    print("Please input 1,2,3 or 4, then hit enter.")
             print("")
             valid = [1, 2, 3, 4]
             print("Select extra difficulty, you may select multiple by entering multiple numbers.")
