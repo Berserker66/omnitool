@@ -183,7 +183,7 @@ def get_content(f, layers=5):  # not done yet
 def get_multis():
     import pygame
 
-    def set_multi_22(tid, f):
+    def set_multi_18(tid, f):
         surf = pygame.surface.Surface((2, 2))
         surf.set_at((0, 0), (tid, f * 36, 0))
         surf.set_at((0, 1), (tid, f * 36, 18))
@@ -191,21 +191,34 @@ def get_multis():
         surf.set_at((1, 1), (tid, 18 + f * 36, 18))
         return surf
 
-    types = {"goldchest": set_multi_22(21, 1),
-             "woodchest": set_multi_22(21, 0),
-             "goldlockchest": set_multi_22(21, 2),
-             "shadowchest": set_multi_22(21, 3),
-             "shadowlockchest": set_multi_22(21, 4),
-             "barrelchest": set_multi_22(21, 5),
-             "canchest": set_multi_22(21, 6)
+    types = {"goldchest": set_multi_18(21, 1),
+             "woodchest": set_multi_18(21, 0),
+             "goldlockchest": set_multi_18(21, 2),
+             "shadowchest": set_multi_18(21, 3),
+             "shadowlockchest": set_multi_18(21, 4),
+             "barrelchest": set_multi_18(21, 5),
+             "canchest": set_multi_18(21, 6),
+             #beyond 6*18 cant be mapped yet
+             #"ebonwoodchest" : set_multi_18(21, 7),
+             #"mahoganywoodchest" : set_multi_18(21, 8),
+             #"bonechest" : set_multi_18(21, 9),
+             #"ivychest" : set_multi_18(21, 10),
+             #"icechest" : set_multi_18(21, 11),
+             #"livingwoodchest" : set_multi_18(21, 12),
+             #"skychest" : set_multi_18(21, 13),
+             #"shadewoodchest" : set_multi_18(21, 14),
+             #"webbedchest" : set_multi_18(21, 15),
+             #"lihzahrdchest" : set_multi_18(21, 16),
+             #"waterchest" : set_multi_18(21, 17),
+             #"bjunglechest" : set_multi_18(21, 18),
+             #"bcorruptionchest" : set_multi_18(21, 19),
+             #"bcrimsonchest" : set_multi_18(21, 20),
+             #"bhallowedchest" : set_multi_18(21, 21),
+             #"bicechest" : set_multi_18(21, 22),
+             "shadoworb" : set_multi_18(31, 0),
+
              }
-    # make shadow orb
-    orbsurf = pygame.surface.Surface((2, 2))
-    orbsurf.set_at((0, 0), (31, 0, 0))
-    orbsurf.set_at((0, 1), (31, 0, 18))
-    orbsurf.set_at((1, 0), (31, 18, 0))
-    orbsurf.set_at((1, 1), (31, 18, 18))
-    types["shadoworb"] = orbsurf
+
     # make altar
     shadowsurf = pygame.surface.Surface((3, 2))
     shadowsurf.set_at((0, 0), (26, 0, 0))

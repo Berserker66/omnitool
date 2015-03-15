@@ -909,7 +909,7 @@ def get_tile_buffered_iter(f, amount):  #Terraria 1.1.2
         if liquid:
             liquidamount, lava = get_byte(f, 2)
             if lava:
-                liquid = -liquidamount  #its lava
+                liquid = liquidamount+256  #its lava
             else:
                 liquid = liquidamount  # its water
         wire = get_gbyte(f)
