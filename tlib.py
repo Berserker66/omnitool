@@ -552,7 +552,7 @@ def set_tile_detail(f, tile, amount):
     f.write(set_ushort(amount))
 
 
-def set_tiles(f, tiles, header, report=True):
+def set_tiles(f, tiles, header, report=True, callback = None):
     total = header["width"] * header["height"]
     for x in range(header["width"]):
         y = 0
@@ -570,11 +570,10 @@ def set_tiles(f, tiles, header, report=True):
                 set_tile_detail(f, tile, 0)
         if report:
             if x % 100 == 0:
-                st = "%6.2f%% done writing tiles" % (((x * header["height"] + y)) * 100.0 / total)
-                if is_exe:
-                    sys.stdout.write(st + "\b" * 26)
-                else:
-                    print(st)
+                progress = ((x * header["height"] + y)) * 100.0 / total
+                st = "%6.2f%% done writing tiles" % (progress)
+                if callback:callback.set_progress(50+progress/2)
+                print(st)
 
 
 def set_tile(f, tile):

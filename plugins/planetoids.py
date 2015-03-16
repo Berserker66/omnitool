@@ -23,6 +23,7 @@ import plugins.planetoids_lib.terragui as terragui
 from plugins.planetoids_lib.tree import make_tree
 from plugins.planetoids_lib.terradata import *
 from os.path import join as osjoin
+import loadbar
 
 
 class Generator():
@@ -185,9 +186,8 @@ class Generator():
                 merch = False
             else:
                 merchant = True
-        #if terramode == 1:
-        #    sizetype = 3
-        #elif terramode == 2: sizetype = 4
+
+        loadingbar = loadbar.Bar(caption = "Planetoids: startup")
         sizetype -= 1
         starttype -= 1
         #people dont like to start counting at 0, so its decremented afterwards
@@ -259,6 +259,8 @@ class Generator():
         for item in itemdata:
             itemtotal += itemdata[item]
         target = itemtotal // chestcount
+
+        loadingbar.set_progress(5, "Planetoids: generating base content")
         #initialize a texture to hold all tile data
         #could have used an array as well, like numpy, but I am more familiarized with pygame than numpy
         surface = pygame.surface.Surface(size)
@@ -323,6 +325,8 @@ class Generator():
                 content.append((0, None))
             return content, current, items
 
+        loadingbar.set_progress(10, "Planetoids: filling chests")
+
         chests = []
         if terramode:
             rad = superradius // 50
@@ -365,10 +369,10 @@ class Generator():
                     while abs(complex(pos[0], pos[1]) - center_pos) < r + 200:
                         pos = (randint(50, size[0] - 50), randint(50, size[1] - 50))
 
-            if c == 25#ebonstone
-                r = random() * 2 * pi
+            if c == 25:#ebonstone
+                dire = random() * 2 * pi
                 radius = randint(10, r)
-               shadoworbpos.append((int(pos[0] + radius  * cos(r)), int(pos[1]+ radius * sin(r))))
+                shadoworbpos.append((int(pos[0] + radius  * cos(dire)), int(pos[1]+ radius * sin(dire))))
 
             # a few special planets.. like glass, jungle donuts etc.
             if c == 59:
@@ -548,6 +552,8 @@ class Generator():
                 npos = get_randradrange(pos, r // 5, r // 2)
                 surface.blit(multis["altar"], npos)
 
+        loadingbar.set_progress(20, "Planetoids: drawing some circles")
+
         chestpos = []
         if mirrored:
             stone_planets //= 2
@@ -702,7 +708,7 @@ class Generator():
 
                 time.sleep(1)
 
-
+        loadingbar.set_progress(30, "Planetoids: hiding goodies")
         for shadoworb in shadoworbpos:
             surface.blit(multis["shadoworb"], shadoworb)
         for chest in chests:
@@ -754,27 +760,13 @@ class Generator():
                 amount = c[tid]
                 print("%-10s : %d" % (db.tiles[tid], amount))
 
-        #count(range(6,10))
-        self.tiles = write_tiles(surface, header, walls, True)
-        #with open(osjoin(temp, "2.part"), "wb") as a:#write chestdata
-        #    set_chests(a,chests)
+        loadingbar.set_progress(50, "Planetoids: writing tile data")
+        self.tiles = write_tiles(surface, header, walls, True, callback = loadingbar)
+
         self.chests = chests
-        #print ("done writing chests")
-        #with open(osjoin(temp, "3.part"), "wb") as f:
-        #    for sign in [None]*1000:
-        #        set_sign(f, sign)
+
         self.signs = [None] * 1000
-        ##        print ("done writing signs")
-        ##        with open(osjoin(temp, "4.part"), "wb") as f:
-        ##            set_npc(f, ('Guide', (header["spawn"][0]*16, (header["spawn"][1]-3)*16), 1, (header["spawn"][0], header["spawn"][1]-3)))
-        ##            set_npc(f, ('Old Man', (header["spawn"][0]*16-16, (header["spawn"][1]-3)*16), 1, (header["spawn"][0], header["spawn"][1]-3)))
-        ##            if merch:
-        ##                set_npc(f, ('Merchant', (header["spawn"][0]*16-16, (header["spawn"][1]-3)*16), 1, (header["spawn"][0], header["spawn"][1]-3)))
-        ##            for x in range(npcsets):
-        ##                for npc in db.npclist[:-1]:
-        ##                    set_npc(f, (npc, (header["spawn"][0]*16, (header["spawn"][1]-3)*16), 1, (header["spawn"][0], header["spawn"][1]-3)))
-        ##            set_npc(f, None)
-        ##            set_npc_names(f, db.names)
+
         self.names = db.names
         self.npcs = [('Guide', (header["spawn"][0] * 16, (header["spawn"][1] - 3) * 16), 1,
                       (header["spawn"][0], header["spawn"][1] - 3)),
@@ -783,18 +775,8 @@ class Generator():
         if merch: self.npcs.append(
             ('Merchant', (header["spawn"][0] * 16 - 16, (header["spawn"][1] - 3) * 16), 1,
              (header["spawn"][0], header["spawn"][1] - 3)))
+        self.loadingbar = loadingbar
 
-
-        #print ("done writing npcs")
-        #with open(osjoin(temp, "5.part"), "wb") as f:
-        #    set_trail(f, (1, header["name"], header["ID"]))
-        #print ("done writing trail")
-        #name = get_next_world(db.cmod)
-        #join(name, True, path = temp)#this just puts all the binary parts into one world file
-        #print ("done joining world "+name)#yay!
-        #print ("A world has been created!")
-        #import time
-        #time.sleep(10)
 
 
 if __name__ == "__main__":

@@ -17,7 +17,8 @@ cx_Freeze.setup(
     description="Omnitool",
     executables=[EXE],
     options={"build_exe": {"excludes": ["OpenGL", "tkinter", "tcl"],
-                           "packages": ["multiprocessing"]}
+                           "packages": ["multiprocessing"],
+                           "includes" : ("loadbar",)}
              }
 )
 not_needed = ("pygame.movie.pyd", "pygame.mixer_music.pyd", "pygame.mixer.pyd",

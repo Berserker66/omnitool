@@ -318,7 +318,7 @@ def get_next_world(cmod=False):
     return os.path.join(path, "world%d.wld" % x)
 
 
-def write_tiles(surface, header, walls={}, report=False, overwrite_no_mt = set()):
+def write_tiles(surface, header, walls={}, report=False, overwrite_no_mt = set(),callback = None):
     total = header["width"] * header["height"]
     part = header["height"] * 50
     short = 100.0 / total
@@ -368,10 +368,9 @@ def write_tiles(surface, header, walls={}, report=False, overwrite_no_mt = set()
                 #print (amount)
         if report:
             if x % 100 == 0:
-                st = "%6.2f%% done writing tiles" % (((x * header["height"] + y)) * short)
-                if is_exe:
-                    sys.stdout.write(st + "\b" * 26)
-                else:
-                    print(st)
+                progress = (((x * header["height"] + y)) * short)
+                st = "%6.2f%% done writing tiles" % progress
+                if callback:callback.set_progress(50+progress/2)
+                print(st)
     if report: print("done writing tiles        ")
     return a

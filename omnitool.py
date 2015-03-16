@@ -1185,8 +1185,12 @@ def get_plugins():
                 plugins.append((file[:-3], name, ptype))
 
 
-def plug_save(Plug):  #
-
+def plug_save(Plug):
+    if hasattr(Plug, "loadingbar"):
+        #we have a loadingbar to attend to
+        loadcallback = Plug.loadingbar
+    else:
+        loadcallback = None
     f = tempfile.SpooledTemporaryFile(10000000)  #10 megabyte ram file
     set_header(f, Plug.header)
     try:
@@ -1195,7 +1199,7 @@ def plug_save(Plug):  #
         Plug.tiles.seek(0)
         f.write(Plug.tiles.read())
     else:
-        set_tiles(f, Plug.tiles, Plug.header, True)
+        set_tiles(f, Plug.tiles, Plug.header, True, loadcallback)
     set_chests(f, Plug.chests)
     set_signs(f, Plug.signs)
     [set_npc(f, npc) for npc in Plug.npcs]
