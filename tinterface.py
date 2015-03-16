@@ -183,59 +183,59 @@ def get_content(f, layers=5):  # not done yet
 def get_multis():
     import pygame
 
-    def set_multi_18(tid, f):
+    def set_multi_2x2(tid, f):
+        stride = db.multitilestrides[tid]
         surf = pygame.surface.Surface((2, 2))
-        surf.set_at((0, 0), (tid, f * 36, 0))
-        surf.set_at((0, 1), (tid, f * 36, 18))
-        surf.set_at((1, 0), (tid, 18 + f * 36, 0))
-        surf.set_at((1, 1), (tid, 18 + f * 36, 18))
+        surf.set_at((0, 0), (tid, f * 2, 0))
+        surf.set_at((0, 1), (tid, f * 2, 1))
+        surf.set_at((1, 0), (tid, 1 + f * 2, 0))
+        surf.set_at((1, 1), (tid, 1 + f * 2, 1))
         return surf
 
-    types = {"goldchest": set_multi_18(21, 1),
-             "woodchest": set_multi_18(21, 0),
-             "goldlockchest": set_multi_18(21, 2),
-             "shadowchest": set_multi_18(21, 3),
-             "shadowlockchest": set_multi_18(21, 4),
-             "barrelchest": set_multi_18(21, 5),
-             "canchest": set_multi_18(21, 6),
-             #beyond 6*18 cant be mapped yet
-             #"ebonwoodchest" : set_multi_18(21, 7),
-             #"mahoganywoodchest" : set_multi_18(21, 8),
-             #"bonechest" : set_multi_18(21, 9),
-             #"ivychest" : set_multi_18(21, 10),
-             #"icechest" : set_multi_18(21, 11),
-             #"livingwoodchest" : set_multi_18(21, 12),
-             #"skychest" : set_multi_18(21, 13),
-             #"shadewoodchest" : set_multi_18(21, 14),
-             #"webbedchest" : set_multi_18(21, 15),
-             #"lihzahrdchest" : set_multi_18(21, 16),
-             #"waterchest" : set_multi_18(21, 17),
-             #"bjunglechest" : set_multi_18(21, 18),
-             #"bcorruptionchest" : set_multi_18(21, 19),
-             #"bcrimsonchest" : set_multi_18(21, 20),
-             #"bhallowedchest" : set_multi_18(21, 21),
-             #"bicechest" : set_multi_18(21, 22),
-             "shadoworb" : set_multi_18(31, 0),
+    types = {"goldchest": set_multi_2x2(21, 1),
+             "woodchest": set_multi_2x2(21, 0),
+             "goldlockchest": set_multi_2x2(21, 2),
+             "shadowchest": set_multi_2x2(21, 3),
+             "shadowlockchest": set_multi_2x2(21, 4),
+             "barrelchest": set_multi_2x2(21, 5),
+             "canchest": set_multi_2x2(21, 6),
+             "ebonwoodchest" : set_multi_2x2(21, 7),
+             "mahoganywoodchest" : set_multi_2x2(21, 8),
+             "bonechest" : set_multi_2x2(21, 9),
+             "ivychest" : set_multi_2x2(21, 10),
+             "icechest" : set_multi_2x2(21, 11),
+             "livingwoodchest" : set_multi_2x2(21, 12),
+             "skychest" : set_multi_2x2(21, 13),
+             "shadewoodchest" : set_multi_2x2(21, 14),
+             "webbedchest" : set_multi_2x2(21, 15),
+             "lihzahrdchest" : set_multi_2x2(21, 16),
+             "waterchest" : set_multi_2x2(21, 17),
+             "bjunglechest" : set_multi_2x2(21, 18),
+             "bcorruptionchest" : set_multi_2x2(21, 19),
+             "bcrimsonchest" : set_multi_2x2(21, 20),
+             "bhallowedchest" : set_multi_2x2(21, 21),
+             "bicechest" : set_multi_2x2(21, 22),
+             "shadoworb" : set_multi_2x2(31, 0),
 
              }
 
     # make altar
     shadowsurf = pygame.surface.Surface((3, 2))
     shadowsurf.set_at((0, 0), (26, 0, 0))
-    shadowsurf.set_at((0, 1), (26, 0, 18))
-    shadowsurf.set_at((1, 0), (26, 18, 0))
-    shadowsurf.set_at((1, 1), (26, 18, 18))
-    shadowsurf.set_at((2, 0), (26, 36, 0))
-    shadowsurf.set_at((2, 1), (26, 36, 18))
+    shadowsurf.set_at((0, 1), (26, 0, 1))
+    shadowsurf.set_at((1, 0), (26, 1, 0))
+    shadowsurf.set_at((1, 1), (26, 1, 1))
+    shadowsurf.set_at((2, 0), (26, 2, 0))
+    shadowsurf.set_at((2, 1), (26, 2, 1))
     types["altar"] = shadowsurf
     # make hellfurnace
     hellsurf = pygame.surface.Surface((3, 2))
     hellsurf.set_at((0, 0), (77, 0, 0))
-    hellsurf.set_at((0, 1), (77, 0, 18))
-    hellsurf.set_at((1, 0), (77, 18, 0))
-    hellsurf.set_at((1, 1), (77, 18, 18))
-    hellsurf.set_at((2, 0), (77, 36, 0))
-    hellsurf.set_at((2, 1), (77, 36, 18))
+    hellsurf.set_at((0, 1), (77, 0, 1))
+    hellsurf.set_at((1, 0), (77, 1, 0))
+    hellsurf.set_at((1, 1), (77, 1, 1))
+    hellsurf.set_at((2, 0), (77, 2, 0))
+    hellsurf.set_at((2, 1), (77, 2, 1))
     types["hellfurnace"] = hellsurf
     return types
 
@@ -325,7 +325,7 @@ def get_next_world(cmod=False):
     return os.path.join(path, "world%d.wld" % x)
 
 
-def write_tiles(surface, header, walls={}, report=False):
+def write_tiles(surface, header, walls={}, report=False, overwrite_no_mt = set()):
     total = header["width"] * header["height"]
     part = header["height"] * 50
     short = 100.0 / total
@@ -354,14 +354,15 @@ def write_tiles(surface, header, walls={}, report=False):
                     set_tile_no_amount(a, (None, 1, -c[2], None))
                 else:
                     set_tile_no_amount(a, (None, 1, c[2], None))
-            elif c[0] == 252:
+            elif c[0] == 252:#just Wall
                 set_tile_no_amount(a, (None, c[1], 0, None))
-            elif c[0] in db.multitiles:  #if it has multitiledata.. i hate those
-                set_tile_no_amount(a, (c[0], walls[c[0]], 0, (c[1], c[2])))
-            elif c[0] in walls:  #put down background walls if we want them
-                set_tile_no_amount(a, (c[0], walls[c[0]], 0, None))
             elif c[0] > 230:  #only have a wall
                 set_tile_no_amount(a, (None, c[0] - 230, 0, None))
+            elif c[0] in db.multitiles and c[0] not in overwrite_no_mt:  #if it has multitiledata.. i hate those
+                stride = db.multitilestrides[c[0]]
+                set_tile_no_amount(a, (c[0], walls[c[0]], 0, (c[1]*stride, c[2]*stride)))
+            elif c[0] in walls:  #put down background walls if we want them
+                set_tile_no_amount(a, (c[0], walls[c[0]], 0, None), c[0] in overwrite_no_mt)
             else:  #or just write a nice normal tile
                 set_tile_no_amount(a, (c[0], None, 0, None))
             if amount:

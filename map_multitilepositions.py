@@ -40,7 +40,7 @@ class MultiMap():
                 else:entry_x.add(i+1)
             entry_x.remove(max(entry_x))
             if entry_x:
-                stride = min(entry_x)
+                self.stride = min(entry_x)
             entry_x.add(0)
 
 
@@ -57,14 +57,14 @@ class MultiMap():
                 else:entry_y.add(i+1)
             entry_y.remove(max(entry_y))
             if entry_y:
-                stride = min(entry_y)
+                self.stride = min(entry_y)
             entry_y.add(0)
 
             self.entry = tuple(itertools.product(entry_x, entry_y))
 
-        def get_data(self):
-            return {"entry" : self.entry,
-                    "stride" : self.stride}
+    def get_data(self):
+        return {"entry" : self.entry,
+                "stride" : self.stride}
 
 def create_mappings(folder = "tImages"):
     import database
@@ -79,7 +79,9 @@ def create_mappings(folder = "tImages"):
         except Exception:
             import traceback
             traceback.print_exc()
-
+    import pprint
+    s = pprint.pformat({i : x.stride for i,x in multimaps.items()})
+    print(s)
 
 
 if __name__ == "__main__":

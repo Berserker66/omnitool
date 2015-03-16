@@ -200,7 +200,7 @@ class Generator():
         x = 0
         for v in torch_sel:
             torch_selection.append((x, v.value))
-            x += 22
+            x += 1
         weight = 0
 
         for item, w in selection:
@@ -238,8 +238,7 @@ class Generator():
         size = (rooms * roomwidth + (rooms - 1) * corridor + border * 2,
                 rooms * roomheight + (rooms - 1) * corridor + border * 2)
         dtile = choice([41, 43, 44])
-        dwall = choice([236, 237, 238, 239])
-        owall = dwall - 230
+        dwall = choice([7, 8, 9])
         if not rooms % 2:
             spawn = (roomwidth // 2 + size[0] // 2, roomheight // 2 + size[1] // 2)
         else:
@@ -262,7 +261,7 @@ class Generator():
         pygame.draw.rect(surface, (dtile, dtile, dtile),
                          ((border - corridor, border - corridor),
                           (size[0] - border * 2 + corridor * 2, size[1] - border * 2 + corridor * 2)))
-        plat = (19, 19, 19)
+        plat = (19, 0, 0)
 
         chests = []
         # contents of the spawn chest
@@ -276,12 +275,12 @@ class Generator():
                          multis["canchest"])
 
         for x in range(rooms):  #horizontal
-            pygame.draw.rect(surface, (dwall, dwall, dwall),
+            pygame.draw.rect(surface, (252, dwall, 0),
                              ((border + corridor, border + roomheight // 2 - 2 + x * (roomheight + corridor)),
                               ((rooms - 1) * (roomwidth + corridor), 4)))
 
         for x in range(rooms):  #vertical
-            pygame.draw.rect(surface, (dwall, dwall, dwall),
+            pygame.draw.rect(surface, (252, dwall, 0),
                              ((border + roomwidth // 2 - 2 + x * (roomheight + corridor), border + corridor),
                               (4, (rooms - 1) * (roomheight + corridor))))
         for x in range(rooms):
@@ -291,7 +290,7 @@ class Generator():
                 #print(ltype)
                 if rtype == "standard":
                     pos = (border + x * (roomwidth + corridor), border + y * (roomwidth + corridor))
-                    pygame.draw.rect(surface, (dwall, dwall, dwall),
+                    pygame.draw.rect(surface, (252, dwall, 0),
                                      (pos, (roomwidth, roomheight)))
                     if torches > randint(0, 100):
                         surface.set_at(pos, (4, 0, ltype))
@@ -375,11 +374,11 @@ class Generator():
         #print ("done writing header") #sounds cool
 
         z = header["width"] * header["height"]  #tileamount
-        walls = defaultdict(lambda:None, {21: owall,
-                 31: owall,
-                 dtile: owall,
-                 4: owall,
-                 19: owall})
+        walls = defaultdict(lambda:None, {21: dwall,
+                 31: dwall,
+                 dtile: dwall,
+                 4: dwall,
+                 19: dwall})
 
         def count(checks):
             c = {}
@@ -396,7 +395,8 @@ class Generator():
 
         #count(range(6,10))
         self.header = header
-        self.tiles = write_tiles(surface, header, walls, True)
+        #wooden platforms used to not be multitiles, so overwrite that
+        self.tiles = write_tiles(surface, header, walls, True, overwrite_no_mt = {19})
         #with open(osjoin(temp, "2.part"), "wb") as a:#write chestdata
         #    set_chests(a,chests)
         #print ("done writing chests")

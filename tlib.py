@@ -610,7 +610,7 @@ def set_tile(f, tile):
     f.write(set_ushort(0))
 
 
-def set_tile_no_amount(f, tile):
+def set_tile_no_amount(f, tile, mt_override = False):
     """
     takes an openend world file as argument
     header needs to be skipped or read first
@@ -620,7 +620,7 @@ def set_tile_no_amount(f, tile):
     if tile[0] != None:
         f.write(one)
         f.write(set_byte(tile[0]))
-        if tile[0] in db.multitiles:
+        if tile[0] in db.multitiles and not mt_override:
             f.write(set_ushort(tile[3][0]) + set_ushort(tile[3][1]))
     else:
         f.write(zero)

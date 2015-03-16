@@ -363,6 +363,7 @@ class Generator():
                     while abs(complex(pos[0], pos[1]) - center_pos) < r + 200:
                         pos = (randint(50, size[0] - 50), randint(50, size[1] - 50))
             # a few special planets.. like glass, jungle donuts etc.
+
             if c == 59:
                 pygame.draw.circle(surface, (c, c, c), pos, r)
                 pygame.draw.circle(surface, (60, 60, 60), pos, r, 1)  #jungle grass
@@ -383,6 +384,12 @@ class Generator():
                 pygame.draw.circle(surface, (30, 30, 30), pos, r - 3, 1)
                 if value:
                     draw_valuable(r-2, r,pos,choice(valuable),randint(3,7))
+            elif c == -1:
+                c = dungeon_map[surround]
+                pygame.draw.circle(surface, (surround, surround, surround), pos, r + 7)
+                pygame.draw.circle(surface, (252, c, 0), pos, r)
+                if value:
+                    draw_valuable(min(10, r), r,pos,choice(valuable),randint(3,7))
             else:
                 if surround != None:
                     pygame.draw.circle(surface, (surround, surround, surround), pos, r + 7)

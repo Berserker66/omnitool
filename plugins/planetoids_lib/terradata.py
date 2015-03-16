@@ -261,9 +261,13 @@ valuable = [(1, 1, 1),
 
 ##mixing of dungeon walls with dungeon tiles
 walls = [41, 43, 44]
-center = [[236, 20, 100], [237, 20, 100], [238, 20, 100], [239, 20, 100]]
+center = [[-1, 20, 100], [-1, 20, 100], [-1, 20, 100]]
 data3 = []  #dungeon
 for tile in center:
     for wall in walls:
+        #center[0], center[1], center[2], walls[0]
+        #tile_Id, rmin, rmax, surround
         data3.append((tile + [wall]))
-
+dungeon_map = {41 : 7,
+               43 : 8,
+               44 : 9}
