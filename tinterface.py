@@ -191,7 +191,13 @@ def get_multis():
         surf.set_at((1, 0), (tid, 1 + f * 2, 0))
         surf.set_at((1, 1), (tid, 1 + f * 2, 1))
         return surf
-
+    def set_multi_generic(x,y, tid, x_entry, y_entry):
+        stride = db.multitilestrides[tid]
+        surf = pygame.surface.Surface((x, y))
+        for xi in range(x):
+            for yi in range(y):
+                surf.set_at((xi,yi), (tid, x*x_entry+xi, y*y_entry+yi))
+        return surf
     types = {"goldchest": set_multi_2x2(21, 1),
              "woodchest": set_multi_2x2(21, 0),
              "goldlockchest": set_multi_2x2(21, 2),
@@ -219,24 +225,11 @@ def get_multis():
 
              }
 
-    # make altar
-    shadowsurf = pygame.surface.Surface((3, 2))
-    shadowsurf.set_at((0, 0), (26, 0, 0))
-    shadowsurf.set_at((0, 1), (26, 0, 1))
-    shadowsurf.set_at((1, 0), (26, 1, 0))
-    shadowsurf.set_at((1, 1), (26, 1, 1))
-    shadowsurf.set_at((2, 0), (26, 2, 0))
-    shadowsurf.set_at((2, 1), (26, 2, 1))
-    types["altar"] = shadowsurf
+    # make demonaltar
+    types["altar"] = set_multi_generic(3,2,26,0,0)
     # make hellfurnace
-    hellsurf = pygame.surface.Surface((3, 2))
-    hellsurf.set_at((0, 0), (77, 0, 0))
-    hellsurf.set_at((0, 1), (77, 0, 1))
-    hellsurf.set_at((1, 0), (77, 1, 0))
-    hellsurf.set_at((1, 1), (77, 1, 1))
-    hellsurf.set_at((2, 0), (77, 2, 0))
-    hellsurf.set_at((2, 1), (77, 2, 1))
-    types["hellfurnace"] = hellsurf
+
+    types["hellfurnace"] = set_multi_generic(3,2,77,0,0)
     return types
 
 

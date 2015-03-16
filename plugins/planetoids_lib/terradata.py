@@ -196,7 +196,7 @@ for stat in statues:
 
 #"large planetoids"
 data1 = [(23, 50, 150, 32),  #corgrass with vines
-         (25, 15, 25, 23),
+         (25, 20, 40, 23),#ebonstone
          (30, 50, 150),
          (40, 50, 150),
          (48, 5, 150),

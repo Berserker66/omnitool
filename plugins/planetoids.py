@@ -344,6 +344,8 @@ class Generator():
         planets = []
         center_pos = complex(header["spawn"][0], header["spawn"][1] + 50)  #mid of spawn planet
 
+        shadoworbpos = []
+
         def make_planet(c, rmin=20, rmax=50, surround=None, value = False):  # function to literally draw the planets onto the world
             r = randint(rmin, rmax)
 
@@ -362,8 +364,13 @@ class Generator():
                     pos = (randint(50, size[0] - 50), randint(50, size[1] - 50))
                     while abs(complex(pos[0], pos[1]) - center_pos) < r + 200:
                         pos = (randint(50, size[0] - 50), randint(50, size[1] - 50))
-            # a few special planets.. like glass, jungle donuts etc.
 
+            if c == 25#ebonstone
+                r = random() * 2 * pi
+                radius = randint(10, r)
+               shadoworbpos.append((int(pos[0] + radius  * cos(r)), int(pos[1]+ radius * sin(r))))
+
+            # a few special planets.. like glass, jungle donuts etc.
             if c == 59:
                 pygame.draw.circle(surface, (c, c, c), pos, r)
                 pygame.draw.circle(surface, (60, 60, 60), pos, r, 1)  #jungle grass
@@ -636,6 +643,7 @@ class Generator():
         pygame.draw.rect(surface, (57, 57, 57), ((0, size[1] - 100), (size[0], 100)))
         pygame.draw.rect(surface, (254, 1, 255), ((0, size[1] - 150), (size[0], 50)))
 
+        #not pure terra mode
         if terramode != 2:
             #ocean planetoids
             pygame.draw.circle(surface, (53, 53, 53), (0, 500), 500)
@@ -695,7 +703,8 @@ class Generator():
                 time.sleep(1)
 
 
-
+        for shadoworb in shadoworbpos:
+            surface.blit(multis["shadoworb"], shadoworb)
         for chest in chests:
             #draw the chests into the world texture
             surface.blit(choice(chestsurflist), chest[0])
