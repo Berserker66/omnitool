@@ -1,4 +1,11 @@
 #! python3.4-32
+from version import Version
+__version__ = Version(170100)
+__author__ = "Fabian Dill"
+__credits__ = ["Ijwu", "7UR7L3", "Fabian Dill"]
+__maintainer__ = "Fabian Dill"
+
+
 if __name__ == "__main__":
     import multiprocessing
 
@@ -6,8 +13,7 @@ if __name__ == "__main__":
 
 import sys
 import os
-from version import Version
-__version__ = Version(170100)
+
 if "APPDATA" in os.environ:
     appdata = os.path.join(os.environ["APPDATA"], "Omnitool")
 else:
@@ -942,7 +948,7 @@ def run():
     try:
         loc = os.path.join(myterraria, "Game Launcher", "omnitool.gli3")
         data = {
-            "appAuthor": "Berserker55",
+            "appAuthor": __author__+" (Berserker66)",
             "appName": "Omnitool",
             "appPath": os.path.abspath(sys.argv[0]),
             "appVersion": __version__.__repr__()
