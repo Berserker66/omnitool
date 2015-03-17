@@ -945,7 +945,7 @@ def run():
             "appAuthor": "Berserker55",
             "appName": "Omnitool",
             "appPath": os.path.abspath(sys.argv[0]),
-            "appVersion": str(__version__)
+            "appVersion": __version__.__repr__()
         }
         with open(loc, "wt") as f:
             f.write(json.dumps(data, indent=4))
