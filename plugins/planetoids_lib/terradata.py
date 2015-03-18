@@ -12,7 +12,7 @@ chasmthickness = 0.045  #thickness in radians of the terra circle
 chasmdeepness = (50, 75)  #in percent of radius
 
 altar_count = 30  #amount for Terra
-max_altar_planet = 30
+max_altar_planet = 50
 
 caverns = 1.2  #multiplied with root of size
 cavernsize = (5, 10)  #(minsize, maxsize) of cave "subplanetoids"

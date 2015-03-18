@@ -639,7 +639,6 @@ class Generator():
             chests.append(((header["spawn"][0] - 1, header["spawn"][1] + 49), items))
 
             header["spawn"] = header["spawn"][0], header["spawn"][1] - radius + 50
-            #multis = get_multis()
 
             surface.blit(make_tree(25), (header["spawn"][0] + 1, header["spawn"][1] - 25))
         surface.blit(multis["altar"], (header["spawn"][0] - 2, header["spawn"][1] - 2))
@@ -661,7 +660,11 @@ class Generator():
             pygame.draw.circle(surface, (253, 0, 255), (size[0], 301), 300)
 
             a = len(chestcontents)
-            b = max_altar_planet
+            if sizetype == 0:b = max_altar_planet//2
+            elif sizetype == 2:b = max_altar_planet*2
+            elif sizetype == 1:b = max_altar_planet
+            else:
+                raise IndexError("Invalid world size")
 
             if mirrored:
                 double = chestcontents[:]
@@ -681,6 +684,7 @@ class Generator():
                         a -= 1
 
                     else:
+                        print("Warning, could not place all content!")
                         break  # we usually have more planets than chests, so lets get out of here
                 chestcontents = double
             a = len(chestcontents)
