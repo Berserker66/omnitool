@@ -43,7 +43,7 @@ wiki = "Terraria Wiki"
 label = "Мир: "
 
 ##settings menu
-warning = "Для сохранения изменений перезагрузите программу"
+warning = "Для сохранения изменений перезагрузите программу" #out of date - not all changes require a restart now
 
 tiny = "Крошечный"  #unused
 small = "Маленький"

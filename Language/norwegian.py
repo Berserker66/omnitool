@@ -42,7 +42,7 @@ wiki = "Terraria Wiki"
 label = "Verden: "
 
 ##settings menu
-warning = "Alle endringer trenger en restart for å tre i kraft"
+warning = "Alle endringer trenger en restart for å tre i kraft" #out of date - not all changes require a restart now
 
 none = "Ingen"
 tiny = "veldig liten"  #unused

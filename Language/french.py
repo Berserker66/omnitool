@@ -42,7 +42,7 @@ wiki = "Terraria Wiki"
 label = "Monde: "
 
 ##settings menu
-warning = "Toutes les modifications nécessitent un redémarrage pour prendre effet"
+warning = "Toutes les modifications nécessitent un redémarrage pour prendre effet" #out of date - not all changes require a restart now
 
 none = "Aucune"
 tiny = "Minuscules"  #unused

@@ -250,7 +250,13 @@ def get_myterraria():
     return p
 
 
-def get_worlds(tconfig=False):
+def get_worlds(source = "vanilla"):
+    """Get World files from a certain folder,
+    source locations:
+    'N'
+    'vanilla'
+    'tApi' # wip
+    """
     worlds = []
     try:
         # get the my documents folder in windows. on other OS it will fail somewhere
@@ -260,23 +266,18 @@ def get_worlds(tconfig=False):
         buf = ctypes.create_unicode_buffer(300)
         dll.SHGetSpecialFolderPathW(None, buf, 0x0005, False)
 
-        if tconfig:
-            p = os.path.join(buf.value, "My Games", "Terraria", "Worlds", "tConfig")
+        if source == 'N':
+            p = os.path.join(buf.value, "My Games", "N Terraria", "Worlds")
         else:
             p = os.path.join(buf.value, "My Games", "Terraria", "Worlds")
     except:
-        if tconfig:
-            p = os.path.expanduser("~/My Games/Terraria/Worlds/tConfig")
+        if source == 'N':
+            p = os.path.expanduser("~/My Games/N Terraria/Worlds")
         else:
             p = os.path.expanduser("~/My Games/Terraria/Worlds")
-    if tconfig:
-        for item in os.listdir(p):
-            if item[-3:] == "zip":
-                worlds.append(item)
-    else:
-        for item in os.listdir(p):
-            if item[-3:] == "wld":
-                worlds.append(item)
+    for item in os.listdir(p):
+        if item[-3:] == "wld":
+            worlds.append(item)
     return p, worlds
 
 
@@ -300,15 +301,9 @@ def get_players():
     return p, players
 
 
-def get_next_world(cmod=False):
-    path, worlds = get_worlds(cmod)
-    # if len(worlds) > 4:
-    #    x = 1
-    #    while 1:
-    #        if not os.path.isfile("world%d.wld" % x):break
-    #        else:x += 1
-    #    return "world%d.wld" % x
-    #else:
+def get_next_world(source='vanilla'):
+    path, worlds = get_worlds(source)
+
     x = 1
     while 1:
         if not os.path.isfile(os.path.join(path, "world%d.wld" % x)):

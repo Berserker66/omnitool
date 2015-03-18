@@ -45,7 +45,7 @@ label = "World: "
 
 
 ##settings menu
-warning = "All changes require a restart to take effect"
+warning = "Some changes require a restart to take effect"
 
 none = "None"
 tiny = "Tiny"  #unused

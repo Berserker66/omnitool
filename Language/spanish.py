@@ -42,7 +42,7 @@ wiki = "Terraria Wiki"
 label = "Mundo: "
 
 ##settings menu
-warning = "Todos los cambios requieren un reinicio para entrar en vigor"
+warning = "Todos los cambios requieren un reinicio para entrar en vigor" #out of date - not all changes require a restart now
 
 none = "Ninguno"
 tiny = "Pequeñita"  #unused

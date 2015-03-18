@@ -43,7 +43,7 @@ wiki = "Terraria wiki"
 label = "warudo: "
 
 ##settings menu
-warning = "Subete no henko wa sakido o yukonisuru hitsuyo ga"
+warning = "Subete no henko wa sakido o yukonisuru hitsuyo ga" #out of date - not all changes require a restart now
 
 none = "nashi"
 tiny = "Tiny"  #unused

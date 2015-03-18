@@ -41,7 +41,7 @@ wiki = "Terraria Wiki"
 label = "Mundo: "
 
 ##settings menu
-warning = "Mudanças necessitam uma reiniciação."
+warning = "Mudanças necessitam uma reiniciação." #out of date - not all changes require a restart now
 
 none = "Nenhum"
 tiny = "Minúsculo"  #unused

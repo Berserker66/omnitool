@@ -44,7 +44,7 @@ wiki = "Terraria Wiki"
 label = "Welt: "
 
 ##settings menu
-warning = "Änderungen benötigen einen Neustart"
+warning = "Einige Änderungen benötigen einen Neustart"
 
 none = "Keine"
 tiny = "Winzig"  #unused

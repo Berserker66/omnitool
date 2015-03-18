@@ -381,11 +381,16 @@ class Settings(gui.Dialog):
 
     def close(self, w=None):
         cache["theme"] = self.liste.value
+        if cache["thumbsize"] != self.sizelist.value:
+            change = True
+        else:
+            change = False
         cache["thumbsize"] = self.sizelist.value
         cache["do_backup"] = self.backup.value
         cache["columns"] = self.columns.value
         save_cache()
         gui.Dialog.close(self, w)
+        display_worlds(change)
 
 
 class World():
@@ -1070,7 +1075,7 @@ def run():
     main.tr()
     worldtable = gui.Table()
     main.td(worldtable, colspan = 6)
-    def display_worlds():
+    def display_worlds(optionchange = False):
         worldtable.clear()
         x = 0
         for w in worlds:
@@ -1103,7 +1108,8 @@ def run():
             app.resize()
             app.repaint()
             size = pygame.display.get_surface().get_size()
-            data = {"size" : size, "w" : size[0], "h" : size[1]}
+            data = {"size" : size, "w" : size[0], "h" : size[1], "reload" : True if optionchange else False}
+
             pygame.event.post(pygame.event.Event(pygame.VIDEORESIZE, data))
 
 
@@ -1119,13 +1125,20 @@ def run():
                 app.first = False
             else:
                 padding = 50
-                thumb_w = max((ev.w - padding) // cache["columns"], 420)
-                thumb_h = int(thumb_w / 3.5)
+                if hasattr(ev, "reload") and ev.reload == True:
+                    thumb_w, thumb_h = cache["thumbsize"]
+                    for w in worlds:
+                        w.override_thumb((thumb_w, thumb_h))
+                        w.info.style.width = thumb_w
+                        w.thumbsize = (thumb_w, thumb_h)
+                else:
+                    thumb_w = max((ev.w - padding) // cache["columns"], 420)
+                    thumb_h = int(thumb_w / 3.5)
 
-                for w in worlds:
-                    w.override_thumb((thumb_w, thumb_h))
-                    w.info.style.width = thumb_w
-                    w.thumbsize = (thumb_w, thumb_h)
+                    for w in worlds:
+                        w.override_thumb((thumb_w, thumb_h))
+                        w.info.style.width = thumb_w
+                        w.thumbsize = (thumb_w, thumb_h)
 
                 app.rect.size = main.rect.size = main.w, main.h = main.resize()
                 if sys.platform.startswith("win"):

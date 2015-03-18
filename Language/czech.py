@@ -41,7 +41,7 @@ wiki = "Terraria Wiki"
 label = "Svět: "
 
 ##settings menu
-warning = "Úpravy se projeví až po restartu"
+warning = "Úpravy se projeví až po restartu" #out of date - not all changes require a restart now
 
 none = "žádný"
 tiny = "Maličký"  #unused
