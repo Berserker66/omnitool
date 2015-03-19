@@ -188,7 +188,7 @@ Tiledata:
 186 CaveDoodads
 187 ThemedDoodads
 188 CactusMass
-189 ClearIce
+189 Cloud
 190 SolidMushroom
 191 HugeTree
 192 Leaves
