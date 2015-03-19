@@ -1,0 +1,627 @@
+Tiledata:
+ 0 Dirt
+ 1 Stone
+ 2 Grass
+ 3 Plant
+ 4 Torches
+ 5 Tree
+ 6 Iron
+ 7 Copper
+ 8 Gold
+ 9 Silver
+10 Door1
+11 Door2
+12 HealthCrystal
+13 Bottle
+14 Table
+15 Chair
+16 Anvil
+17 Furnace
+18 CraftingTable
+19 WoodenPlatform
+20 PlantsDecorative
+21 Chest
+22 Demonite
+23 CorruptionGrass
+24 CorruptionPlant
+25 Ebonstone
+26 ShadowAltar
+27 Sunflower
+28 Pot
+29 PiggyBank
+30 BlockWood
+31 ShadowOrb
+32 CorruptionVines
+33 Candle
+34 CopperChandelier
+35 SilverChandelier
+36 GoldChandelier
+37 Meteorite
+38 BlockStone
+39 BlockRedStone
+40 Clay
+41 BlockBlueStone
+42 LightGlobe
+43 BlockGreenStone
+44 BlockPinkStone
+45 BlockGold
+46 BlockSilver
+47 BlockCopper
+48 Spikes
+49 CandleBlue
+50 Books
+51 Web
+52 Vines
+53 Sand
+54 Glass
+55 Sign
+56 Obsidian
+57 Ash
+58 Hellstone
+59 Mud
+60 UndergroundJungleGrass
+61 UndergroundJunglePlant
+62 UndergroundJungleVines
+63 Sapphire
+64 Ruby
+65 Emerald
+66 Topaz
+67 Amethyst
+68 Diamond
+69 UndergroundJungleThorns
+70 UndergroundMushroomGrass
+71 UndergroundMushroomPlant
+72 UndergroundMushroomTree
+73 Plant2
+74 Plant3
+75 BlockObsidian
+76 BlockHellstone
+77 UnderworldFurnace
+78 DecorativePot
+79 Bed
+80 Cactus
+81 Coral
+82 HerbSprout
+83 HerbStalk
+84 Herb
+85 Tombstone
+86 Loom
+87 Piano
+88 Dresser
+89 Bench
+90 BathTub
+91 Banner
+92 LampPost
+93 TikiTorch
+94 Keg
+95 ChineseLantern
+96 Cauldron
+97 Safe
+98 SkullLantern
+99 Trashcan
+100 Candelabra
+101 BookShelf
+102 Throne
+103 Bowl
+104 Clock
+105 Statue
+106 Sawmill
+107 Cobalt
+108 Mithril
+109 HallowGrass
+110 HallowVegetation
+111 Adamantite
+112 CorruptedSand
+113 HallowPlants
+114 WorkShop
+115 HallowVines
+116 Pearlsand
+117 PearlStone
+118 PearlBricks
+119 BlackBricks
+120 BrownBricks
+121 CobaltBricks
+122 MithrilBricks
+123 Silt
+124 WoodenBeam
+125 MagicOrb
+126 WhiteOrb
+127 MagicIce
+128 ArmorStand
+129 CrystalShard
+130 ActiveStone
+131 InactiveStone
+132 Lever
+133 AdamantiteFurnace
+134 MithrilAnvil
+135 PressurePlate
+136 Switch
+137 DartShooter
+138 Boulder
+139 NoteBlock
+140 PurpleBrick
+141 Explosives
+142 InletPump
+143 OutletPump
+144 Timer
+145 RedCane
+146 GreenCane
+147 Snow
+148 SnowBrick
+149 ChistmasLights
+150 RedMetal
+151 SandStone
+152 DarkSandStone
+153 Sludge
+154 LightSlush
+155 GreySlush
+156 WhiteSlush
+157 ShadeWood
+158 MahoganyWood
+159 DarkWood
+160 IceBrick
+161 NaturalIce
+162 SnowyIce
+163 BlueIce
+164 RedIce
+165 Stala-
+166 DarkStuff
+167 DarkerStuff
+168 LightStuff
+169 Platinum
+170 LeadChandelier
+171 PlatinumChandelier
+172 BlueChandelier
+173 PlatinumTorches
+174 PlatinumTorch
+175 SandyBricks
+176 RoughGreenBricks
+177 IceFence
+178 Gems
+179 MossyCobbleStone
+180 DarkMossy
+181 CrimsonMossy
+182 HallowMossy
+183 PurpleMossy
+184 Grasses
+185 Doodads
+186 CaveDoodads
+187 ThemedDoodads
+188 CactusMass
+189 ClearIce
+190 SolidMushroom
+191 HugeTree
+192 Leaves
+193 BlueMass
+194 SkullWood
+195 BloodyMess
+196 SnowMass
+197 DeepBlueMass
+198 BlackMass
+199 CrimsonGrass
+200 CrimsonedIce
+201 CrimsonTallGrass
+202 SkyBricks
+203 CrimsonStone
+204 RedBlueStone
+205 CrimsonVines
+206 BlueIceBricks
+207 Fountain
+208 ShadyWood
+209 Cannon
+210 RedButton
+211 GreenOre
+212 SnowScope
+213 Rope
+214 Chain
+215 Campfire
+216 Rocket
+217 MechaBunny
+218 SteelPot
+219 Extractinator
+220 RoundMachine
+221 OrangeOre
+222 PurpleOre
+223 ShinyOre
+224 WoolyEarth
+225 Hive
+226 BrownMass
+227 DyeFlowers
+228 DyeStation
+229 HoneyBlock
+230 CrustedHoney
+231 QueenBeeSummon
+232 MossySpikes
+233 JungleDoodads
+234 FieryAsh
+235 Weighter
+236 LifeFruitPlant
+237 YellowBigPot
+238 PlanteraBulb
+239 Markers
+240 PaintingsBack
+241 Crypt
+242 LargePaintings
+243 SkullMachine
+244 BubbleMachine
+245 VerticalPaintings
+246 MorePaintings
+247 AutoAxe
+248 PalladiumPillar
+249 BubblegumBalls
+250 TitanStone
+251 Pumpkin
+252 Hay
+253 Spooky Wood
+254 Pumpkin Plant
+255 Amethyst Gemspark Block (Offline)
+256 Topaz Gemspark Block (Offline)
+257 Sapphire Gemspark Block (Offline)
+258 Emerald Gemspark Block (Offline)
+259 Ruby Gemspark Block (Offline)
+260 Diamond Gemspark Block (Offline)
+261 Amber Gemspark Block (Offline)
+262 Amethyst Gemspark Block
+263 Topaz Gemspark Block
+264 Sapphire Gemspark Block
+265 Emerald Gemspark Block
+266 Ruby Gemspark Block
+267 Diamond Gemspark Block
+268 Amber Gemspark Block
+269 Womannequin
+270 Firefly in a Bottle
+271 Lightning Bug in a Bottle
+272 Cog
+273 Stone Slab
+274 Sandstone Slab
+275 Bunny Cage
+276 Squirrel Cage
+277 Mallard Duck Cage
+278 Duck Cage
+279 Bird Cage
+280 Blue Jay Cage
+281 Cardinal Cage
+282 Fish Bowl
+283 Heavy Work Bench
+284 Copper Plating
+285 Snail Cage
+286 Glowing Snail Cage
+287 Ammo Box
+288 Monarch Butterfly Jar
+289 Purple Emperor Butterfly Jar
+290 Red Admiral Butterfly Jar
+291 Ulysses Butterfly Jar
+292 Sulphur Butterfly Jar
+293 Tree Nymph Butterfly Jar
+294 Zebra Swallowtail Butterfly Jar
+295 Julia Butterfly Jar
+296 Scorpion Cage
+297 Black Scorpion Cage
+298 Frog Cage
+299 Mouse Cage
+300 Bone Welder
+301 Flesh Cloning Vat
+302 Glass Kiln
+303 Lihzahrd Furnace
+304 Living Loom
+305 Sky Mill
+306 Ice Machine
+307 Steampunk Boiler
+308 Honey Dispenser
+309 Penguin Cage
+310 Worm Cage
+311 Dynasty Wood
+312 Red Dynasty Shingles
+313 Blue Dynasty Shingles
+314 Minecart Track
+315 Coralstone Block
+316 Blue Jellyfish Jar
+317 Green Jellyfish Jar
+318 Pink Jellyfish Jar
+319 Ship in a Bottle
+320 Seaweed Planter
+321 Boreal Wood
+322 Palm Wood
+323 Palm Tree
+324 Seashell
+325 Tin Plating
+326 Waterfall Block
+327 Lavafall Block
+328 Confetti Block
+329 Midnight Confetti Block
+330 Copper Coin Pile
+331 Silver Coin Pile
+332 Gold Coin Pile
+333 Platinum Coin Pile
+334 Weapon Rack
+335 Fireworks Box
+336 Living Fire Block
+337 Text Statue
+338 Firework Fountain
+339 Grasshopper Cage
+
+Walldata:
+ 0 WallNone
+ 1 WallStone
+ 2 WallDirt
+ 3 WallEbonstone
+ 4 WallWood
+ 5 WallBrick
+ 6 WallRed
+ 7 WallBlue
+ 8 WallGreen
+ 9 WallPink
+10 WallGold
+11 WallSilver
+12 WallCopper
+13 WallHellstone
+14 WallDarkBlue
+15 WallAsh
+16 WallDirt2
+17 WallBlue2
+18 WallGreen2
+19 WallPink2
+20 WallDarkBlue2
+21 Wall22
+22 Wall23
+23 Wall24
+24 Wall25
+25 Wall26
+26 Wall27
+27 Wall28
+28 Wall29
+29 Wall30
+30 Wall31
+31 Wall32
+32 Wall33
+33 Wall34
+34 Wall35
+35 Wall36
+36 Wall37
+37 Wall38
+38 Wall39
+39 Wall40
+40 Wall41
+41 Wall42
+42 Wall43
+43 Wall44
+44 Wall45
+45 Wall46
+46 Wall47
+47 Wall48
+48 Wall49
+49 Wall50
+50 Wall51
+51 Wall52
+52 Wall53
+53 Wall54
+54 Wall55
+55 Wall56
+56 Wall57
+57 Wall58
+58 Wall59
+59 Wall60
+60 Wall61
+61 Wall62
+62 Wall63
+63 Wall64
+64 Wall65
+65 Wall66
+66 Wall67
+67 Wall68
+68 Wall69
+69 Wall70
+70 Wall71
+71 Wall72
+72 Wall73
+73 Wall74
+74 Wall75
+75 Wall76
+76 Wall77
+77 Wall78
+78 Wall79
+79 Wall80
+80 Wall81
+81 Wall82
+82 Wall83
+83 Wall84
+84 Wall85
+85 Wall86
+86 Wall87
+87 Wall88
+88 Wall89
+89 Wall90
+90 Wall91
+91 Wall92
+92 Wall93
+93 Wall94
+94 Wall95
+95 Wall96
+96 Wall97
+97 Wall98
+98 Wall99
+99 Wall100
+100 Wall101
+101 Wall102
+102 Wall103
+103 Wall104
+104 Wall105
+105 Wall106
+106 Wall107
+107 Wall108
+108 Wall109
+109 Wall110
+110 Wall111
+
+Multitiles:
+ 3 Plant
+ 4 Torches
+ 5 Tree
+10 Door1
+11 Door2
+12 HealthCrystal
+13 Bottle
+14 Table
+15 Chair
+16 Anvil
+17 Furnace
+18 CraftingTable
+19 WoodenPlatform
+20 PlantsDecorative
+21 Chest
+24 CorruptionPlant
+26 ShadowAltar
+27 Sunflower
+28 Pot
+29 PiggyBank
+31 ShadowOrb
+33 Candle
+34 CopperChandelier
+35 SilverChandelier
+36 GoldChandelier
+42 LightGlobe
+50 Books
+55 Sign
+61 UndergroundJunglePlant
+71 UndergroundMushroomPlant
+72 UndergroundMushroomTree
+73 Plant2
+74 Plant3
+77 UnderworldFurnace
+78 DecorativePot
+79 Bed
+81 Coral
+82 HerbSprout
+83 HerbStalk
+84 Herb
+85 Tombstone
+86 Loom
+87 Piano
+88 Dresser
+89 Bench
+90 BathTub
+91 Banner
+92 LampPost
+93 TikiTorch
+94 Keg
+95 ChineseLantern
+96 Cauldron
+97 Safe
+98 SkullLantern
+99 Trashcan
+100 Candelabra
+101 BookShelf
+102 Throne
+103 Bowl
+104 Clock
+105 Statue
+106 Sawmill
+110 HallowVegetation
+113 HallowPlants
+114 WorkShop
+125 MagicOrb
+126 WhiteOrb
+128 ArmorStand
+129 CrystalShard
+132 Lever
+133 AdamantiteFurnace
+134 MithrilAnvil
+135 PressurePlate
+136 Switch
+137 DartShooter
+138 Boulder
+139 NoteBlock
+141 Explosives
+142 InletPump
+143 OutletPump
+144 Timer
+149 ChistmasLights
+165 Stala-
+171 PlatinumChandelier
+173 PlatinumTorches
+174 PlatinumTorch
+178 Gems
+184 Grasses
+185 Doodads
+186 CaveDoodads
+187 ThemedDoodads
+201 CrimsonTallGrass
+207 Fountain
+209 Cannon
+210 RedButton
+212 SnowScope
+215 Campfire
+216 Rocket
+217 MechaBunny
+218 SteelPot
+219 Extractinator
+220 RoundMachine
+227 DyeFlowers
+228 DyeStation
+231 QueenBeeSummon
+233 JungleDoodads
+235 Weighter
+236 LifeFruitPlant
+237 YellowBigPot
+238 PlanteraBulb
+239 Markers
+240 PaintingsBack
+241 Crypt
+242 LargePaintings
+243 SkullMachine
+244 BubbleMachine
+245 VerticalPaintings
+246 MorePaintings
+247 AutoAxe
+254 Pumpkin Plant
+269 Womannequin
+270 Firefly in a Bottle
+271 Lightning Bug in a Bottle
+275 Bunny Cage
+276 Squirrel Cage
+277 Mallard Duck Cage
+278 Duck Cage
+279 Bird Cage
+280 Blue Jay Cage
+281 Cardinal Cage
+282 Fish Bowl
+283 Heavy Work Bench
+285 Snail Cage
+286 Glowing Snail Cage
+287 Ammo Box
+288 Monarch Butterfly Jar
+289 Purple Emperor Butterfly Jar
+290 Red Admiral Butterfly Jar
+291 Ulysses Butterfly Jar
+292 Sulphur Butterfly Jar
+293 Tree Nymph Butterfly Jar
+294 Zebra Swallowtail Butterfly Jar
+295 Julia Butterfly Jar
+296 Scorpion Cage
+297 Black Scorpion Cage
+298 Frog Cage
+299 Mouse Cage
+300 Bone Welder
+301 Flesh Cloning Vat
+302 Glass Kiln
+303 Lihzahrd Furnace
+304 Living Loom
+305 Sky Mill
+306 Ice Machine
+307 Steampunk Boiler
+308 Honey Dispenser
+309 Penguin Cage
+310 Worm Cage
+314 Minecart Track
+316 Blue Jellyfish Jar
+317 Green Jellyfish Jar
+318 Pink Jellyfish Jar
+319 Ship in a Bottle
+320 Seaweed Planter
+323 Palm Tree
+324 Seashell
+334 Weapon Rack
+335 Fireworks Box
+337 Text Statue
+338 Firework Fountain
+339 Grasshopper Cage
