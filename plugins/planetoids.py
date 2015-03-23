@@ -394,7 +394,6 @@ class Generator():
             items = []
             for item,amount in chestcontents.items():
                 items.extend([item]*amount)
-            print(items)
             shuffle(items)
             while items:
                 ch = items[:itemsperchest]
