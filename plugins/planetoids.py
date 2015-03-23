@@ -221,11 +221,11 @@ class Generator():
         elif sizetype == 2 and terramode:  #large world - terra = contents of medium planetoids
             sizetype = 1
 
-        chestcount = [250, 500, 800][sizetype]
+        chestcount = [200, 400, 800][sizetype]
         #I would prefer [500,1000,1500] chests
         #but terraria only allows 1000 chests as well as 1000 signs, never forget that limit
 
-        large_planets = [10, 50, 100][sizetype]
+        large_planets = [25, 50, 100][sizetype]
         dungeon_planets = [5, 10, 20][sizetype]
         small_planets = [250, 500, 1000][sizetype]
         stone_planets = [25, 50, 100][sizetype]
@@ -240,20 +240,40 @@ class Generator():
                   'ID': randint(10, 10000000), 'moonphase': 0, 'name': name, "hardmode": int(hard),
                   "altars_broken": 0,
                   'is_a_shadow_orb_broken': 0, 'time': time}
-
+        chestfactor = 1
         if sizetype == 0:
-            for item in itemdata:
-                itemdata[item] = itemdata[item] // 2 + itemdata[item] % 2
+            for item, amount in itemdata.items():
+                itemdata[item] = sum(divmod(amount, 2))
+            for item, amount in goldlockitemdata.items():
+                goldlockitemdata[item] = sum(divmod(amount, 2))
+            for item, amount in shadowlockitemdata.items():
+                shadowlockitemdata[item] = sum(divmod(amount, 2))
+            chestfactor /= 2
         elif sizetype == 2:
             for item in itemdata:
                 itemdata[item] = itemdata[item] * 2
+            for item, amount in goldlockitemdata.items():
+                goldlockitemdata[item] = amount*2
+            for item, amount in shadowlockitemdata.items():
+                shadowlockitemdata[item] = amount*2
+            chestfactor *= 2
         if mirrored:
             for item in itemdata:
                 itemdata[item] = itemdata[item] // 2 + itemdata[item] % 2
+            for item, amount in goldlockitemdata.items():
+                goldlockitemdata[item] = sum(divmod(amount, 2))
+            for item, amount in shadowlockitemdata.items():
+                shadowlockitemdata[item] = sum(divmod(amount, 2))
             chestcount //= 2
+            chestfactor /= 2
         if loot:
             for item in itemdata:
                 itemdata[item] = itemdata[item] // 2 + itemdata[item] % 2
+            for item, amount in goldlockitemdata.items():
+                goldlockitemdata[item] = sum(divmod(amount, 2))
+            for item, amount in shadowlockitemdata.items():
+                shadowlockitemdata[item] = sum(divmod(amount, 2))
+            chestfactor /= 2
 
         itemtotal = 0
         for item in itemdata:
@@ -305,6 +325,11 @@ class Generator():
 
             return (on_radius(radius), content)
 
+        def pad_chest(content):
+            for x in range(20 - len(content)):  #chests always have 20 slots
+                content.append((0, None))
+            return content
+
         def pick(items, targetnumber):  #picks randomly items for a chest planetoids
             current = 0
             content = []
@@ -321,9 +346,31 @@ class Generator():
                 current += amount
                 if len(content) > 19:
                     break
-            for x in range(20 - len(content)):  #chests always have 20 slots
-                content.append((0, None))
-            return content, current, items
+
+            return pad_chest(content), current, items
+
+        multis = get_multis()
+
+        goldlockedsurf = multis["goldlockchest"]
+        shadowlockedsurf = multis["shadowlockchest"]
+        chestnames = ("woodchest",
+                         "goldchest",
+                         "shadowchest",
+                         "barrelchest",
+                         "canchest",
+                         "ebonwoodchest",
+                         "mahoganywoodchest",
+                         "bonechest",
+                         "ivychest",
+                         "icechest",
+                         "livingwoodchest",
+                         "skychest",
+                         "shadewoodchest",
+                         "webbedchest",)
+
+        chestsurflist = {}
+        for entry in chestnames:
+            chestsurflist[entry] = multis[entry]
 
         loadingbar.set_progress(10, "Planetoids: filling chests")
 
@@ -333,7 +380,7 @@ class Generator():
             step = (float(superradius) - superradius // 16 - 30) / terrachestcount
             while len(chests) < terrachestcount:
                 rad += step
-                chests.append(terrapick(rad))
+                chests.append((terrapick(rad), choice(chestnames)))
 
         chestcontents = []
 
@@ -341,11 +388,39 @@ class Generator():
             i, c, itemdatabase = pick(itemdata, min(target, itemtotal))
             chestcontents.append(i)
             itemtotal -= c
-        #for chest in chestcontents:print(chest)
 
-        #print str(len(chestcontents))+" chests filled" # give the user a sign of life every once a while
+        def fill_special_chests(itemsperchest, chestcontents, extra_items = ()):
 
-        planets = []
+            items = []
+            for item,amount in chestcontents.items():
+                items.extend([item]*amount)
+            print(items)
+            shuffle(items)
+            while items:
+                ch = items[:itemsperchest]
+                items = items[itemsperchest:]
+                content = [(1, item) for item in ch]
+                content.extend([(amount, item) for item, amount in extra_items])
+                yield pad_chest(content)
+
+        goldchests = []
+        shadowchests = []
+        special_chest_contents = {"goldlockchest" : goldchests,
+                                  "shadowlockchest" : shadowchests,
+                                  "blockedjunglechest" : [pad_chest([(1, "Piranha Gun")])],
+                                  "blockedcorruptionchest" : [pad_chest([(1, "Scourge of the Corruptor")])],
+                                  "blockedcrimsonchest" : [pad_chest([(1, "Vampire Knives")])],
+                                  "blockedhallowedchest" : [pad_chest([(1, "Rainbow Gun")])],
+                                  "blockedicechest" : [pad_chest([(1, "Staff of the Frost Hydra")])],
+                                  }
+        [goldchests.append(content) for content in fill_special_chests(itemspergoldchest, goldlockitemdata, goldlockextra)]
+        [shadowchests.append(content) for content in fill_special_chests(itemspershadowchest, shadowlockitemdata, shadowlockextra)]
+        special_chests = []
+        for chestmulti, chs in special_chest_contents.items():
+            for ch in chs:
+                special_chests.append((chestmulti, ch))
+
+
         center_pos = complex(header["spawn"][0], header["spawn"][1] + 50)  #mid of spawn planet
 
         shadoworbpos = []
@@ -440,6 +515,8 @@ class Generator():
                 rad = randint(4, 7)
                 npos = get_randrad(pos, r - 5 - rad)
                 pygame.draw.circle(surface, choice(valuable), npos, rad)
+
+            return pos
 
         def get_randrad(pos, radius):
             radius = random() * radius
@@ -564,7 +641,7 @@ class Generator():
             mul = 5
         if not terramode or sizetype == 1:
             for x in range(stone_planets):
-                make_hub_planet()
+                chestpos.append(make_hub_planet())
             for x in range(large_planets):
                 chestpos.append(make_planet(*choice(data1), value=True))
             for x in range(0, (sizetype + 1) * mul):
@@ -583,16 +660,8 @@ class Generator():
             mirror = surface.subsurface(0, 0, size[0] // 2, size[1])
             mirror = pygame.transform.flip(mirror, 1, 0)
             surface.blit(mirror, (size[0] // 2, 0))
-            #chestpos.extend([(size[0]-chest[0], chest[1]) for chest in chestpos])
 
-        multis = get_multis()
 
-        #surface.blit(multis["shadoworb"], (header["spawn"][0]-1,header["spawn"][1]+20))
-        chestsurflist = (multis["woodchest"],
-                         multis["goldchest"],
-                         multis["shadowchest"],
-                         multis["barrelchest"],
-                         multis["canchest"])
         if terramode:
             if atlantis:
                 pygame.draw.circle(surface, (255, 255, 255), (header["spawn"][0], header["spawn"][1]), 50)
@@ -604,7 +673,7 @@ class Generator():
         else:  #spawnplanet
             items = [(50, "Torch"), (25, "Acorn"), (5, "Daybloom Seeds"), (5, "Moonglow Seeds"),
                      (5, "Blinkroot Seeds"), (5, "Waterleaf Seeds"), (5, "Fireblossom Seeds"),
-                     (5, "Deathweed Seeds"), (1, "Life Crystal"), (2, "Mana Crystal"), (50, "Book"),
+                     (5, "Deathweed Seeds"), (5, "Shiverthorn Seeds"), (1, "Life Crystal"), (2, "Mana Crystal"), (50, "Book"),
                      (200, "Cobweb"), (5, "Mushroom Grass Seeds"), (1, "Snow Globe"), (10, "Mud Block"),
                      (250, "Dirt Block"), (250, "Dirt Block"),
                      (1, "Shiny Red Balloon"),
@@ -636,7 +705,7 @@ class Generator():
             for _ in range(3):#copper
                 draw_valuable(20, 30, center, (7,7,7), 5)
 
-            chests.append(((header["spawn"][0] - 1, header["spawn"][1] + 49), items))
+            chests.append(((header["spawn"][0] - 1, header["spawn"][1] + 49), items, choice(chestnames)))
 
             header["spawn"] = header["spawn"][0], header["spawn"][1] - radius + 50
 
@@ -676,11 +745,10 @@ class Generator():
                     elif tile == 58:  #hellfurnace into hellstone
                         surface.blit(multis["hellfurnace"], pos)
                     elif b:
-                        #print ("altar")
                         b -= 1
                         surface.blit(multis["altar"], pos)
                     elif a:
-                        chests.append((pos, chestcontents.pop()))  #place chests
+                        chests.append((pos, chestcontents.pop(), choice(chestnames)))  #place chests
                         a -= 1
 
                     else:
@@ -695,19 +763,20 @@ class Generator():
                     surface.blit(multis["shadoworb"], pos)  #place shadoworb into corruption
                 elif tile == 58:  #hellfurnace into hellstone
                     surface.blit(multis["hellfurnace"], pos)
+                elif special_chests:
+                    multi, content = special_chests.pop()
+                    chests.append((pos, content, multi))
                 elif b:
-                    #print ("altar")
                     b -= 1
                     surface.blit(multis["altar"], pos)
                 elif a:
-                    chests.append((pos, chestcontents.pop()))  #place chests
+                    chests.append((pos, chestcontents.pop(), choice(chestnames)))  #place chests
                     a -= 1
-
                 else:
                     break  # we usually have more planets than chests, so lets get out of here
 
             if a:
-                print("Warning: unallocated chests")
+                print("------------------Warning: {} unallocated chests------------------".format(a))
                 import time
 
                 time.sleep(1)
@@ -717,7 +786,7 @@ class Generator():
             surface.blit(multis["shadoworb"], shadoworb)
         for chest in chests:
             #draw the chests into the world texture
-            surface.blit(choice(chestsurflist), chest[0])
+            surface.blit(multis[chest[2]], chest[0])
             # below is to make sure every chest stands on something, so they dont glitch
             d = surface.get_at((chest[0][0], chest[0][1] + 2))[0]
             if d > 250 or d == 51:
@@ -747,7 +816,7 @@ class Generator():
                                            58: 13,
                                            21: 2,
                                            31: 3,
-                                           51: 1,
+                                           51: 62,#cobweb gets spider nest wall
                                            40: 6,
                                            })
 

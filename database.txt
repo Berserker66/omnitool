@@ -195,7 +195,7 @@ Tiledata:
 193 BlueMass
 194 SkullWood
 195 BloodyMess
-196 SnowMass
+196 RainCloud
 197 DeepBlueMass
 198 BlackMass
 199 CrimsonGrass

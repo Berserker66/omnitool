@@ -1,3 +1,4 @@
+"""Low level interface to Terraria data"""
 from struct import unpack, pack, Struct
 import sys
 
@@ -47,10 +48,7 @@ formats = (  # ("word" , "<H", 2),
              ("float", "<f", 4),
              )
 
-# def get_word(f, num = 1):
-#    if num == 1:
-#        return unpack("<H", f.read(2))[0]
-#    return unpack("<"+"H"*num, f.read(num*2))
+
 def get_short(f, num=1):
     if num == 1:
         return unpack("<h", f.read(2))[0]

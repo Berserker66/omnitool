@@ -1,3 +1,4 @@
+"""Higher level interface to Terraria data, based on the low level interface tlib"""
 import sys
 import os
 import tempfile
@@ -221,6 +222,11 @@ def get_multis():
              "bcrimsonchest" : set_multi_2x2(21, 20),
              "bhallowedchest" : set_multi_2x2(21, 21),
              "bicechest" : set_multi_2x2(21, 22),
+             "blockedjunglechest" : set_multi_2x2(21, 23),
+             "blockedcorruptionchest" : set_multi_2x2(21, 24),
+             "blockedcrimsonchest" : set_multi_2x2(21, 25),
+             "blockedhallowedchest" : set_multi_2x2(21, 26),
+             "blockedicechest" : set_multi_2x2(21, 27),
              "shadoworb" : set_multi_2x2(31, 0),
 
              }

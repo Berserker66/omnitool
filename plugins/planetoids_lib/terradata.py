@@ -149,45 +149,66 @@ starsperchest = (0, 2)
 #####planetoids#####
 
 #chestdata for planetoids
-itemdata = {'Swiftness Potion': 100, 'Cloud in a Bottle': 50,
-            'Lucky Horseshoe': 10, 'Gold Bar': 500, 'Shiny Red Balloon': 10,
-            'Wooden Arrow': 1000, 'Throwing Knife': 5000,
-            'Wooden Boomerang': 20, 'Flipper': 10, 'Blowpipe': 5, 'Dynamite': 500,
-            'Band of Regeneration': 100, 'Flaming Arrow': 3000, 'Starfury': 3,
-            'Aqua Scepter': 3, 'Battle Potion': 50, 'Hellfire Arrow': 2000,
-            'Shine Potion': 100, 'Trident': 7, 'Gills Potion': 50,
-            'Silver Bar': 750, 'Gravitation Potion': 300,
+itemdata = {'Swiftness Potion': 100, 'Cloud in a Bottle': 25, 'Sandstorm in a Bottle' : 25,
+            'Flying Carpet' : 10, "Pharaoh's Robe" : 10, "Pharaoh's Mask" : 10,
+            'Ice Boomerang' : 10, 'Ice Blade': 10, 'Ice Skates' : 10, 'Snowball Cannon' : 10,
+            'Blizzard in a Bottle' : 25, 'Flurry Boots' : 10, 'Fish' : 2,
+            'Lucky Horseshoe': 10, 'Gold Bar': 250, 'Shiny Red Balloon': 10,
+            'Wooden Arrow': 500, 'Throwing Knife': 500,
+            'Wooden Boomerang': 20, 'Flipper': 10, 'Blowpipe': 5, 'Dynamite': 300,
+            'Band of Regeneration': 50, 'Flaming Arrow': 500, 'Starfury': 3,
+            'Battle Potion': 50, 'Hellfire Arrow': 500, 'Umbrella' : 5,
+            'Shine Potion': 100, 'Trident': 7, 'Gills Potion': 100,
+            'Silver Bar': 250, 'Gravitation Potion': 300, "Water Walking Boots" : 10,
             'Regeneration Potion': 50, 'Water Walking Potion': 50,
-            'Invisibility Potion': 50, 'Magic Mirror': 50,
-            'Magic Power Potion': 50, 'Glowstick': 5000, 'Healing Potion': 1000,
-            'Enchanted Boomerang': 50, 'Handgun': 5, 'Blue Moon': 5,
+            'Invisibility Potion': 50, 'Magic Mirror': 30, "Beach Ball" : 50,
+            'Magic Power Potion': 100, 'Glowstick': 750, 'Healing Potion': 500,
+            'Enchanted Boomerang': 50, "Shoe Spikes" : 10, "Climbing Claws" : 10,
+            'Flare Gun' : 5, 'Flare' : 500, 'Lava Charm' : 10,
             'Staff of Regrowth': 3, 'Night Owl Potion': 100,
             'Thorns Potion': 100, 'Mana Regeneration Potion': 100,
             'Archery Potion': 100, 'Feral Claws': 10, 'Gold Coin': 300,
             'Hunter Potion': 100, 'Bottle': 300, 'Silver Bullet': 750,
-            'Iron Bar': 1000, 'Dark Lance': 2, 'Breathing Reed': 10,
+            'Iron Bar': 250, 'Breathing Reed': 10,
             'Grenade': 100, 'Aglet': 20, 'Restoration Potion': 300,
-            'Magic Missile': 5, 'Hermes Boots': 50, 'Muramasa': 3,
-            'Bomb': 1000, 'Spear': 15, 'Lesser Healing Potion': 200,
-            'Silver Coin': 5000, 'Torch': 3000, 'Anklet of the Wind': 5,
-            'Cobalt Shield': 5, 'Featherfall Potion': 200, "Jester's Arrow": 2000,
-            'Shuriken': 10000, 'Copper Bar': 2000, 'Obsidian Skin Potion': 100,
-            'Spelunker Potion': 50, 'Lesser Restoration Potion': 100,
-            'Ironskin Potion': 50, "Life Crystal": 150, "Fallen Star": 1000,
-            "Suspicious Looking Eye": 250, "Worm Food": 150,
-            "Sunfury": 3, "Flower of Fire": 3, "Book": 1000, "Wood": 2000,
-            "Cobweb": 5000, "Bone": 300, "Musket Ball": 1000, "Meteorite": 1200,
-            "Demon Wings" : 2, "Angel Wings" : 2, "Bee Wings" : 2, "Butterfly Wings" : 2, "Fairy Wings" : 2}
+            'Hermes Boots': 30, "Extractinator" : 5,
+            'Bomb': 500, 'Spear': 10, 'Lesser Healing Potion': 200,
+            'Silver Coin': 5000, 'Torch': 3000, 'Anklet of the Wind': 10,
+            'Featherfall Potion': 100, "Jester's Arrow": 1000,
+            'Shuriken': 1000, 'Copper Bar': 250, 'Obsidian Skin Potion': 100,
+            'Spelunker Potion': 100, 'Lesser Restoration Potion': 100,
+            'Ironskin Potion': 100, "Life Crystal": 150, "Fallen Star": 250,
+            "Suspicious Looking Eye": 100, "Worm Food": 100,
+            "Book": 1000, "Wood": 2000,
+            "Cobweb": 3000, "Bone": 300, "Musket Ball": 1000, "Meteorite": 500,
+            "Flesh Cloning Vat" : 2, "Glass Kiln" : 2, "Honey Dispenser" : 2,
+            "Ice Machine" : 2, "Lihzahrd Furnace" : 2, "Living Loom" : 2,
+            "Sky Mill" : 2, "Living Wood Wand" : 2, "Leaf Wand" : 2,
+            "Web Slinger" : 10, "Jungle Key Mold" : 2, "Corruption Key Mold" : 2,
+            "Crimson Key Mold" : 2, "Hallowed Key Mold" : 2, "Frozen Key Mold" : 2,
+            "Abeemination" : 10,
+            }
 
+goldlockitemdata = {'Muramasa': 4, 'Handgun': 4, 'Blue Moon': 4, 'Magic Missile': 4, 'Cobalt Shield': 4,
+                    'Aqua Scepter': 4, 'Shadow Key' : 4}
+#extra format: (itemname, minamount, maxamount)
+goldlockextra = (("Life Crystal", 1), ("Bone", 10))
+itemspergoldchest = 2
+
+shadowlockitemdata = {"Demon Wings" : 2, "Angel Wings" : 2, "Bee Wings" : 2, "Butterfly Wings" : 2, "Fairy Wings" : 2,
+                      'Dark Lance': 4, "Flamelash" : 4, "Flower of Fire": 4, "Sunfury" : 4, "Lihzahrd Altar" : 4,
+                      }
+shadowlockextra = (("Lihzahrd Power Cell", 3),)
+itemspershadowchest = 2
 statues = ['Angel Statue', 'Anvil Statue', 'Armor Statue', 'Axe Statue', 'Bat Statue', 'Bird Statue', 'Bomb Statue',
            'Boomerang Statue', 'Boot Statue', 'Bow Statue', 'Bunny Statue', 'Chest Statue', 'Corrupt Statue',
            'Crab Statue', 'Cross Statue', 'Eyeball Statue', 'Fish Statue', 'Gargoyle Statue', 'Gloom Statue',
            'Goblin Statue', 'Hammer Statue', 'Heart Statue', 'Hornet Statue', 'Imp Statue', 'Jellyfish Statue',
-           'King Statue', 'Mushroom Statue', 'Pickaxe Statue', 'Pillar Statue', 'Pirahna Statue', 'Pot Statue',
+           'King Statue', 'Mushroom Statue', 'Pickaxe Statue', 'Pillar Statue', 'Piranha Statue', 'Pot Statue',
            'Potion Statue', 'Queen Statue', 'Reaper Statue', 'Shield Statue', 'Skeleton Statue', 'Slime Statue',
            'Spear Statue', 'Star Statue', 'Sunflower Statue', 'Sword Statue', 'Tree Statue', 'Woman Statue']
 for stat in statues:
-    itemdata[stat] = 10
+    itemdata[stat] = 4
 
 #data format: tile_id, minradius, maxradius, [tile_id for shell]
 #shell is optional
@@ -200,7 +221,7 @@ data1 = [(23, 50, 150, 32),  #corgrass with vines
          (30, 50, 150),
          (40, 50, 150),
          (48, 5, 150),
-         (51, 15, 25, 1),
+         (51, 30, 50, 1),#cobweb planet
          (53, 50, 150),
          (54, 10, 50),
          (57, 50, 150),
@@ -208,6 +229,8 @@ data1 = [(23, 50, 150, 32),  #corgrass with vines
          (145, 30, 50, 147),
          (146, 30, 50, 147),
          (148, 30, 50, 147),
+         (229, 30, 50, 225),#honey surrounded by hive
+         (189, 30, 50, 196),#cloud surrounded by raincloud
          ]
 #"small planetoids"
 data2 = [(22, 2, 4, 1),

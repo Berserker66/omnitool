@@ -1,6 +1,6 @@
 #! python3.4-32
 from version import Version
-__version__ = Version(170100)
+__version__ = Version(170200)
 __author__ = "Fabian Dill"
 __credits__ = ["Ijwu", "7UR7L3", "Fabian Dill"]
 __maintainer__ = "Fabian Dill"
@@ -708,6 +708,7 @@ class Info(threading.Thread):
 
 
 class Backupper(threading.Thread):
+    """Thread handling background backups - quits when everything is backed up"""
     def __init__(self):
         threading.Thread.__init__(self)
 
@@ -765,6 +766,7 @@ class Backupper(threading.Thread):
 
 
 class Redrawer(threading.Thread):
+    """Thread that waits for changes in the world folder and triggers a menu redraw when necessary"""
     def __init__(self):
         threading.Thread.__init__(self)
         self.daemon = True
