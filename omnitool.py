@@ -1024,7 +1024,7 @@ def run():
         (lang.visit + "/" + lang.TO, webbrowser.open, "http://www.terrariaonline.com"),
         (lang.visit + "/" + lang.wiki, webbrowser.open, "http://terraria.gamepedia.com/Terraria_Wiki"),
         (lang.visit + "/GameLauncher GUI", webbrowser.open,
-         "http://forums.terraria.org/index.php?threads/game-launcher-3-2-1-5.1061/unread"),
+         "http://forums.terraria.org/index.php?threads/game-launcher-3-2-1-5.1061/"),
     ])
     forbidden = ["flatworld", "planetoids", "worldify", "arena"]
     for plug in plugins:
