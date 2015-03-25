@@ -1018,13 +1018,13 @@ def run():
         (lang.open + "/" + lang.backupfolder, subprocess.Popen, "explorer " + os.path.join(myterraria, "WorldsBackup")),
         (lang.open + "/" + lang.themes, subprocess.Popen, "explorer " + os.path.join(os.getcwd(), "themes")),
         (lang.visit + "/" + lang.donate, webbrowser.open,
-         "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=JBZM8LFAGDK4N"),
+         r"https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=JBZM8LFAGDK4N"),
         (lang.visit + "/" + lang.homepage, webbrowser.open,
-         "http://www.terrariaonline.com/threads/omnitool-world-mapping-backups-creation-and-more-released.61654/"),
+         r"http://forums.terraria.org/index.php?threads/omnitool-world-creation-mapping-backups-and-more.14664/"),
         (lang.visit + "/" + lang.TO, webbrowser.open, "http://www.terrariaonline.com"),
-        (lang.visit + "/" + lang.wiki, webbrowser.open, "http://wiki.terrariaonline.com/Terraria_Wiki"),
+        (lang.visit + "/" + lang.wiki, webbrowser.open, "http://terraria.gamepedia.com/Terraria_Wiki"),
         (lang.visit + "/GameLauncher GUI", webbrowser.open,
-         "http://www.terrariaonline.com/threads/terraria-game-launcher-gui.64759/"),
+         "http://forums.terraria.org/index.php?threads/game-launcher-3-2-1-5.1061/unread"),
     ])
     forbidden = ["flatworld", "planetoids", "worldify", "arena"]
     for plug in plugins:
