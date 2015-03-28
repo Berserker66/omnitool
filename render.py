@@ -10,6 +10,15 @@ minimap_limits = 400,300
 # from blendmapper import *
 
 def load(tiles=None, walls=None, colors=None, wallcolors=None):
+    if os.path.exists("content.lzma"):
+        import zipfile
+        ZF = zipfile.ZipFile("content.lzma", "r", zipfile.ZIP_LZMA)
+        import io
+        def load_content(imagename):
+            return pygame.image.load(io.BytesIO(ZF.read(imagename)), "png")
+    else:
+        def load_content(imagename):
+            return pygame.image.load(os.path.join("tImages", imagename))
     npc_tex = {}
     pink = pygame.surface.Surface((500, 500))
     pink.fill((255, 0, 255))
@@ -27,16 +36,16 @@ def load(tiles=None, walls=None, colors=None, wallcolors=None):
 
             }
     for name in bind:
-        npc_tex[name] = pygame.image.load(os.path.join("tImages", bind[name]))
+        npc_tex[name] = load_content(bind[name])
 
     tex = [pink] * 65537
     x = 0
     while 1:
         try:
-            tex[x] = pygame.image.load(
-                os.path.join("tImages",
-                             "Tiles_" + str(x) + ".png")).convert_alpha()
+            tex[x] = load_content("Tiles_" + str(x) + ".png")#.convert_alpha()
         except pygame.error:
+            break
+        except KeyError:
             break
         x += 1
     if tiles is not None:
@@ -50,10 +59,10 @@ def load(tiles=None, walls=None, colors=None, wallcolors=None):
     x = 1
     while 1:
         try:
-            walltex[x] = pygame.image.load(
-                os.path.join("tImages",
-                             "Wall_" + str(x) + ".png")).convert_alpha()
+            walltex[x] = load_content("Wall_" + str(x) + ".png")
         except pygame.error:
+            break
+        except KeyError:
             break
         x += 1
     if walls is not None:
@@ -251,7 +260,7 @@ def run(header, path, mapping, data):
                 s = pygame.surface.Surface(res)
                 dirty.append(pygame.rect.Rect(0, 0, res[0], res[1]))
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 1:
+                if mapimage and event.button == 1:
                     if event.pos[0]>(res[0]-mi_size[0]) and event.pos[1] < mi_size[1]:
                         movemode = MAP
                     else:
