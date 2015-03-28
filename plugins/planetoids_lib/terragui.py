@@ -31,7 +31,7 @@ def run(main=None):
     method.add(lang.pt_square, (4, 0))
     method.add(lang.pt_both, (3, 1))
     method.add(lang.pt_square_terra, (4, 2))
-    method.value = (3, 1)
+    method.value = (3, 0)
     main.td(method, colspan=2)
     main.tr()
 

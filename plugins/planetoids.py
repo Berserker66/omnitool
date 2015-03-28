@@ -316,10 +316,7 @@ class Generator():
             if stars:
                 content.append((stars, "Fallen Star"))
             content.append((1, "Acorn"))
-            #print 
-            #print radius
-            #for item in content:
-            #    print item[1], item[0]
+
             for x in range(20 - len(content)):  #chests always have 20 slots
                 content.append((0, None))
 
@@ -380,7 +377,8 @@ class Generator():
             step = (float(superradius) - superradius // 16 - 30) / terrachestcount
             while len(chests) < terrachestcount:
                 rad += step
-                chests.append((terrapick(rad), choice(chestnames)))
+                pos, content = terrapick(rad)
+                chests.append((pos, content, choice(chestnames)))
 
         chestcontents = []
 
@@ -537,14 +535,8 @@ class Generator():
             pygame.draw.circle(surface, material, pos, size)
 
         def make_terra(surface, size):
-
-            #pos = (randint(0+5,size[0]-5),randint(0+5,size[1]-5))
-            #r = randint(75,125)
             pos = (size[0] // 2, size[1] // 2)
             r = superradius
-
-            #while abs(complex(pos[0],pos[1])-center_pos) < r+120:
-            #    pos = (randint(0+5,size[0]-5),randint(0+5,size[1]-5))
             valuables = (r // 25) ** 2
 
             pygame.draw.circle(surface, (0, 0, 0), pos, r)  #dirt
