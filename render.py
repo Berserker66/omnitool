@@ -72,17 +72,14 @@ def load(tiles=None, walls=None, colors=None, wallcolors=None):
                 s = pygame.surface.Surface((500, 500))
                 s.fill(wallcolors[w])
                 walltex[w] = s
-                #x -= 1
-                #while 1:
-                #for w in range(x-1, len(walls)+1):
 
-                #    if w in wallcolors:
-                #        s = pygame.surface.Surface((500,500))
-                #        s.fill(wallcolors[w])
-                #        walltex[w] = s
-                #    else: break
-                #    x += 1
-    return tex, walltex, npc_tex
+    air = load_content("Background_0.png")
+    gborder =load_content("Background_1.png")
+    rborder = load_content("Background_4.png")
+    gfill = load_content("Background_2.png")
+    rfill = load_content("Background_3.png")
+
+    return tex, walltex, npc_tex, air, gborder, rborder, gfill, rfill
 
 
 
@@ -176,12 +173,7 @@ def run(header, path, mapping, data):
     mid = time.clock()
     print("World loaded: %5f seconds" % (mid - start))
 
-    tex, walltex, npc_tex = load()
-    air = pygame.image.load(os.path.join("tImages", "Background_0.png")).convert()
-    gborder = pygame.image.load(os.path.join("tImages", "Background_1.png")).convert_alpha()
-    rborder = pygame.image.load(os.path.join("tImages", "Background_4.png")).convert_alpha()
-    gfill = pygame.image.load(os.path.join("tImages", "Background_2.png")).convert()
-    rfill = pygame.image.load(os.path.join("tImages", "Background_3.png")).convert()
+    tex, walltex, npc_tex, air, gborder, rborder, gfill, rfill = load()
     print("Textures loaded: %5f seconds" % (time.clock() - mid))
 
     spawn = header["spawn"]
