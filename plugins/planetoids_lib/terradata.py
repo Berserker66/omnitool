@@ -186,19 +186,22 @@ itemdata = {'Swiftness Potion': 100, 'Cloud in a Bottle': 25, 'Sandstorm in a Bo
             "Sky Mill" : 2, "Living Wood Wand" : 2, "Leaf Wand" : 2,
             "Web Slinger" : 10, "Jungle Key Mold" : 2, "Corruption Key Mold" : 2,
             "Crimson Key Mold" : 2, "Hallowed Key Mold" : 2, "Frozen Key Mold" : 2,
-            "Abeemination" : 10,
+            "Abeemination" : 10, "Wooden Crate" : 100, "Compass" : 10, "Ruler" : 10,
+            "Slime Crown" : 10, "Music Box" : 10, "Lens" : 50, "Bezoar" : 2, "Nazar" : 2,
+            "Water Bolt" : 5, "Water Candle" : 10,
             }
 
 goldlockitemdata = {'Muramasa': 4, 'Handgun': 4, 'Blue Moon': 4, 'Magic Missile': 4, 'Cobalt Shield': 4,
                     'Aqua Scepter': 4, 'Shadow Key' : 4}
-#extra format: (itemname, minamount, maxamount)
-goldlockextra = (("Life Crystal", 1), ("Bone", 10))
+#extra format: (itemname, amount)
+goldlockextra = (("Life Crystal", 1), ("Bone", 10), ("Golden Key", 1), ("Iron Crate", 1), ("Present", 1))
 itemspergoldchest = 2
 
-shadowlockitemdata = {"Demon Wings" : 2, "Angel Wings" : 2, "Bee Wings" : 2, "Butterfly Wings" : 2, "Fairy Wings" : 2,
-                      'Dark Lance': 4, "Flamelash" : 4, "Flower of Fire": 4, "Sunfury" : 4, "Lihzahrd Altar" : 4,
+shadowlockitemdata = {"Demon Wings" : 1, "Angel Wings" : 1, "Bee Wings" : 1, "Butterfly Wings" : 1, "Fairy Wings" : 1,
+                      'Dark Lance': 2, "Flamelash" : 2, "Flower of Fire": 2, "Sunfury" : 2, "Lihzahrd Altar" : 4,
+                      "Moon Charm" : 1, "Neptune's Shell" : 1,
                       }
-shadowlockextra = (("Lihzahrd Power Cell", 3),)
+shadowlockextra = (("Lihzahrd Power Cell", 3), ("Golden Crate", 1), ("Goodie Bag", 1))
 itemspershadowchest = 2
 statues = ['Angel Statue', 'Anvil Statue', 'Armor Statue', 'Axe Statue', 'Bat Statue', 'Bird Statue', 'Bomb Statue',
            'Boomerang Statue', 'Boot Statue', 'Bow Statue', 'Bunny Statue', 'Chest Statue', 'Corrupt Statue',
@@ -206,7 +209,8 @@ statues = ['Angel Statue', 'Anvil Statue', 'Armor Statue', 'Axe Statue', 'Bat St
            'Goblin Statue', 'Hammer Statue', 'Heart Statue', 'Hornet Statue', 'Imp Statue', 'Jellyfish Statue',
            'King Statue', 'Mushroom Statue', 'Pickaxe Statue', 'Pillar Statue', 'Piranha Statue', 'Pot Statue',
            'Potion Statue', 'Queen Statue', 'Reaper Statue', 'Shield Statue', 'Skeleton Statue', 'Slime Statue',
-           'Spear Statue', 'Star Statue', 'Sunflower Statue', 'Sword Statue', 'Tree Statue', 'Woman Statue']
+           'Spear Statue', 'Star Statue', 'Sunflower Statue', 'Sword Statue', 'Tree Statue', 'Woman Statue',
+           'Shark Statue']
 for stat in statues:
     itemdata[stat] = 4
 
