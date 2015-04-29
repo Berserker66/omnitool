@@ -3,6 +3,8 @@ from zipfile import *
 import os
 
 print("Zipping content files...", end="")
+import sys
+sys.stdout.flush()
 
 with ZipFile(os.path.join("build", "content.lzma"), "w", ZIP_LZMA) as Z:
     for file in os.listdir("tImages"):

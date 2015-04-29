@@ -22,7 +22,7 @@ cx_Freeze.setup(
     executables=[EXE],
     options={"build_exe": {"excludes": ["OpenGL", "tkinter", "tcl"],
                            "packages": ["multiprocessing"],
-                           "includes" : ("loadbar",)}
+                           "includes" : ("loadbar","colorsys")}
              }
 )
 not_needed = ("pygame.movie.pyd", "pygame.mixer_music.pyd", "pygame.mixer.pyd",

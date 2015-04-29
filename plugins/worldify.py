@@ -15,12 +15,9 @@ import pygame
 import database as db
 import colorlib
 from tlib import *
-from tinterface import get_next_world
-from binarysplit import join
-from random import randint
 from time import sleep
-from os.path import join as osjoin
 import tempfile
+import colorsys
 from pgu_override import MyFileDialog
 
 
@@ -236,9 +233,6 @@ class Generator():
                        'ID': 1394008880, 'moonphase': 0, 'name': name,
                        'is_a_shadow_orb_broken': 0, 'time': 13500,
                        "hardmode": 0, "altars_broken": 0, }
-        #with open(osjoin(temp, "0.part"), "wb") as f:#write the header
-        #    set_header(f, header)
-        #print ("done writing header") #sounds cool
 
         import time
 
@@ -302,7 +296,7 @@ class Generator():
 
         def hsv(a, surface, rcolors, weight=(2, 3, 1)):
             #hue saturation value/brightness
-            import colorsys
+
 
             hcolors = {}
             for color in rcolors:
@@ -337,7 +331,7 @@ class Generator():
 
         start = time.clock()
         self.tiles = tempfile.TemporaryFile()
-        #with open(osjoin(temp, "1.part") , "wb") as a:#write the tile data
+
         if func == "RGB":
             print("Finding closest match via euclidian RGB distance")
             rgb(self.tiles, surface, rcolors)
@@ -348,30 +342,10 @@ class Generator():
         n = (t, t / (w * h))
         print("%5f seconds taken, that is %0.10f seconds per pixel" % n)
         self.chests = [None] * 1000
-        #with open(osjoin(temp, "2.part"), "wb") as a:#write chestdata
-        #    set_chests(a,[None]*1000)
-        #print ("done writing chests")
-        #with open(osjoin(temp, "3.part"), "wb") as f:
-        #    for sign in [None]*1000:
-        #        set_sign(f, sign)
         self.signs = [None] * 1000
-        #print ("done writing signs")
-        #with open(osjoin(temp, "4.part"), "wb") as f:
-        #    set_npc(f, ('Guide', (header["spawn"][0]*16, (header["spawn"][1]-3)*16), 1, (header["spawn"][0], header["spawn"][1]-3)))
-        #    set_npc(f, None)
-        #    set_npc_names(f, db.names)
         self.names = db.names
         self.npcs = [('Guide', (self.header["spawn"][0] * 16, (self.header["spawn"][1] - 3) * 16), 1,
                       (self.header["spawn"][0], self.header["spawn"][1] - 3))]
-        #print ("done writing npcs")
-        #with open(osjoin(temp, "5.part"), "wb") as f:
-        #    set_trail(f, (1, header["name"], header["ID"]))
-        #print ("done writing trail")
-        #name = get_next_world(db.cmod)
-        #join(name, True, path = temp)#this just puts all the binary parts into one world file
-        #print ("done joining world "+name)#yay!
-        #print ("A world has been created!")
-        #sleep(3)
 
 
 if __name__ == "__main__":

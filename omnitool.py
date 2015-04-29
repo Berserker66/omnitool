@@ -1,6 +1,6 @@
 #! python3.4-32
 from version import Version
-__version__ = Version(170300)
+__version__ = Version(170400)
 __author__ = "Fabian Dill"
 __credits__ = ["Ijwu", "7UR7L3", "Fabian Dill"]
 __maintainer__ = "Fabian Dill"
@@ -202,18 +202,28 @@ def save_cache():
 
 cmod = False
 if len(sys.argv) > 1:  #user wants something
-    if sys.argv[1].split("\\")[-1] == "TEdit.exe":  #install tedit
-        cache["tedit"] = sys.argv[1]
-        print("Learned TEdit path: " + sys.argv[1])
+    def savequit():
+        import time
+        time.sleep(3)
         save_cache()
         pygame.quit()
         sys.exit()
+
+    if sys.argv[1].split("\\")[-1] == "TEditXna.exe":  #install tedit
+        cache["tedit"] = sys.argv[1]
+        print("Learned TEdit path: " + sys.argv[1])
+        savequit()
+
     elif sys.argv[1].split("\\")[-1] == "Terrafirma.exe":  #install tedit
         cache["terrafirma"] = sys.argv[1]
         print("Learned terrafirma path: " + sys.argv[1])
-        save_cache()
-        pygame.quit()
-        sys.exit()
+        savequit()
+
+if getattr(sys, 'frozen', False):
+    os.chdir(os.path.dirname(sys.executable))
+else:
+    os.chdir(os.path.dirname(os.path.realpath(__file__)))
+
 myterraria = get_myterraria()  #mygames-terraria path
 images = os.path.join(myterraria, "WorldImages")
 if __name__ == "__main__":
