@@ -276,6 +276,12 @@ def get_header(f):
     """ returns a dict of header data"""
     version = get_gint(f)
     if version >= 100:
+        if version > 140:
+            get_long(f)
+            rev = get_uint(f)
+            get_long(f)
+
+
         #get sections
         sectiondata = {"sections" : get_uint(f, get_gshort(f)),
                        "tiletypes" : get_gshort(f)}
@@ -288,6 +294,7 @@ def get_header(f):
             else: mask <<=1
             if flags & mask == mask:
                 multitiles.add(x)
+
     else:
         multitiles = db.multitiles
 
@@ -424,7 +431,7 @@ def get_header(f):
              "cloudcount": get_gushort(f),
              "windspeed": get_float(f),
              }
-    else:# version 102+
+    elif version < 103:# version 102+
         d = {"name": get_string(f),
              "ID": get_gint(f),
              "worldrect": get_uint(f, 4),
@@ -468,6 +475,61 @@ def get_header(f):
              "angler_quest" : get_gint(f)
 
              }
+    else:#version 147
+        d = {"name": get_string(f),
+             "ID": get_gint(f),
+             "worldrect": get_uint(f, 4),
+             "height": get_gint(f),
+             "width": get_gint(f),
+             "expert" : get_gbyte(f),
+             "creationtime" : get_glong(f),
+             "moontype": get_gbyte(f),
+             "treedata": get_uint(f, 7),
+             "cavedata": get_uint(f, 10),
+             "spawn": get_uint(f, 2),
+             "groundlevel": get_gdouble(f),
+             "rocklevel": get_gdouble(f),
+             "time": get_gdouble(f),
+             "is_day": get_gbyte(f),
+             "moonphase": get_gint(f),
+             "is_bloodmoon": get_gbyte(f),
+             "is_eclipse": get_gbyte(f),
+             "dungeon_xy": get_uint(f, 2),
+             "is_crimson": get_gbyte(f),
+             "bosses_slain": get_byte(f, 11),
+             "npcs_saved": get_byte(f, 3),
+             "special_slain": get_byte(f, 4),
+             "is_a_shadow_orb_broken": get_gbyte(f),
+             "is_meteor_spawned": get_gbyte(f),
+             "shadow_orbs_broken": get_gbyte(f),
+             "altars_broken": get_gint(f),
+             "hardmode": get_gbyte(f),
+             "gob_inv_time": get_gint(f),
+             "gob_inv_size": get_gint(f),
+             "gob_inv_type": get_gint(f),
+             "gob_inv_x": get_gdouble(f),
+             "slime_rain_time" : get_gdouble(f),
+             "sundial_cooldown" : get_gbyte(f),
+             "raining": get_gbyte(f),
+             "raintime": get_gint(f),
+             "maxrain": get_float(f),
+             "oretiers": get_int(f, 3),
+             "background_styles": get_byte(f, 8),
+             "clouds": get_uint(f),
+             "cloudcount": get_gushort(f),
+             "windspeed": get_float(f),
+             "anglerstrings" : [get_string(f) for _ in range(get_gint(f))],
+             "angler_saved" : get_gbyte(f),
+             "angler_quest" : get_gint(f),
+             "saved_stylist" : get_gbyte(f),
+             "saved_collector" : get_gbyte(f),
+             "invasionsize" : get_gint(f),
+             "cultist_delay" : get_gint(f),
+             "mobkills" : get_uint(f, get_ushort(f)),
+             "fastforward" : get_gbyte(f),
+             "extra_flags" : get_byte(f, 18)
+             }
+        print(d["name"], d["extra_flags"])
     d["version"] = version
 
     return d, multitiles
@@ -770,15 +832,9 @@ def get_tile_buffered_iter_12_masked(f, amount):  #Terraria 1.2 bitmask
     """
     while amount > 0:
         header1 = get_gbyte(f)
-        if (header1 & 1):
-            header2 = get_gbyte(f)
-            if (header2 & 1):
-                header3 = get_gbyte(f)
-            else:
-                header3 = 0
-        else:
-            header2 = 0
-            header3 = 0
+        header2 = get_gbyte(f) if header1 & 1 else 0
+        header3 = get_gbyte(f) if header2 & 1 else 0
+
         if (header1 & 2):  #if exists
             if (header1 & 32) != 32:
                 ttype = get_gbyte(f)
@@ -799,7 +855,7 @@ def get_tile_buffered_iter_12_masked(f, amount):  #Terraria 1.2 bitmask
                 get_gbyte(f)  #read in color and GC
         else:
             wall = None
-        liquid = (header1 & 24)
+        liquid = (header1 & 24)>>3
         if liquid:
             liquid = (256*(liquid-1))+get_gbyte(f)
         if header2 > 1:
@@ -813,7 +869,9 @@ def get_tile_buffered_iter_12_masked(f, amount):  #Terraria 1.2 bitmask
             rle = get_gbyte(f)
         elif rle == 2:
             rle = get_gshort(f)
-        else:raise Exception("RLE compression error.")
+        else:
+            print(rle)
+            raise Exception("RLE compression error.")
 
         tile = (ttype, wall, liquid, multi, wire)
 
