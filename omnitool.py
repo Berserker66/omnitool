@@ -879,62 +879,6 @@ def proxyload(file):
         d = pygame.image.load(f, ext)
     return d
 
-def get_t_path(verbal=False):
-    done = False
-    source = False
-    if os.path.exists("path.txt"):
-        with open("path.txt") as f:
-            for path in f.readlines():
-                path = path.rstrip("\n")
-                if not os.path.isdir(path):
-                    if verbal: print("Terraria not found at %s" % path)
-                else:
-                    if verbal: print("Terraria found at %s" % path)
-                    done = True
-                    source = path
-                    break
-    if not done:
-        if os.path.isdir("Terraria"):
-            source = "Terraria"
-            if verbal: print("Terraria found in Omnitool")
-        else:
-            source = False
-    if not done:
-        try:
-            try:
-                import winreg
-            except:
-                import _winreg as winreg
-
-            opened = winreg.OpenKey(winreg.HKEY_CURRENT_USER, "Software\Valve\Steam")
-            x = (winreg.QueryValueEx(opened, "SteamPath"))[0]
-            x = os.path.join(x, "SteamApps", "common", "terraria")
-            if os.path.isdir(x):
-                source = x
-                if verbal: print("Terraria found at %s" % x)
-                done = True
-        except:
-            pass
-    if not done:
-        paths = [":\program files (x86)\steam\steamapps\common\Terraria",
-                 ":\program files\steam\steamapps\common\Terraria",
-                 ":\steam\steamapps\common\Terraria",
-                 ":\Terraria"]
-        for c in ["C", "D", "E", "F"]:
-            if done: break
-            for p in paths:
-
-                path = c + p
-                if not os.path.isdir(path):
-                    if verbal: print("Terraria not found at %s" % path)
-                else:
-                    if verbal: print("Terraria found at %s" % path)
-                    source = path
-                    done = True
-                    break
-    return source
-
-
 if "directlaunch" in sys.argv:
     if cache["do_backup"]:
         b = Backupper()
@@ -989,7 +933,6 @@ def run():
     worlds = []
     ts = [threading.Thread(target=get_world, args=(path, world, worlds)) for world in worldnames]
     tuple(t.start() for t in ts)
-    source = get_t_path(True)
     pad = 10
     x = 0
 
@@ -1000,16 +943,6 @@ def run():
         (lang.start + "/" + lang.terraria, os.system, "start steam://rungameid/105600"),
 
     ]
-
-    if source:
-        import omnitool
-
-        data.append((lang.start + "/" + lang.steamfree, start_proc, (omnitool.launch_terraria, "Launch", "")))
-        for file in os.listdir(source):
-            if file[-4:] == ".gli":
-                with open(os.path.join(source, file), "rt") as f:
-                    name, ghash = f.readline().strip(), f.readline().strip()
-                data.append((lang.start + "/" + name, start_proc, (launch_terraria, ["Launch", " " + ghash])))
 
     if "tedit" in cache:
         if os.path.exists(cache["tedit"]):

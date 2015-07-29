@@ -529,7 +529,6 @@ def get_header(f):
              "fastforward" : get_gbyte(f),
              "extra_flags" : get_byte(f, 18)
              }
-        print(d["name"], d["extra_flags"])
     d["version"] = version
 
     return d, multitiles
