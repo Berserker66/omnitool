@@ -504,12 +504,13 @@ class World():
             t.start()
 
 
-def gen_slice(path, start, size, levels, version, queue=None):
+def gen_slice(path, start, size, levels, version):
     #import tlib
     if version > 100:
-        get_tile = tlib.get_tile_buffered_iter_12_masked
+        get_tile = tlib.get_tile_buffered_12_masked
     else:
-        get_tile = tlib.get_tile_buffered_iter_12 if version >= 68 else tlib.get_tile_buffered_iter
+        get_tile = tlib.get_tile_buffered
+
     with open(path, "rb") as f:
         b = [0]
         f.seek(start)
@@ -523,40 +524,41 @@ def gen_slice(path, start, size, levels, version, queue=None):
         pygame.draw.rect(s, (50, 50, 50),
                          ((0, levels[1]),
                           (size[0], size[1] - levels[1])))
-        for (xi, yi), (tile, wall, liquid, multi, wire) in zip(product(range(x), range(y)), get_tile(f, x * y)):
+        buffer = pygame.PixelArray(s)
+        for xi in range(x):# for each slice
+            yi = 0
+            while yi < y:  # get the tiles
+                (tile, wall, liquid, multi, wire), b = get_tile(f)
+                color = None
+                if not liquid:  #liquid == 0 means no liquid
+                    # there could be a liquid and a tile, like a chest and water,
+                    #but I can only set one color to a pixel anyway, so I priotise the tile
+                    if tile == None:
+                        if wall:
+                            if wall in colorlib.walldata:
+                                color = colorlib.walldata[wall]
+                            else:
+                                color = (wall, wall, wall)
 
-            #tiles start from the upper left corner, then go downwards
-            # when a slice is complete its starts with the next slice
+                    elif tile in colorlib.data:
+                        color = colorlib.data[tile]  #if colorlib has a color use it
+                    else:
+                        tile = min(255, tile)
+                        color = (tile, tile, tile)  #make a grey otherwise
+                elif liquid > 512:
+                    color = (245, 219, 27)
+                elif liquid > 256:
+                    color = (150, 35, 17)
 
-            if not liquid:  #liquid == 0 means no liquid
-                # there could be a liquid and a tile, like a chest and water,
-                #but I can only set one color to a pixel anyway, so I priotise the tile
-                if tile == None:
-                    if wall:
-                        if wall in colorlib.walldata:
-                            s.set_at((xi, yi), colorlib.walldata[wall])
-                        else:
-                            s.set_at((xi, yi), (wall, wall, wall))
-
-                elif tile in colorlib.data:
-                    s.set_at((xi, yi), colorlib.data[tile])  #if colorlib has a color use it
-                else:
-                    tile = min(255, tile)
-                    s.set_at((xi, yi), (tile, tile, tile))  #make a grey otherwise
-            elif liquid > 512:
-                s.set_at((xi, yi), (245, 219, 27))
-            elif liquid > 256:
-                s.set_at((xi, yi), (150, 35, 17))
-
-            else:  #0>x>256 is water, the higher x is the more water is there
-                s.set_at((xi, yi), (19, 86, 134))
-
+                else:  #0>x>256 is water, the higher x is the more water is there
+                    color = (19, 86, 134)
+                if color:
+                    buffer[xi, yi:yi+b] = color
+                yi+=b
+        del(buffer)
         pos = f.tell()
-        f.seek(start)
-    if queue:
-        queue.put((pygame.image.tostring(s, "RGB"), pos))
-    else:
-        return (pygame.image.tostring(s, "RGB"), pos)
+
+    return (pygame.image.tostring(s, "RGB"), pos)
 
 processing = threading.Lock()
 
@@ -602,70 +604,6 @@ class PLoader(threading.Thread):
         self.cache["time"] = os.path.getmtime(self.file)
         save_cache()
         sys.exit()
-
-
-class Loader(threading.Thread):
-    def __init__(loader, world):
-        threading.Thread.__init__(loader)
-        loader.world = world
-
-    def run(loader):
-        self = loader.world
-        with open(os.path.join(self.path, self.filename), "rb") as f:
-            b = [0]
-            #header = get_header(f)#read header with tlib.get_header and also reach tile data in f
-            f.seek(self.pos)
-            x, y = self.header["width"], self.header["height"]  #read world size from header cache
-            #s = pygame.surface.Surface((x,y)) #create a software surface to save tile colors in
-            s = self.raw
-            s.fill((200, 200, 255))
-            pygame.draw.rect(s, (150, 75, 0),
-                             ((0, self.header["groundlevel"]),
-                              (self.header["width"], self.header["height"] - self.header["groundlevel"])))
-
-            pygame.draw.rect(s, (50, 50, 50),
-                             ((0, self.header["rocklevel"]),
-                              (self.header["width"], self.header["height"] - self.header["rocklevel"])))
-            for xi in range(x):  # for each slice
-                for yi in range(y):  # get the tiles
-                    #tiles start from the upper left corner, then go downwards
-                    # when a slice is complete its starts with the next slice
-
-                    tile = get_tile_buffered(f, b)
-                    tile, wall, liquid, multi, wire = tile
-
-                    if not liquid:  #liquid == 0 means no liquid
-                        # there could be a liquid and a tile, like a chest and water,
-                        #but I can only set one color to a pixel anyway, so I priotise the tile
-                        if tile == None:
-                            if wall:
-                                if wall in colorlib.walldata:
-                                    s.set_at((xi, yi), colorlib.walldata[wall])
-                                else:
-                                    s.set_at((xi, yi), (wall, wall, wall))
-                                    #s.set_at((xi,yi), (255,255,255))#if no tile present, set it white
-
-                        elif tile in colorlib.data:
-                            s.set_at((xi, yi), colorlib.data[tile])  #if colorlib has a color use it
-                        else:
-                            s.set_at((xi, yi), (tile, tile, tile))  #make a grey
-                    elif liquid > 0:  #0>x>256 is water, the higher x is the more water is there
-                        s.set_at((xi, yi), (19, 86, 134))
-                    else:  #lava is -256>x>0
-                        s.set_at((xi, yi), (150, 35, 17))
-                if xi % 50 == 0:  # every x slices show the progress
-                    self.update_thumb()
-                    self.image.repaint()
-
-        self.update_thumb()
-        self.image.repaint()
-        pygame.image.save(s, os.path.join(appdata, self.filename[:-3] + "png"))
-        shutil.copyfile(os.path.join(appdata, self.filename[:-3] + "png"),
-                        os.path.join(images, self.filename[:-3] + "png"))
-        self.cache["time"] = os.path.getmtime(self.file)
-        save_cache()
-        sys.exit()
-
 
 def full_split(root):
     split = list(os.path.split(root))

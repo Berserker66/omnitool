@@ -772,113 +772,6 @@ def get_tile_buffered(f):
     return (tile, get_ushort(f)+1)
 
 
-def get_tile_buffered_iter_12(f, amount):  #Terraria 1.2
-    """
-    takes an openend world file as argument
-    header needs to be skipped or read first
-    returns an iterator containing tile data
-    return (tile_id, wall_id, liquid)
-    """
-    while amount > 0:
-        if get_gbyte(f):  #if exists
-            ttype = get_gbyte(f)
-            if ttype in db.multitiles:
-                multi = get_ushort(f, 2)
-            else:
-                multi = None
-            if get_gbyte(f):  #has a color
-                get_gbyte(f)  #read in color and GC
-        else:
-            ttype = None
-            multi = None
-        walled = get_gbyte(f)
-        if walled:
-            wall = get_gbyte(f)
-            if get_gbyte(f):  #has a color
-                get_gbyte(f)  #read in color and GC
-        else:
-            wall = None
-        liquid = get_gbyte(f)
-        if liquid:
-            liquidamount, lava, honey = get_byte(f, 3)
-            if lava:
-                liquid = liquidamount + 256  #its lava
-            elif honey:
-                liquid = liquidamount + 512  #its honey
-            else:
-                liquid = liquidamount  # its water
-        wire = get_byte(f, 3)
-
-        #get_gbyte(f)#halfBrick
-        #get_gbyte(f)#slope
-        #get_gbyte(f)#actuator
-        #get_gbyte(f)#inActive
-        get_byte(f, 4)  #skip
-
-        tile = (ttype, wall, liquid, multi, wire)
-
-        x = get_gushort(f) + 1
-        amount -= x
-        for _ in range(x):
-            yield tile
-
-def get_tile_buffered_iter_12_masked(f, amount):  #Terraria 1.2 bitmask
-    """
-    takes an openend world file as argument
-    header needs to be skipped or read first
-    returns an iterator containing tile data
-    return (tile_id, wall_id, liquid)
-    """
-    while amount > 0:
-        header1 = get_gbyte(f)
-        header2 = get_gbyte(f) if header1 & 1 else 0
-        header3 = get_gbyte(f) if header2 & 1 else 0
-
-        if (header1 & 2):  #if exists
-            if (header1 & 32) != 32:
-                ttype = get_gbyte(f)
-            else:
-                ttype = get_gushort(f)
-            if ttype in db.multitiles:
-                multi = get_ushort(f, 2)
-            else:
-                multi = None
-            if (header3 & 8):  #has a color
-                get_gbyte(f)  #read in color and GC
-        else:
-            ttype = None
-            multi = None
-        if (header1 & 4):
-            wall = get_gbyte(f)
-            if (header3 & 16):  #has a color
-                get_gbyte(f)  #read in color and GC
-        else:
-            wall = None
-        liquid = (header1 & 24)>>3
-        if liquid:
-            liquid = (256*(liquid-1))+get_gbyte(f)
-        if header2 > 1:
-            wire = (header2 & 2), (header2 & 4), (header2 & 8)
-        else:
-            wire = 0,0,0
-
-        rle = (header1 & 192) >> 6
-        if rle == 0:pass
-        elif rle == 1:
-            rle = get_gbyte(f)
-        elif rle == 2:
-            rle = get_gshort(f)
-        else:
-            print(rle)
-            raise Exception("RLE compression error.")
-
-        tile = (ttype, wall, liquid, multi, wire)
-
-        rle+=1
-        amount -= rle
-        for _ in range(rle):
-            yield tile
-
 def get_tile_buffered_12_masked(f):  #Terraria 1.2 bitmask
     """
     takes an openend world file as argument
@@ -892,7 +785,7 @@ def get_tile_buffered_12_masked(f):  #Terraria 1.2 bitmask
     header3 = get_gbyte(f) if header2 & 1 else 0
 
     if (header1 & 2):  #if exists
-        if (header1 & 32):
+        if (header1 & 32) != 32:
             ttype = get_gbyte(f)
         else:
             ttype = get_gushort(f)
@@ -930,42 +823,6 @@ def get_tile_buffered_12_masked(f):  #Terraria 1.2 bitmask
     tile = (ttype, wall, liquid, multi, wire)
 
     return tile, rle+1
-
-def get_tile_buffered_iter(f, amount):  #Terraria 1.1.2
-    """
-    takes an openend world file as argument
-    header needs to be skipped or read first
-    returns an iterator containing tile data
-    return (tile_id, wall_id, liquid)
-    """
-    while amount > 0:
-        if get_gbyte(f):  #if exists
-            ttype = get_gbyte(f)
-            if ttype in db.multitiles:
-                multi = get_ushort(f, 2)
-            else:
-                multi = None
-        else:
-            ttype = None
-            multi = None
-        walled = get_gbyte(f)
-        if walled:
-            wall = get_gbyte(f)
-        else:
-            wall = None
-        liquid = get_gbyte(f)
-        if liquid:
-            liquidamount, lava = get_byte(f, 2)
-            if lava:
-                liquid = liquidamount+256  #its lava
-            else:
-                liquid = liquidamount  # its water
-        wire = get_gbyte(f)
-        tile = (ttype, wall, liquid, multi, wire)
-        x = get_gushort(f) + 1
-        amount -= x
-        for _ in range(x):
-            yield tile
 
 
 ### content parser end ###
