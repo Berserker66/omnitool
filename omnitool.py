@@ -17,7 +17,7 @@ import os
 if "APPDATA" in os.environ:
     appdata = os.path.join(os.environ["APPDATA"], "Omnitool")
 else:
-    appdata = os.path.join(os.environ["HOME"], "Omnitool")
+    appdata = os.path.join(os.environ["HOME"], ".Omnitool")
 temp = os.path.join(appdata, "temp")
 cachepath = os.path.join(appdata, "cache.dill")
 for p in (appdata, temp):

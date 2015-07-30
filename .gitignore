@@ -226,7 +226,6 @@ ip.txt
 Output/
 __cycache__/
 .dropbox
-*.png
 tImages/
 Output/
 *.dll
