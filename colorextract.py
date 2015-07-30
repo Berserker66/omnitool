@@ -1,12 +1,13 @@
 import os
 import pygame
+folder = "tImages"
 
 colors = {}
-for p in os.listdir(os.getcwd()):
+for p in os.listdir(folder):
     if p[-3:] == "png":
         if p[:5] == "Tiles":
             colorsum = [0, 0, 0]
-            image = pygame.image.load(p)
+            image = pygame.image.load(os.path.join(folder, p))
             size = image.get_size()
             i = 0
             for x in range(size[0]):
@@ -20,9 +21,13 @@ for p in os.listdir(os.getcwd()):
                         else:
                             colorsum = [colorsum[0] + c[0], colorsum[1] + c[1], colorsum[2] + c[2]]
                             i += 1
-            color = (int(colorsum[0] / float(i)),
-                     int(colorsum[1] / float(i)),
-                     int(colorsum[2] / float(i)))
+            try:
+                color = (int(colorsum[0] / float(i)),
+                         int(colorsum[1] / float(i)),
+                         int(colorsum[2] / float(i)))
+            except ZeroDivisionError:
+                print(p, "is empty!")
+                color = (0,0,0)
             try:
                 colors[int(p[6:].strip(".png"))] = color
             except ValueError:
@@ -35,12 +40,12 @@ print(colors)
 
 print("-"*70)
 colors = {0: (0, 0, 0)}
-for p in os.listdir(os.getcwd()):
+for p in os.listdir(folder):
     if p[-3:] == "png":
         if p[:4] == "Wall" and p != "WallOfFlesh.png" and p != "Wall_Outline.png":
 
             colorsum = [0, 0, 0]
-            image = pygame.image.load(p)
+            image = pygame.image.load(os.path.join(folder, p))
             size = image.get_size()
             i = 0
             for x in range(size[0]):

@@ -1,4 +1,4 @@
-Current version : 17.5.0, for Terraria 1.3.0.7.
+Current version : 17.5.1, for Terraria 1.3.0.7.
 
 On the Terraria Forums:
 [Link](http://forums.terraria.org/index.php?threads/omnitool-world-creation-mapping-backups-and-more.14664/)
