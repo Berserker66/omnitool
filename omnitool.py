@@ -1,6 +1,6 @@
 #! python3.4-32
 from version import Version
-__version__ = Version(170400)
+__version__ = Version(170401)
 __author__ = "Fabian Dill"
 __credits__ = ["Ijwu", "7UR7L3", "Fabian Dill"]
 __maintainer__ = "Fabian Dill"
@@ -424,18 +424,9 @@ class World():
             self.info.td(gui.Label("Hardmode", color=(250, 0, 0)), align=0)
         self.info.td(self.size, align=1)
         self.raw = pygame.surface.Surface((self.header["width"], self.header["height"]))
-        self.raw.fill((100, 100, 100))
+        self.raw.fill((200, 200, 255))
         self.thumbsize = thumbsize
-        ##buttons
-        self.save = Button("Save Image", nothing, self)
-        self.npcs = Button("Edit NPCs", nothing, self)
-        self.chests = Button("Edit Chests", nothing, self)
-        self.save.disabled = True
-        self.save.blur()
-        self.npcs.disabled = True
-        self.npcs.blur()
-        self.chests.disabled = True
-        self.chests.blur()
+
         if thumbsize:
             self.get_thumb()
             self.image = gui.Image(self.thumb)
@@ -486,21 +477,21 @@ class World():
         else:
             self.raw.blit(i, (0, 0))
             self.update_thumb()
-            self.save.disabled = False
-            self.save.blur()
-            self.npcs.disabled = False
-            self.npcs.blur()
-            self.chests.disabled = False
-            self.chests.blur()
+
         save_cache()
         if needed:
+            size = self.raw.get_size()
+            levels = self.header["groundlevel"], self.header["rocklevel"]
+            pygame.draw.rect(self.raw, (150, 75, 0),
+                             ((0, levels[0]),
+                              (size[0], size[1] - levels[0])))
+
+            pygame.draw.rect(self.raw, (50, 50, 50),
+                             ((0, levels[1]),
+                              (size[0], size[1] - levels[1])))
             self.update_thumb()
-            if False:  #stupid code, but here so I don't forget how to thread it
-                t = Loader(self)
-                first = False
-            else:
-                t = PLoader(self)
-                t.name = "Vanilla-Mapper-%s" % self.header["name"]
+            t = PLoader(self)
+            t.name = "Vanilla-Mapper-%s" % self.header["name"]
             t.start()
 
 
@@ -571,7 +562,7 @@ class PLoader(threading.Thread):
     def run(loader):
         import omnitool
 
-        w = 50
+        w = 16
         self = loader.world
         size = (self.header["width"], self.header["height"])
         with processing:
@@ -603,7 +594,6 @@ class PLoader(threading.Thread):
 
         self.cache["time"] = os.path.getmtime(self.file)
         save_cache()
-        sys.exit()
 
 def full_split(root):
     split = list(os.path.split(root))

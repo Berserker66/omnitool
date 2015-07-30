@@ -3,6 +3,7 @@ import time
 import pygame
 import numpy
 from tinterface import *
+from concurrent.futures import ThreadPoolExecutor
 minimap_limits = 400,300
 
 
@@ -78,7 +79,6 @@ def load(tiles=None, walls=None, colors=None, wallcolors=None):
     rborder = load_content("Background_4.png")
     gfill = load_content("Background_2.png")
     rfill = load_content("Background_3.png")
-
     return tex, walltex, npc_tex, air, gborder, rborder, gfill, rfill
 
 
@@ -87,7 +87,8 @@ def run(header, path, mapping, data):
     header, pos = data
     pygame.init()
     pygame.display.init()
-
+    threadpool = ThreadPoolExecutor(1)
+    texture_loader = threadpool.submit(load)
     try:
         imageloc = os.path.join(get_myterraria(), "WorldImages", os.path.basename(path).split(".")[0]+".png")
         mapimage = pygame.image.load(imageloc)
@@ -173,8 +174,8 @@ def run(header, path, mapping, data):
     mid = time.clock()
     print("World loaded: %5f seconds" % (mid - start))
 
-    tex, walltex, npc_tex, air, gborder, rborder, gfill, rfill = load()
-    print("Textures loaded: %5f seconds" % (time.clock() - mid))
+    tex, walltex, npc_tex, air, gborder, rborder, gfill, rfill = texture_loader.result()
+
 
     spawn = header["spawn"]
     clock = pygame.time.Clock()
