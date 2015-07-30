@@ -533,16 +533,6 @@ def get_header(f):
 
     return d, multitiles
 
-
-def get_pointers(f):
-    """ returns a dict of pointer data"""
-    pointers = {}
-    pointers["marks"] = get_uint(f, 2)
-    pointers["tiles"] = get_long(f, pointers["marks"][0])
-    pointers["extra"] = get_long(f, 3)
-    return pointers
-
-
 def set_header(f, h):
     f.write(set_uint(h["version"]))
     f.write(set_string(h["name"]))
@@ -698,44 +688,6 @@ def set_tile_no_amount(f, tile, mt_override = False):
     else:
         f.write(zero)
     f.write(zero)
-
-
-def get_tile(f):#quite old
-    """
-    takes an openend world file as argument
-    header needs to be skipped or read first
-    returns a tuple containing tile data
-    return (tile_id, wall_id, liquid)
-    """
-    if f.buffer[0]:
-        f.buffer[0] -= 1
-        return f.buffer[1]
-    if get_byte(f):  #if exists
-        ttype = get_byte(f)
-        if ttype in db.multitiles:
-            multi = get_ushort(f, 2)
-        else:
-            multi = None
-    else:
-        ttype = None
-        multi = None
-    walled = get_byte(f)
-    if walled:
-        wall = get_byte(f)
-    else:
-        wall = None
-    liquid = get_byte(f)
-    if liquid:
-        liquidamount, lava = get_byte(f, 2)
-        if lava:
-            liquid = -liquidamount  #its lava
-        else:
-            liquid = liquidamount  # its water
-
-    tile = (ttype, wall, liquid, multi, get_byte(f))
-    f.buffer = [get_ushort(f), tile]
-    return tile
-
 
 def get_tile_buffered(f):
     """

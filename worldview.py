@@ -20,12 +20,7 @@ import colorlib
 import database as db
 
 
-def make_map(path, outputpath=None, mark=False, name=None, cmod=False):
-    if cmod:
-        db.add_cmod()
-        db.parse()
-        colorlib.add_cmod()
-        db.cmod = True
+def make_map(path, outputpath=None, mark=False, name=None):
     images = {}
     render = {}
     if mark:
@@ -52,10 +47,6 @@ def make_map(path, outputpath=None, mark=False, name=None, cmod=False):
     with open(path, "rb") as f:
         b = [0]
         header = get_header(f)[0]  # read header with tlib.get_header and also reach tile data in f
-        # print (header["version"])
-        if header["version"] > 109:
-            get_pointers(f)
-            print("Cmod R4")
         x, y = header["width"], header["height"]  #read world size from header cache
         s = pygame.surface.Surface((x, y))  #create a software surface to save tile colors in
         s.fill((200, 200, 255))
@@ -201,7 +192,7 @@ if __name__ == "__main__":
                 else:
                     pos = item
                 pro = Process(target=make_map, name=item,
-                              args=(os.path.join(p, item), pos, mark, item, db.cmod))
+                              args=(os.path.join(p, item), pos, mark, item, False))
                 pro.start()
                 processes.append(pro)
         while len(processes) > 0:
