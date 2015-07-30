@@ -10,12 +10,12 @@ minimap_limits = 400,300
 # from blendmapper import *
 
 def load(tiles=None, walls=None, colors=None, wallcolors=None):
-    if os.path.exists("content.lzma"):
-        import zipfile
-        ZF = zipfile.ZipFile("content.lzma", "r", zipfile.ZIP_LZMA)
-        import io
+    if os.path.exists("tImages.zip"):
+        from Resources import ResourceManager
+        manager = ResourceManager("tImages.zip")
         def load_content(imagename):
-            return pygame.image.load(io.BytesIO(ZF.read(imagename)), "png")
+            base, _ = os.path.splitext(imagename)
+            return manager.get_pygame_image(base+".img")
     else:
         def load_content(imagename):
             return pygame.image.load(os.path.join("tImages", imagename))

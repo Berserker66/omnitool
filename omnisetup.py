@@ -26,7 +26,7 @@ cx_Freeze.setup(
              }
 )
 not_needed = ("pygame.movie.pyd", "pygame.mixer_music.pyd", "pygame.mixer.pyd",
-              "pygame.overlay.pyd", "pygame.pixelarray.pyd")
+              "pygame.overlay.pyd")
 
 for f in not_needed:
     os.remove(os.path.join("build", folder, f))
@@ -48,6 +48,6 @@ def installfile(name):
         print('Warning, %s not found' % name)
 
 
-extra_data = ["themes", "Images", "steam_api.dll", "plugins", "build/content.lzma"]
+extra_data = ["themes", "Images", "steam_api.dll", "plugins", "tImages.zip"]
 for data in extra_data:
     installfile(data)
