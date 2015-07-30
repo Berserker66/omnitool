@@ -888,17 +888,11 @@ def get_tile_buffered_12_masked(f):  #Terraria 1.2 bitmask
     """
 
     header1 = get_gbyte(f)
-    if (header1 & 1):
-        header2 = get_gbyte(f)
-        if (header2 & 1):
-            header3 = get_gbyte(f)
-        else:
-            header3 = 0
-    else:
-        header2 = 0
-        header3 = 0
+    header2 = get_gbyte(f) if header1 & 1 else 0
+    header3 = get_gbyte(f) if header2 & 1 else 0
+
     if (header1 & 2):  #if exists
-        if (header1 & 32) != 32:
+        if (header1 & 32):
             ttype = get_gbyte(f)
         else:
             ttype = get_gushort(f)
@@ -917,7 +911,7 @@ def get_tile_buffered_12_masked(f):  #Terraria 1.2 bitmask
             get_gbyte(f)  #read in color and GC
     else:
         wall = None
-    liquid = ((header1 & 24))
+    liquid = (header1 & 24)>>3
     if liquid:
         liquid = (256*(liquid-1))+get_gbyte(f)
     if header2 > 1:
