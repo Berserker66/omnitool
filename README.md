@@ -1,4 +1,4 @@
-Current version : 17.3.0, for Terraria 1.2.4.1 and older.
+Current version : 17.5.0, for Terraria 1.3.0.7.
 
 On the Terraria Forums:
 [Link](http://forums.terraria.org/index.php?threads/omnitool-world-creation-mapping-backups-and-more.14664/)
@@ -6,23 +6,21 @@ On the Terraria Forums:
 Features
 ========
 * Makes world backups on launch.
-* Maps worlds on launch (vanilla and tConfig).
-* Render worlds with 16x16 textures for each block (vanilla and tConfig).
+* Maps worlds on launch.
+* Render worlds with 16x16 textures for each block.
 * Contains world generators: Planetoids & Terra, Worldify, Flatworld and PVP Dungeon Arena.
 * Update notification.
 * Linking of other tools (tedit, terrafirma).
-* Start Terraria from Omnitool instead of Steam or with Steam, works with GameLauncher GUI.
-* Create a portable Terraria.
+* Works with GameLauncher GUI
 * Plugin system for extensions.
 
 Usage
 =====
 
-* Download (32Bit) or Download (64Bit)(If unsure, go for 32Bit)
+* Download a matching version for your operating System from the Releases Tab.
 * Install & Run
 * [optional] drag & drop a tedit exe file onto omnitool.exe, to access tedit from within omnitool
 * [optional] drag & drop a terrafirma exe file onto omnitool.exe, to access terrafirma from within omnitool
-* report errors
 
 FAQ
 ===
@@ -32,15 +30,11 @@ You can render a world similar to how Terraria shows them by clicking on a world
 
 Do I need admin rights to use Omnitool?
 ---------------------------------------
-Depending on where your Terraria is saved, Steamfree Terraria launch may require Omnitool to be started in administrator mode. Everything else works without admin.
+No
 
-Omnitool can't find my Terraria install.
-----------------------------------------
-If Omnitool is unable to find your Terraria, take a look here: [Link](http://www.terrariaonline.com/threads/omnitool-world-mapping-backups-creation-and-more-released.61654/page-19#post-1501847)
-
-How can I tell when the world generators have finished? Is there a progress bar?
---------------------------------------------------------------------------------
-World Generators do not have a progress bar, they will tell you when they are done in the console.
+Where do I report issues or ideas?
+---------------------------------------
+Either as a Github issue or on the forums. both require an account unfortunately.
 
 Available Languages
 ===================
@@ -72,7 +66,7 @@ Credits for Omnitool
 ====================
 * 7UR7L3: testing and ideas
 * Ijwu: translation overseer, testing, ideas & skins (Oasis, Underworld, Overworld)
-* Berserker66(me): programming, testing, bundling, setup, ....
+* Berserker66: programming, testing, bundling, setup, ....
 * Translation credits in translation thread: [Link](http://www.terrariaonline.com/threads/omnitool-language-thread.62981/)
 
 Dependencies
@@ -80,4 +74,8 @@ Dependencies
 
 * [Phil's Game Utilities](http://www.pygame.org/project-PGU+-+Phil's+pyGame+Utilities-108-.html)
 
-The rest of the dependencies can be grabbed on pip using the requirements.txt file.
+The rest of the dependencies can be grabbed through pip using the requirements.txt file.
+That is "pip install -r requirements.txt".
+Depending on your Python installation, you may need to run one of these instead:
+"py -3 -m pip install -r requirements.txt". (likely case for windows)
+"python3 -m pip install -r requirements.txt". (likely case for linux)

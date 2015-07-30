@@ -4,7 +4,7 @@
 #define MyAppName "Omnitool"
 #define MyAppVersion "17.5.0"
 #define MyAppPublisher "Fabian Dill"
-#define MyAppURL "http://www.terrariaonline.com/threads/omnitool-world-mapping-backups-creation-and-more-released.61654/"
+#define MyAppURL "http://forums.terraria.org/index.php?threads/omnitool-world-creation-mapping-backups-and-more.14664/"
 #define MyAppExeName "omnitool.exe"
 
 [Setup]
