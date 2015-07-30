@@ -66,21 +66,6 @@ def make_map(path, outputpath=None, mark=False, name=None):
                 tile, b = get_tile_buffered(f, b)  #tlib.get_tile
 
                 tile, wall, liquid, multi, wire = tile
-                """ debug stuff, please ignore"""
-                ##                if tile:
-                ##
-                ##                    if tile == 255:
-                ##                        print xi,yi
-                ##                        pygame.image.save(s, path[:-3]+"png")
-                ##                        i += 1
-                ##                        if i > 2:
-                ##                            raise AssertionError()
-                ##                    try:
-                ##                        db.tiles[tile]
-                ##                    except:
-                ##                        print tile, xi, yi
-                ##                        #raise AssertionError()
-                """ debug stuff end"""
                 if not liquid:  #liquid == 0 means no liquid
                     # there could be a liquid and a tile, like a chest and water,
                     #but I can only set one color to a pixel anyway, so I priotise the tile
@@ -192,7 +177,7 @@ if __name__ == "__main__":
                 else:
                     pos = item
                 pro = Process(target=make_map, name=item,
-                              args=(os.path.join(p, item), pos, mark, item, False))
+                              args=(os.path.join(p, item), pos, mark, item))
                 pro.start()
                 processes.append(pro)
         while len(processes) > 0:
