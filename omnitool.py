@@ -89,12 +89,9 @@ if __name__ == "__main__":
 
         try:
             import splashlib
-
-            splashlib.splash((512, 512), os.path.join("themes", themename, "splash.png"))
+            splashlib.splash((512, 512), "Omnitool", os.path.join("themes", themename, "Splash.png"))
         except Exception as e:
             print("SplashWarning: " + str(e))
-    else:
-        pass
 import pygame
 
 

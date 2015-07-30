@@ -16,18 +16,17 @@ from PIL import ImageGrab
 init()
 
 
-def splash(size, path="splash.png"):
-    # print (environ['SDL_VIDEO_WINDOW_POS'])
+def splash(size, name, path="splash.png"):
     environ['SDL_VIDEO_WINDOW_POS'] = "center"
-    display.set_caption(("PRS"))
+    display.set_caption(name)
     wininfo = display.Info()
     screensize = (wininfo.current_w, wininfo.current_h)
     desktop = ImageGrab.grab()
     screen = display.set_mode(size, NOFRAME, 32)
     background = image.load(path).convert_alpha()
     w, h = size
-    w /= 2
-    h /= 2
+    w //= 2
+    h //= 2
     desktop = desktop.crop((screensize[0] // 2 - w, screensize[1] // 2 - h,
                             screensize[0] // 2 + w, screensize[1] // 2 + h))
     string = desktop.tostring()
@@ -38,7 +37,7 @@ def splash(size, path="splash.png"):
 
 
 if __name__ == "__main__":
-    splash((512, 512), "splash.png")
+    splash((512, 512), "Test", "splash.png")
     import time
 
     time.sleep(5)

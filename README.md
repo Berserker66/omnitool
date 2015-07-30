@@ -34,7 +34,7 @@ No
 
 Where do I report issues or ideas?
 ---------------------------------------
-Either as a Github issue or on the forums. both require an account unfortunately.
+Either as a Github issue or on the forums. Both require an account unfortunately.
 
 Available Languages
 ===================
