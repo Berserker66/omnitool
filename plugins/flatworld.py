@@ -74,8 +74,8 @@ class Generator():  # required class to be called by plugin manager
         #surface label
         main.td(gui.Label(lang.fw_surf))
 
-        surf = ["Grass", "CorruptionGrass", "UndergroundJungleGrass",
-                "UndergroundMushroomGrass", "HallowGrass"]
+        surf = ["Grass Block", "Corrupt Grass Block", "Jungle Grass Block",
+                "Mushroom Grass Block", "Hallowed Grass Block"]
         #surface drop down menu
         sur = gui.Select(width=300)
         sur.add("None", None)
