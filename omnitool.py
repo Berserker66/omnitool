@@ -9,6 +9,7 @@ __maintainer__ = "Fabian Dill"
 if __name__ == "__main__":
     import multiprocessing
     multiprocessing.freeze_support()
+    multiprocessing.set_start_method("spawn")  # Prevents X11 crash on Linux - properly separates pygame internals
 
 import sys
 import os
@@ -22,15 +23,6 @@ for p in (appdata, ):
 
 import zlib
 import pickle
-
-if sys.platform == "linux":
-    import ctypes
-
-    x11 = ctypes.cdll.LoadLibrary("libX11.so")
-    retcode = x11.XInitThreads()
-    assert (retcode != 0)
-
-
 
 try:
     with open(cachepath, "rb") as f:

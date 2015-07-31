@@ -32,7 +32,7 @@ class Generator():
 
     def run(self):
 
-        from omnitool import temp, lang, Quitbutton, exit_prog, Theme, themename, __version__
+        from omnitool import lang, Quitbutton, exit_prog, Theme, themename, __version__
 
         torch_chances = [lang.at_full, lang.at_blue, lang.at_red, lang.at_green,
                          lang.at_pink, lang.at_white, lang.at_yellow, lang.at_purple,
@@ -363,15 +363,9 @@ class Generator():
             assert chest[0][0] < header["width"] and chest[0][0] > 0
             assert chest[0][1] < header["height"] and chest[0][1] > 0
 
-        #pygame.image.save(surface, "mask.png")
-
         for x in range(1000 - len(chests)):  #fill in nonechests, as terraria always has 1000 chests
             chests.append(None)
-        #print ("World fully generated")# another lifesign
 
-        #with open(osjoin(temp, "0.part"), "wb") as f:#write the header
-        #    set_header(f, header)
-        #print ("done writing header") #sounds cool
 
         z = header["width"] * header["height"]  #tileamount
         walls = defaultdict(lambda:None, {21: dwall,
@@ -393,39 +387,16 @@ class Generator():
                 amount = c[tid]
                 print("%-10s : %d" % (db.tiles[tid], amount))
 
-        #count(range(6,10))
         self.header = header
         #wooden platforms used to not be multitiles, so overwrite that
         self.tiles = write_tiles(surface, header, walls, True, overwrite_no_mt = {19})
-        #with open(osjoin(temp, "2.part"), "wb") as a:#write chestdata
-        #    set_chests(a,chests)
-        #print ("done writing chests")
-        #with open(osjoin(temp, "3.part"), "wb") as f:
-        #    for sign in [None]*1000:
-        #        set_sign(f, sign)
-        #print ("done writing signs")
+
         self.chests = chests
         self.signs = [None] * 1000
-        #with open(osjoin(temp, "4.part"), "wb") as f:
-        #    set_npc(f, ('Guide', (header["spawn"][0]*16, (header["spawn"][1]-3)*16), 1, (header["spawn"][0], header["spawn"][1]-3)))
-        #    #set_npc(f, ('Old Man', (header["spawn"][0]*16-16, (header["spawn"][1]-3)*16), 1, (header["spawn"][0], header["spawn"][1]-3)))
-        #    #if not "4" in dif:set_npc(f, ('Merchant', (header["spawn"][0]*16+16, (header["spawn"][1]-3)*16), 1, (header["spawn"][0], header["spawn"][1]-3)))
-        #    set_npc(f, None)
-        #    set_npc_names(f, db.names)
+
         self.npcs = [('Guide', (header["spawn"][0] * 16, (header["spawn"][1] - 3) * 16), 1,
                       (header["spawn"][0], header["spawn"][1] - 3))]
         self.names = db.names
-        #print ("done writing npcs")
-
-        #with open(osjoin(temp, "5.part"), "wb") as f:
-        #    set_trail(f, (1, header["name"], header["ID"]))
-        #print ("done writing trail")
-        #name = get_next_world(db.cmod)
-        #join(name, True, path = temp)#this just puts all the binary parts into one world file
-        #print ("done joining world "+name)#yay!
-        #print ("A world has been created!")
-        #import time
-        #time.sleep(10)
 
 
 if __name__ == "__main__":

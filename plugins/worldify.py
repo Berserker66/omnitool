@@ -27,7 +27,7 @@ class Generator():
 
 
     def run(self):
-        from omnitool import themename, Theme, lang, exit_prog, Quitbutton, temp, __version__
+        from omnitool import themename, Theme, lang, exit_prog, Quitbutton, __version__
         #pygame.quit()
         if hasattr(sys, "frozen"):
             os.chdir(os.path.dirname(sys.executable))

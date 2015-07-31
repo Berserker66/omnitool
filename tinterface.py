@@ -265,23 +265,8 @@ def get_worlds(source = "vanilla"):
     'tApi' # wip
     """
     worlds = []
-    try:
-        # get the my documents folder in windows. on other OS it will fail somewhere
-        import ctypes
 
-        dll = ctypes.windll.shell32
-        buf = ctypes.create_unicode_buffer(300)
-        dll.SHGetSpecialFolderPathW(None, buf, 0x0005, False)
-
-        if source == 'N':
-            p = os.path.join(buf.value, "My Games", "N Terraria", "Worlds")
-        else:
-            p = os.path.join(buf.value, "My Games", "Terraria", "Worlds")
-    except:
-        if source == 'N':
-            p = os.path.expanduser("~/My Games/N Terraria/Worlds")
-        else:
-            p = os.path.expanduser("~/My Games/Terraria/Worlds")
+    p = os.path.join(get_myterraria(), "Worlds")
     for item in os.listdir(p):
         if item[-3:] == "wld":
             worlds.append(item)
@@ -310,6 +295,7 @@ def get_players():
 
 def get_next_world(source='vanilla'):
     path, worlds = get_worlds(source)
+    print(worlds, "are here")
 
     x = 1
     while 1:
