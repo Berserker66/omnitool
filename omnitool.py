@@ -8,7 +8,6 @@ __maintainer__ = "Fabian Dill"
 
 if __name__ == "__main__":
     import multiprocessing
-
     multiprocessing.freeze_support()
 
 import sys
@@ -23,6 +22,15 @@ for p in (appdata, ):
 
 import zlib
 import pickle
+
+if sys.platform == "linux":
+    import ctypes
+
+    x11 = ctypes.cdll.LoadLibrary("libX11.so")
+    retcode = x11.XInitThreads()
+    assert (retcode != 0)
+
+
 
 try:
     with open(cachepath, "rb") as f:
@@ -117,6 +125,7 @@ import webbrowser
 
 if sys.platform.startswith("win"):
     from ctypes import windll
+
 import struct
 import tempfile
 import json
@@ -849,7 +858,12 @@ def run():
         print("Omnitool has found no worlds")
 
     theme = Theme(themename)
-    app = pgu_override.MyApp(theme=theme)
+    use_override = True
+    if use_override:
+        app = pgu_override.MyApp(theme=theme)
+    else:
+        import pgu
+        app = pgu.gui.App(theme=theme)
     worlds = []
     ts = [threading.Thread(target=get_world, args=(path, world, worlds)) for world in worldnames]
     tuple(t.start() for t in ts)
