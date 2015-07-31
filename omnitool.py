@@ -13,14 +13,10 @@ if __name__ == "__main__":
 
 import sys
 import os
-
-if "APPDATA" in os.environ:
-    appdata = os.path.join(os.environ["APPDATA"], "Omnitool")
-else:
-    appdata = os.path.join(os.environ["HOME"], ".Omnitool")
-temp = os.path.join(appdata, "temp")
+import appdirs
+appdata = appdirs.user_config_dir('omnitool', roaming = True)
 cachepath = os.path.join(appdata, "cache.dill")
-for p in (appdata, temp):
+for p in (appdata, ):
     if not os.path.isdir(p):
         os.mkdir(p)
 
@@ -100,9 +96,7 @@ try:
     import pygame._view
 except ImportError:
     pass
-#print (os.environ['SDL_VIDEODRIVER'])
-if sys.platform.startswith("win"):
-    os.environ['SDL_VIDEODRIVER'] = "windib"
+
 from pgu import gui
 from tinterface import *
 from tinterface import World as tWorld
@@ -1013,21 +1007,24 @@ def run():
                 app.rect.size = main.rect.size = main.w, main.h = main.resize()
                 if sys.platform.startswith("win"):
                     if windll.user32.IsZoomed(pygame.display.get_wm_info()['window']):
-                        s = pygame.display.set_mode(ev.size, pygame.SWSURFACE | pygame.RESIZABLE)
+                        s = pygame.display.set_mode(ev.size, pygame.RESIZABLE)
                         app.rect.size = pygame.display.get_surface().get_size()
                         app.zoomed = True
                     else:
-                        s = pygame.display.set_mode((main.w, main.h), pygame.SWSURFACE | pygame.RESIZABLE)
+                        s = pygame.display.set_mode((main.w, main.h), pygame.RESIZABLE)
                         app.zoomed = False
+                else:
+                    s = pygame.display.set_mode((main.w, main.h),pygame.RESIZABLE)
+                    app.zoomed = False
 
                 app.screen = s
                 app.first = True
 
         return resize
 
-
-    app.init(main, None)
     app.on_resize = make_resize(worlds, app, main)
+    app.init(main, None)
+
     main.rect.h = max(main.rect.height, 250)
     if cache["thumbsize"]:
         pygame.display.set_mode((main.rect.size[0] - 2, main.rect.size[1] - 2), pygame.SWSURFACE | pygame.RESIZABLE)

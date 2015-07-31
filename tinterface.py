@@ -2,6 +2,7 @@
 import sys
 import os
 import tempfile
+import appdirs
 
 from tlib import *
 
@@ -242,7 +243,7 @@ def get_multis():
 def get_myterraria():
     import os
 
-    try:
+    if os.name == "nt":
         # get the my documents folder in windows. on other OS it will fail somewhere
         import ctypes
 
@@ -251,8 +252,8 @@ def get_myterraria():
         dll.SHGetSpecialFolderPathW(None, buf, 0x0005, False)
 
         p = os.path.join(buf.value, "My Games", "Terraria")
-    except:
-        p = os.path.expanduser("~/My Games/Terraria")
+    else:
+        p = appdirs.user_data_dir('Terraria')
     return p
 
 

@@ -72,7 +72,7 @@ Credits for Omnitool
 Dependencies
 ============
 
-* [Phil's Game Utilities](http://www.pygame.org/project-PGU+-+Phil's+pyGame+Utilities-108-.html)
+* [Phil's Game Utilities](http://code.google.com/p/pgu/)
 
 The rest of the dependencies can be grabbed through pip using the requirements.txt file.
 That is "pip install -r requirements.txt".
