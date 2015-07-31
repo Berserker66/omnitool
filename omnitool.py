@@ -14,8 +14,9 @@ if __name__ == "__main__":
 import sys
 import os
 import appdirs
-appdata = appdirs.user_config_dir('omnitool', roaming = True)
+appdata = appdirs.user_config_dir('omnitool', "", roaming = True)
 cachepath = os.path.join(appdata, "cache.dill")
+
 for p in (appdata, ):
     if not os.path.isdir(p):
         os.mkdir(p)
