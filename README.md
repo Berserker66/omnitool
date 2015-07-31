@@ -56,19 +56,6 @@ Plugins
 More plugins to add features to Omnitool can be found [here](http://www.terrariaonline.com/threads/omnitool-plugin-compendium.82677/#post-1625952).
 You can also check out the [documentation](http://www.terrariaonline.com/threads/omnitool-plugin-system-documentation.80960/) to make your own.
 
-Other
-=====
-[![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=JBZM8LFAGDK4N) or [Steam Wishlist](http://steamcommunity.com/profiles/76561198041949197/wishlist/)
-
-
-
-Credits for Omnitool
-====================
-* 7UR7L3: testing and ideas
-* Ijwu: translation overseer, testing, ideas & skins (Oasis, Underworld, Overworld)
-* Berserker66: programming, testing, bundling, setup, ....
-* Translation credits in translation thread: [Link](http://www.terrariaonline.com/threads/omnitool-language-thread.62981/)
-
 Dependencies
 ============
 
@@ -79,3 +66,14 @@ That is "pip install -r requirements.txt".
 Depending on your Python installation, you may need to run one of these instead:
 "py -3 -m pip install -r requirements.txt". (likely case for windows)
 "python3 -m pip install -r requirements.txt". (likely case for linux)
+
+Credits for Omnitool
+====================
+* 7UR7L3: testing and ideas
+* Ijwu: translation overseer, testing, ideas & skins (Oasis, Underworld, Overworld)
+* Berserker66: programming, testing, bundling, setup, ....
+* Translation credits in translation thread: [Link](http://www.terrariaonline.com/threads/omnitool-language-thread.62981/)
+
+Other
+=====
+[![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=JBZM8LFAGDK4N) or [Steam Wishlist](http://steamcommunity.com/profiles/76561198041949197/wishlist/)
