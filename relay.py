@@ -1,5 +1,3 @@
-import sys
-
 def run_flat():
     launch_plugin(('flatworld', 'Flatworld', 'generator'))
 

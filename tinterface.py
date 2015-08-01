@@ -295,7 +295,6 @@ def get_players():
 
 def get_next_world(source='vanilla'):
     path, worlds = get_worlds(source)
-    print(worlds, "are here")
 
     x = 1
     while 1:
