@@ -181,7 +181,7 @@ def run(header, path, mapping, data):
     clock = pygame.time.Clock()
     pos = [spawn[0] * 16 - 256, spawn[1] * 16 - 256]
 
-    pygame.display.set_caption("Terraria World Render")
+    pygame.display.set_caption("Terraria World Render: {}".format(header["name"].decode()))
     if mapping:
         res = [1600, 1600]
         area = [1600, 1600]
