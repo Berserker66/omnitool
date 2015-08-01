@@ -80,8 +80,7 @@ if __name__ == "__main__":
     global processes
     processes = []
 
-
-    # print (sys.argv)
+    print(sys.argv)
     if not '--multiprocessing-fork' in sys.argv:
 
         try:
@@ -107,7 +106,6 @@ import tlib  #multiprocessing issues when frozen
 import threading
 import time
 import pgu_override
-import pgu.gui.surface as pgusur
 
 import subprocess
 import shutil
@@ -126,56 +124,6 @@ from itertools import product
 bit = struct.calcsize("P") * 8
 
 outdated = False
-
-
-def myupdate(self, s):
-    updates = []
-
-    if self.myfocus: self.toupdate[self.myfocus] = self.myfocus
-
-    for w in self.topaint:
-        if w is self.mywindow:
-            continue
-        else:
-            sub = pgusur.subsurface(s, w.rect)
-            w.paint(sub)
-            updates.append(pygame.rect.Rect(w.rect))
-    while 1:
-        try:
-            for w in self.toupdate:
-                if w is self.mywindow:
-                    continue
-                else:
-                    us = w.update(pgusur.subsurface(s, w.rect))
-                if us:
-                    for u in us:
-                        updates.append(pygame.rect.Rect(u.x + w.rect.x, u.y + w.rect.y, u.w, u.h))
-            break
-        except RuntimeError:
-            pass
-    for w in self.topaint:
-        if w is self.mywindow:
-            w.paint(self.top_surface(s, w))
-            updates.append(pygame.rect.Rect(w.rect))
-        else:
-            continue
-
-    for w in self.toupdate:
-        if w is self.mywindow:
-            us = w.update(self.top_surface(s, w))
-        else:
-            continue
-        if us:
-            for u in us:
-                updates.append(pygame.rect.Rect(u.x + w.rect.x, u.y + w.rect.y, u.w, u.h))
-
-    self.topaint = {}
-    self.toupdate = {}
-
-    return updates
-
-
-gui.container.Container.update = myupdate
 
 #for exe bundling
 t = False

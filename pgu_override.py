@@ -1,6 +1,6 @@
 import os
 
-from pgu.gui import Desktop, basic, container, FileDialog
+from pgu.gui import Desktop, basic, container, FileDialog, surface
 from pgu.gui.const import *
 from pygame.locals import *
 
@@ -91,4 +91,52 @@ class MyFileDialog(FileDialog):
             self.close()
 
 
+def myupdate(self, s):
+    updates = []
+
+    if self.myfocus: self.toupdate[self.myfocus] = self.myfocus
+
+    for w in self.topaint:
+        if w is self.mywindow:
+            continue
+        else:
+            sub = surface.subsurface(s, w.rect)
+            w.paint(sub)
+            updates.append(pygame.rect.Rect(w.rect))
+    while 1:
+        try:
+            for w in self.toupdate:
+                if w is self.mywindow:
+                    continue
+                else:
+                    us = w.update(surface.subsurface(s, w.rect))
+                if us:
+                    for u in us:
+                        updates.append(pygame.rect.Rect(u.x + w.rect.x, u.y + w.rect.y, u.w, u.h))
+            break
+        except RuntimeError:
+            pass
+    for w in self.topaint:
+        if w is self.mywindow:
+            w.paint(self.top_surface(s, w))
+            updates.append(pygame.rect.Rect(w.rect))
+        else:
+            continue
+
+    for w in self.toupdate:
+        if w is self.mywindow:
+            us = w.update(self.top_surface(s, w))
+        else:
+            continue
+        if us:
+            for u in us:
+                updates.append(pygame.rect.Rect(u.x + w.rect.x, u.y + w.rect.y, u.w, u.h))
+
+    self.topaint = {}
+    self.toupdate = {}
+
+    return updates
+
+
+container.Container.update = myupdate
 basic.Image.change_image = change_image
