@@ -25,11 +25,20 @@ cx_Freeze.setup(
                            "includes" : ("loadbar","colorsys")}
              }
 )
-not_needed = ("pygame.movie.pyd", "pygame.mixer_music.pyd", "pygame.mixer.pyd",
-              "pygame.overlay.pyd")
+
+if sys.platform == "linux":
+    ext = "so"
+else:
+    ext = "pyd"
+not_needed = (x + ext for x in ("pygame.movie.", "pygame.mixer_music.", "pygame.mixer.",
+                                "pygame.overlay."))
+
 
 for f in not_needed:
-    os.remove(os.path.join("build", folder, f))
+    try:
+        os.remove(os.path.join("build", folder, f))
+    except FileNotFoundError:
+        print("Warning: {} already doesn't exist, cannot remove.".format(f))
 
 
 def installfile(name):

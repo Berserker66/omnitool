@@ -5,13 +5,18 @@ __author__ = "Fabian Dill"
 __credits__ = ["Ijwu", "7UR7L3", "Fabian Dill"]
 __maintainer__ = "Fabian Dill"
 
+import sys
 
+child = False
 if __name__ == "__main__":
     import multiprocessing
     multiprocessing.freeze_support()
     multiprocessing.set_start_method("spawn")  # Prevents X11 crash on Linux - properly separates pygame internals
+    for arg in sys.argv:
+        if "multiprocessing" in arg:
+            child = True
+            break
 
-import sys
 import os
 import appdirs
 appdata = appdirs.user_config_dir('omnitool', "", roaming = True)
@@ -80,26 +85,17 @@ if __name__ == "__main__":
     global processes
     processes = []
 
-    print(sys.argv)
-    if not '--multiprocessing-fork' in sys.argv:
+    if not child:
 
         try:
             import splashlib
             splashlib.splash((512, 512), "Omnitool", os.path.join("themes", themename, "Splash.png"))
         except Exception as e:
             print("SplashWarning: " + str(e))
+
 import pygame
-
-
-# for python 2/3 compatibility
-try:
-    import pygame._view
-except ImportError:
-    pass
-
 from pgu import gui
 from tinterface import *
-from tinterface import World as tWorld
 import colorlib
 from tlib import *
 import tlib  #multiprocessing issues when frozen
@@ -110,7 +106,6 @@ import pgu_override
 import subprocess
 import shutil
 import sys
-import npcadd
 import webbrowser
 
 if sys.platform.startswith("win"):
@@ -119,7 +114,6 @@ if sys.platform.startswith("win"):
 import struct
 import tempfile
 import json
-from itertools import product
 
 bit = struct.calcsize("P") * 8
 
@@ -171,7 +165,7 @@ if __name__ == "__main__":
     try:
         import render
     except:
-        if not '--multiprocessing-fork' in sys.argv:
+        if not child:
             print("WorldRender extension not available:")
             import traceback
 
@@ -1220,7 +1214,7 @@ class Quitbutton(gui.Button):
             self.connect(gui.CLICK, app.close, None)
 
 
-if __name__ == "__main__":
+if __name__ == "__main__" and not child:
 
     get_plugins()
     p = False
