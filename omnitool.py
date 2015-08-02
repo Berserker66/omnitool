@@ -350,12 +350,13 @@ def regen_map(world):
 
 def run_with_browser(func, filepath, *args):
     func(*args)
-    webbrowser.open(filepath)
+    webbrowser.open(str(filepath))
 
 def runrender(world, mapping):
     if mapping:
-        args = (render.run, world.path / "index.html",
-                world.header, world.path, True, (world.header, world.pos), world.path)
+        megaimage_dir = world.path.with_suffix('')
+        args = (render.run, megaimage_dir / "index.html",
+                world.header, world.path, True, (world.header, world.pos), megaimage_dir)
         p = multiprocessing.Process(target=run_with_browser, name="WorldRender (mapping)", args=args)
     else:
         args = (world.header, world.path, False, (world.header, world.pos))

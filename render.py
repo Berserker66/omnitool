@@ -220,8 +220,8 @@ def run(header, path, mapping, data, mappingfolder = None):
 
         mx = 0
         my = 0
-        with (mappingfolder / "index.html").open("wt") as index:
-            index.write('<html><table border="0" cellspacing="0" cellpadding="0"><tr>')
+        index = (mappingfolder / "index.html").open("wt")
+        index.write('<html><table border="0" cellspacing="0" cellpadding="0"><tr>')
         pos = [mx * res[0], my * res[1]]
         from loadbar import Bar
         caption = "Rendering {}".format(header["name"].decode())
@@ -312,8 +312,8 @@ def run(header, path, mapping, data, mappingfolder = None):
 
             progtext = "%2dX|%2dY of %dX|%dY" % (mx, my, plates_x-1, plates_y-1)
             loadingbar.set_progress(100*plates_done/plates, caption+" "+progtext)
-            pygame.image.save(s, os.path.join(tilefolder, "screen_%d_%d.png" % (mx, my)))
-            index.write('<td><img src="' + str("tiles/screen_%d_%d.png" % (mx, my)) + '"></td>')
+            pygame.image.save(s, str(tilefolder / "screen_{}_{}.png".format(mx, my)))
+            index.write('<td><img src="tiles/screen_%d_%d.png"></td>' % (mx, my))
             mx += 1
             if mx * area[0] >= wi:
                 index.write("</tr><tr>")
