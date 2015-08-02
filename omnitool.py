@@ -179,7 +179,7 @@ if __name__ == "__main__":
         render_ext = True
 
 def runrender(world):
-    args = (world.header, world.file, False, (world.header, world.pos))
+    args = (world.header, world.path, False, (world.header, world.pos))
     p = multiprocessing.Process(target=render.run, name="WorldRender", args=args)
     p.start()
     processes.append(p)
@@ -455,7 +455,7 @@ class World():
             if str(self.path) in cache["worlds"]:
                 self.cache = cache["worlds"][str(self.path)]
                 if self.path.stat().st_mtime == self.cache["time"]:
-                    i = proxyload(images / Path(self.path.name).with_suffix('.png'))
+                    i = proxyload(images / self.path.with_suffix('.png').name)
                 else:
                     raise IOError("Image is outdated")
 
@@ -689,7 +689,7 @@ class Redrawer(threading.Thread):
             time.sleep(1)
             if dropped:
                 print("World File Change Detected!")
-                worlds = list(filter(lambda world: world.filename not in dropped, worlds))
+                worlds = list(filter(lambda world: world.path not in dropped, worlds))
                 app.queue.append((display_worlds,))
             if new:
                 print("World File Change Detected!")
