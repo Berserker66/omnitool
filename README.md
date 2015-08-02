@@ -62,15 +62,15 @@ Dependencies
 The dependencies can be grabbed through pip using the requirements.txt file.
 That is "pip install -r requirements.txt".
 Depending on your Python installation, you may need to run one of these instead:
-"py -3 -m pip install -r requirements.txt". (likely case for windows)
-"python3 -m pip install -r requirements.txt". (likely case for linux)
+* `py -3 -m pip install -r requirements.txt`. (likely case for windows)
+* `python3 -m pip install -r requirements.txt`. (likely case for linux)
 
 For some of the modules, additional packages are required for download.
 
 That is subversion for PGU and mercurial for Pygame.
 In Ubuntu this can be satisfied with:
-"sudo apt-get install mercurial"
-"sudo apt-get install subversion"
+* `sudo apt-get install mercurial`
+* `sudo apt-get install subversion`
 
 Credits for Omnitool
 ====================
