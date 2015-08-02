@@ -1,5 +1,6 @@
 """Higher level interface to Terraria data, based on the low level interface tlib"""
 import sys
+import io
 import os
 import tempfile
 import appdirs
@@ -306,58 +307,67 @@ def get_next_world(source='vanilla'):
 
 
 def write_tiles(surface, header, walls={}, report=False, overwrite_no_mt = set(),callback = None):
+    import pygame
     total = header["width"] * header["height"]
-    part = header["height"] * 50
-    short = 100.0 / total
 
+    short = 100.0 / total
+    cache = {}
     a = tempfile.SpooledTemporaryFile(10000000)
     y = 0
     wordzero = set_ushort(0)
+    pxarray = pygame.PixelArray(surface)
     # with open(n , "wb") as a:#write the tile data
     for x in range(header["width"]):
         y = 0
         while y < header["height"]:
-            c = surface.get_at((x, y))
+            c = pxarray[x, y]
             amount = 0
-            while y < header["height"] - 1 - amount and c == surface.get_at((x, y + 1 + amount)):
+            while y < header["height"] - 1 - amount and c == pxarray[x, y + 1 + amount]:
                 amount += 1
 
-            if c[0] == 255:
-                set_tile_no_amount(a, (None, None, 0, None))
-            elif c[0] == 254:  #liquid
-                if c[1]:  #if lava
-                    set_tile_no_amount(a, (None, None, -c[2], None))
-                else:
-                    set_tile_no_amount(a, (None, None, c[2], None))
-            elif c[0] == 253:  #liquid
-                if c[1]:  #if lava
-                    set_tile_no_amount(a, (None, 1, -c[2], None))
-                else:
-                    set_tile_no_amount(a, (None, 1, c[2], None))
-            elif c[0] == 252:#just Wall
-                set_tile_no_amount(a, (None, c[1], 0, None))
-            elif c[0] > 230:  #only have a wall
-                set_tile_no_amount(a, (None, c[0] - 230, 0, None))
-            elif c[0] in db.multitiles and c[0] not in overwrite_no_mt:  #if it has multitiledata.. i hate those
-                stride = db.multitilestrides[c[0]]
-                set_tile_no_amount(a, (c[0], walls[c[0]], 0, (c[1]*stride, c[2]*stride)))
-            elif c[0] in walls:  #put down background walls if we want them
-                set_tile_no_amount(a, (c[0], walls[c[0]], 0, None), c[0] in overwrite_no_mt)
-            else:  #or just write a nice normal tile
-                set_tile_no_amount(a, (c[0], None, 0, None))
+            c = pygame.Color(c)[1:]
+            if c in cache:
+                a.write(cache[c])
+            else:
+                tiledata = io.BytesIO()
+                if c[0] == 255:
+                    set_tile_no_amount(tiledata, (None, None, 0, None))
+                elif c[0] == 254:  #liquid
+                    if c[1]:  #if lava
+                        set_tile_no_amount(tiledata, (None, None, -c[2], None))
+                    else:
+                        set_tile_no_amount(tiledata, (None, None, c[2], None))
+                elif c[0] == 253:  #liquid
+                    if c[1]:  #if lava
+                        set_tile_no_amount(tiledata, (None, 1, -c[2], None))
+                    else:
+                        set_tile_no_amount(tiledata, (None, 1, c[2], None))
+                elif c[0] == 252:#just Wall
+                    set_tile_no_amount(tiledata, (None, c[1], 0, None))
+                elif c[0] > 230:  #only have a wall
+                    set_tile_no_amount(tiledata, (None, c[0] - 230, 0, None))
+                elif c[0] in db.multitiles and c[0] not in overwrite_no_mt:  #if it has multitiledata.. i hate those
+                    stride = db.multitilestrides[c[0]]
+                    set_tile_no_amount(tiledata, (c[0], walls[c[0]], 0, (c[1]*stride, c[2]*stride)))
+                elif c[0] in walls:  #put down background walls if we want them
+                    set_tile_no_amount(tiledata, (c[0], walls[c[0]], 0, None), c[0] in overwrite_no_mt)
+                else:  #or just write a nice normal tile
+                    set_tile_no_amount(tiledata, (c[0], None, 0, None))
+                value = tiledata.getvalue()
+                a.write(value)
+                cache[c] = value
+
             if amount:
                 y += amount
-                #a.seek(-2, 1)
                 a.write(set_ushort(amount - 1))
             else:
                 y += 1
                 a.write(wordzero)
-                #print (amount)
-        if report:
-            if x % 100 == 0:
-                progress = (((x * header["height"] + y)) * short)
-                st = "%6.2f%% done writing tiles" % progress
-                if callback:callback.set_progress(50+progress/2)
-                print(st)
+
+        if report and x % 100 == 0:
+            progress = (((x * header["height"] + y)) * short)
+            st = "%6.2f%% done writing tiles" % progress
+            if callback:callback.set_progress(50+progress/2)
+            print(st)
     if report: print("done writing tiles        ")
     return a
