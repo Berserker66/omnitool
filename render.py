@@ -336,6 +336,7 @@ def run(header, path, mapping, data, mappingfolder = None):
             if s.get_size() != res: s = pygame.surface.Surface(res)
             res = [area[0], area[1]]
             pos = [mx * res[0], my * res[1]]
+            plates_done += 1
 
         else:
             dirty = []
@@ -350,7 +351,7 @@ def run(header, path, mapping, data, mappingfolder = None):
 
         pygame.display.update()
         clock.tick(100)
-        plates_done += 1
+
 
 
 
