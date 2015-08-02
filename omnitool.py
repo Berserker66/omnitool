@@ -399,7 +399,6 @@ class World():
     def __init__(self, path):
         self.path = path
         self.imagepath = images / self.path.with_suffix(".png").name
-        self.path = path
         with self.path.open("rb") as f:
             self.header, self.multiparts = get_header(f)
             self.pos = f.tell()
@@ -579,7 +578,7 @@ class PLoader(threading.Thread):
         self.update_thumb()
         self.image.repaint()
 
-        pygame.image.save(self.raw, loader.world.imagepath)
+        pygame.image.save(self.raw, str(loader.world.imagepath))
 
         self.cache["time"] = self.path.stat().st_mtime
         save_cache()
