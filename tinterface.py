@@ -262,8 +262,13 @@ def get_myterraria():
 
 
 def get_steamdir():
-    #TODO windows
-    return Path(appdirs.user_data_dir('Steam'))
+    if os.name == "nt":
+        import winreg
+        opened = winreg.OpenKey(winreg.HKEY_CURRENT_USER, "Software\Valve\Steam")
+        path = winreg.QueryValueEx(opened, "SteamPath")[0]
+    else:
+        path = appdirs.user_data_dir('Steam')
+    return Path(path)
 
 
 def get_remote_terraria_dirs(sub_dir = None):
