@@ -339,11 +339,11 @@ class Button(gui.Button):
         self.connect(gui.CLICK, func, args)
 
 def open_image(world):
-    webbrowser.open(world.imagepath)
+    webbrowser.open(str(world.imagepath))
 
 def open_tedit(world):
     print(cache["tedit"])
-    subprocess.Popen((cache["tedit"], world.file), cwd=os.path.split(cache["tedit"])[0])
+    subprocess.Popen((cache["tedit"], str(world.path)), cwd=os.path.split(cache["tedit"])[0])
 
 def regen_map(world):
     world.get_worldview()
@@ -354,11 +354,11 @@ def run_with_browser(func, filepath, *args):
 
 def runrender(world, mapping):
     if mapping:
-        args = (render.run, os.path.join(world.folder, world.name, "index.html"),
-                world.header, world.file, True, (world.header, world.pos), os.path.join(world.folder, world.name))
+        args = (render.run, world.path / "index.html",
+                world.header, world.path, True, (world.header, world.pos), world.path)
         p = multiprocessing.Process(target=run_with_browser, name="WorldRender (mapping)", args=args)
     else:
-        args = (world.header, world.file, False, (world.header, world.pos))
+        args = (world.header, world.path, False, (world.header, world.pos))
         p = multiprocessing.Process(target=render.run, name="WorldRender", args=args)
     p.start()
     processes.append(p)
