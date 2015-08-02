@@ -163,7 +163,8 @@ else:
     os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 myterraria = get_myterraria()  #mygames-terraria path
-images = os.path.join(myterraria, "WorldImages")
+images = myterraria / "WorldImages"
+
 if __name__ == "__main__":
     try:
         import render
@@ -177,10 +178,17 @@ if __name__ == "__main__":
     else:
         render_ext = True
 
-if not os.path.exists(images):
-    os.makedirs(images)
+def runrender(world):
+    args = (world.header, world.path, False, (world.header, world.pos))
+    p = multiprocessing.Process(target=render.run, name="WorldRender", args=args)
+    p.start()
+    processes.append(p)
+
+
+if not images.is_dir():
+    images.mkdir(parents=True)
 try:
-    os.mkdir(os.path.join(myterraria, "Worlds"))
+    (myterraria / "Worlds").mkdir()
 except:
     pass
 
@@ -388,13 +396,11 @@ class WorldInteraction(gui.Dialog):
 
 
 class World():
-    def __init__(self, path, filename):
-        self.file = os.path.join(path, filename)
-        self.folder = path
-        self.filename = filename
-        self.imagepath = os.path.join(images, self.filename[:-3] + "png")
+    def __init__(self, path):
         self.path = path
-        with open(self.file, "rb") as f:
+        self.imagepath = images / self.path.with_suffix(".png").name
+        self.path = path
+        with self.path.open("rb") as f:
             self.header, self.multiparts = get_header(f)
             self.pos = f.tell()
 
@@ -446,17 +452,17 @@ class World():
     def get_worldview(self):
         needed = False
         try:
-            if self.filename in cache["worlds"]:
-                self.cache = cache["worlds"][self.filename]
-                if os.path.getmtime(self.file) == self.cache["time"]:
-                    i = proxyload(os.path.join(images, self.filename[:-3] + "png"))
+            if str(self.path) in cache["worlds"]:
+                self.cache = cache["worlds"][str(self.path)]
+                if self.path.stat().st_mtime == self.cache["time"]:
+                    i = proxyload(images / self.path.with_suffix('.png').name)
                 else:
                     raise IOError("Image is outdated")
 
             else:
-                cache["worlds"][self.filename] = {"time": 0}
-                self.cache = cache["worlds"][self.filename]
-                #print ("Image does not exist for "+self.filename)
+                cache["worlds"][str(self.path)] = {"time": 0}
+                self.cache = cache["worlds"][str(self.path)]
+                #print("Image does not exist for "+ str(self.path))
                 raise IOError("Image does not exist")
 
         except:
@@ -488,7 +494,7 @@ def gen_slice(path, start, size, levels, version, multiparts):
     else:
         get_tile = tlib.get_tile_buffered
 
-    with open(path, "rb") as f:
+    with path.open("rb") as f:
         b = [0]
         f.seek(start)
         x, y = size  #read world size from header cache
@@ -554,8 +560,6 @@ class PLoader(threading.Thread):
         with processing:
             pool = multiprocessing.Pool(1)
 
-        path = os.path.join(self.path, self.filename)
-
         levels = self.header["groundlevel"], self.header["rocklevel"]
         xi = 0
         version = self.header["version"]
@@ -564,7 +568,7 @@ class PLoader(threading.Thread):
 
         while xi < hw:
             w = min(w, -xi + hw)
-            p, pos = pool.apply(omnitool.gen_slice, ((path, pos, (w, self.header["height"]), levels, version, loader.world.multiparts)))
+            p, pos = pool.apply(omnitool.gen_slice, ((self.path, pos, (w, self.header["height"]), levels, version, loader.world.multiparts)))
             p = pygame.image.fromstring(p, (w, self.header["height"]), "RGB")
             while self.raw.get_locked():  #if window is beeing rezized, keep waiting
                 time.sleep(0.1)
@@ -578,7 +582,7 @@ class PLoader(threading.Thread):
 
         pygame.image.save(self.raw, loader.world.imagepath)
 
-        self.cache["time"] = os.path.getmtime(self.file)
+        self.cache["time"] = self.path.stat().st_mtime
         save_cache()
 
 def full_split(root):
@@ -636,52 +640,34 @@ class Backupper(threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
 
+    def cache(self, path, dest):
+        t = path.stat().st_mtime
+        if path not in cache["backup"] or t != cache["backup"]:
+            s = time.strftime("%SS_%MM_%HH_%dD_%b_%YY.", time.localtime(t))
+            shutil.copy(str(path), str(dest / (s + path.name)))
+            cache["backup"][str(path)] = t
+
     def run(self):
-        dest = os.path.join(myterraria, "WorldsBackup")
-        if not os.path.exists(dest):
-            os.mkdir(dest)
+        dest = myterraria / "WorldsBackup"
+        if not dest.is_dir():
+            dest.mkdir()
 
         #source = os.path.join("C:\program files (x86)\\steamapps\common\Terraria")
-        try:
-            worlds = get_worlds()
-        except:
-            worlds = [None, []]
+        worlds = list(get_worlds())
+        for path in worlds:
+            self.cache(path, dest)
+        if len(worlds) == 0:
             print("BackUpper has found no worlds")
-        for f in worlds[1]:
-            path = (os.path.join(worlds[0], f))
-            if f in cache["backup"]:
-                t = os.path.getmtime(path)
-                if t != cache["backup"]:
-                    s = time.strftime("%SS_%MM_%HH_%dD_%b_%YY.", time.localtime(t))
-                    shutil.copy(path, os.path.join(dest, s + f))
-                    cache["backup"][f] = t
-            else:
-                t = os.path.getmtime(path)
-                s = time.strftime("%SS_%MM_%HH_%dD_%b_%YY.", time.localtime(t))
-                shutil.copy(path, os.path.join(dest, s + f))
-                cache["backup"][f] = t
 
-        dest = os.path.join(myterraria, "PlayersBackup")
-        if not os.path.exists(dest):
-            os.mkdir(dest)
+        dest = myterraria / "PlayersBackup"
+        if not dest.is_dir():
+            dest.mkdir()
         try:
             players = get_players()
-        except:
-            players = [None, []]
+            for path in players:
+                self.cache(path, dest)
+        except FileNotFoundError:
             print("BackUpper has found no player files")
-        for f in players[1]:
-            path = (os.path.join(players[0], f))
-            if f in cache["backup"]:
-                t = os.path.getmtime(path)
-                if t != cache["backup"]:
-                    s = time.strftime("%SS_%MM_%HH_%dD_%b_%YY.", time.localtime(t))
-                    shutil.copy(path, os.path.join(dest, s + f))
-                    cache["backup"][f] = t
-            else:
-                t = os.path.getmtime(path)
-                s = time.strftime("%SS_%MM_%HH_%dD_%b_%YY.", time.localtime(t))
-                shutil.copy(path, os.path.join(dest, s + f))
-                cache["backup"][f] = t
 
         print("Backups made")
         sys.exit()
@@ -702,36 +688,35 @@ class Redrawer(threading.Thread):
         while 1:
             time.sleep(1)
             if dropped:
-                "World File Change Detected!"
-                worlds = list(filter(lambda world : world.filename not in dropped, worlds))
+                print("World File Change Detected!")
+                worlds = list(filter(lambda world: world.path not in dropped, worlds))
                 app.queue.append((display_worlds,))
             if new:
-                "World File Change Detected!"
+                print("World File Change Detected!")
 
                 for name in new:
                     get_world(path, name, worlds)
                 app.queue.append((display_worlds,))
-            path, newnames = get_worlds()
-            new = set(newnames)-set(worldnames)
-            dropped = set(worldnames)-set(newnames)
+            newnames = set(get_worlds())
+            new = newnames - set(worldnames)
+            dropped = set(worldnames) - newnames
             if new:
                 worldnames.extend(new)
             if dropped:
-                [worldnames.remove(w) for w in dropped]
+                for w in dropped:
+                    worldnames.remove(w)
 
 
 def launch_terraria(arg=""):
-    dest = os.path.join(appdata, "Terraria")
+    dest = appdata / "Terraria"
     source = get_t_path()
     if source == False:
         webbrowser.open(
             "http://www.terrariaonline.com/threads/omnitool-world-mapping-backups-creation-and-more-released.61654/page-19#post-1501847")
         raise RuntimeError("Terraria not found, opening a guide to set path")
-    source = source.lower()
-    dest = dest.lower()
-    if os.path.isdir(dest):
+    if dest.is_dir():
         print("checking Terraria for changes")
-        for root, dirs, files in os.walk(source):
+        for root, dirs, files in os.walk(str(source)):
             rsplit = full_split(root)
             ssplit = full_split(source)
             #print (rsplit, ssplit)
@@ -757,8 +742,7 @@ def launch_terraria(arg=""):
     print("impersonating steam")
     shutil.copy("steam_api.dll", dest)
     print("launching Terraria")
-    subprocess.Popen(os.path.join(dest, "Terraria.exe") + arg,
-                     cwd=dest)
+    subprocess.Popen(os.path.join(dest, "Terraria.exe") + arg, cwd=dest)
 
 
 class Updater(threading.Thread):
@@ -803,9 +787,9 @@ if "directlaunch" in sys.argv:
     sys.exit()
 
 
-def get_world(path, world, worlds):
+def get_world(world, worlds):
     try:
-        w = World(path, world)
+        w = World(world)
     except Exception as e:
         print("Error loading world %s:" % world)
         import traceback
@@ -815,20 +799,33 @@ def get_world(path, world, worlds):
         worlds.append(w)
 
 
+def open_dir(direc):
+    direc = str(direc)
+    if sys.platform == 'win32':
+        subprocess.Popen(['start', direc], shell=True)
+    elif sys.platform == 'darwin':
+        subprocess.Popen(['open', direc])
+    else:
+        try:
+            subprocess.Popen(['xdg-open', direc])
+        except OSError:
+            pass
+
+
 def run():
     global app
     global worldnames
     global worlds
     global display_worlds
     try:
-        loc = os.path.join(myterraria, "Game Launcher", "omnitool.gli3")
+        loc = myterraria / "Game Launcher" / "omnitool.gli3"
         data = {
             "appAuthor": __author__+" (Berserker66)",
             "appName": "Omnitool",
             "appPath": os.path.abspath(sys.argv[0]),
             "appVersion": __version__.__repr__()
         }
-        with open(loc, "wt") as f:
+        with loc.open("wt") as f:
             f.write(json.dumps(data, indent=4))
     except:
         import traceback
@@ -837,9 +834,9 @@ def run():
         traceback.print_exc()
 
     try:
-        path, worldnames = get_worlds()
-    except:
-        path, worldnames = [None, []]
+        worldnames = list(get_worlds())
+    except FileNotFoundError:
+        worldnames = []
         print("Omnitool has found no worlds")
 
     theme = Theme(themename)
@@ -850,7 +847,7 @@ def run():
         import pgu
         app = pgu.gui.App(theme=theme)
     worlds = []
-    ts = [threading.Thread(target=get_world, args=(path, world, worlds)) for world in worldnames]
+    ts = [threading.Thread(target=get_world, args=(world, worlds)) for world in worldnames]
     tuple(t.start() for t in ts)
     pad = 10
     x = 0
@@ -875,9 +872,9 @@ def run():
 
             data.append((lang.start + "/Terrafirma", run_terrafirma, None))
     data.extend([
-        (lang.open + "/" + lang.imagefolder, subprocess.Popen, "explorer " + images),
-        (lang.open + "/" + lang.backupfolder, subprocess.Popen, "explorer " + os.path.join(myterraria, "WorldsBackup")),
-        (lang.open + "/" + lang.themes, subprocess.Popen, "explorer " + os.path.join(os.getcwd(), "themes")),
+        (lang.open + "/" + lang.imagefolder, open_dir, images),
+        (lang.open + "/" + lang.backupfolder, open_dir, myterraria / "WorldsBackup"),
+        (lang.open + "/" + lang.themes, open_dir, Path.cwd() / "themes"),
         (lang.visit + "/" + lang.donate, webbrowser.open,
          r"https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=JBZM8LFAGDK4N"),
         (lang.visit + "/" + lang.homepage, webbrowser.open,
@@ -1102,13 +1099,12 @@ def launch_plugin(plug):
     Plugin = importlib.__import__("plugins." + plug[0], fromlist=[plug[0]])
     if plug[2] == "receiver":
         #print(dir(Plugin))
-        p, worlds = get_worlds()
+        worlds = list(get_worlds())
         import plugingui
 
-        w = plugingui.run(p, worlds, Plugin, "rec")
+        w = plugingui.run(worlds, Plugin, "rec")
         if w:
-            path = os.path.join(p, w)
-            with open(path, "rb") as f:
+            with w.open("rb") as f:
                 Plug = Plugin.Receiver()
                 f.buffer = [0]
                 header = get_header(f)[0]
@@ -1147,12 +1143,11 @@ def launch_plugin(plug):
         Plug.run()
     elif plug[2] == "transplant":
 
-        p, worlds = get_worlds()
+        worlds = list(get_worlds())
         import plugingui
 
-        w = plugingui.run(p, worlds, Plugin, "trans")
-        path = os.path.join(p, w[1])
-        with open(path, "rb") as f:
+        w1, w2 = plugingui.run(worlds, Plugin, "trans")
+        with w2.open("rb") as f:
             Plug = Plugin.Transplant()
             f.buffer = [0]
             header = get_header(f)[0]
@@ -1177,8 +1172,7 @@ def launch_plugin(plug):
             Plug.rec_npcs(npcs, names)
             Plug.run()
 
-        path = os.path.join(p, w[0])
-        with open(path, "rb") as f:
+        with w1.open("rb") as f:
             #Plug = Plugin.Transplant()
             f.buffer = [0]
             header = get_header(f)[0]
@@ -1204,12 +1198,11 @@ def launch_plugin(plug):
                             Plug.run()
         plug_save(Plug)
     elif plug[2] == "modifier":
-        p, worlds = get_worlds()
+        worlds = list(get_worlds())
         import plugingui
 
-        w = plugingui.run(p, worlds, Plugin, "mod")
-        path = os.path.join(p, w)
-        with open(path, "rb") as f:
+        w = plugingui.run(worlds, Plugin, "mod")
+        with w.open("rb") as f:
             Plug = Plugin.Modifier()
             f.buffer = [0]
             header = get_header(f)[0]

@@ -14,7 +14,7 @@ def exit_prog(p):
     sys.exit()
 
 
-def run(p, worlds, Plugin, ptype):
+def run(worlds, Plugin, ptype):
     # pygame.quit()
     from omnitool import lang, Theme, themename
 
@@ -62,14 +62,14 @@ def run(p, worlds, Plugin, ptype):
         data = []
         liste2 = gui.List(250, 250)
         for w in worlds:
-            with open(os.path.join(p, w), "rb") as f:
+            with w.open("rb") as f:
                 name = get_name(f)
             liste2.add(name, value=w)
         main.td(liste2)
     data = []
     liste = gui.List(250, 250)
     for w in worlds:
-        with open(os.path.join(p, w), "rb") as f:
+        with w.open("rb") as f:
             name = get_name(f)
         liste.add(name, value=w)
     main.td(liste)
@@ -81,7 +81,7 @@ def run(p, worlds, Plugin, ptype):
     pygame.display.quit()
     if trans:
         return liste.value, liste2.value
-    return (liste.value)
+    return liste.value
 
 
 if __name__ == "__main__":

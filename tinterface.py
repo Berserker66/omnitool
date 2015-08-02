@@ -5,6 +5,9 @@ import os
 import tempfile
 import appdirs
 
+from pathlib import Path
+from itertools import count, chain
+
 from tlib import *
 
 
@@ -252,10 +255,24 @@ def get_myterraria():
         buf = ctypes.create_unicode_buffer(300)
         dll.SHGetSpecialFolderPathW(None, buf, 0x0005, False)
 
-        p = os.path.join(buf.value, "My Games", "Terraria")
+        p = Path(buf.value) / "My Games" / "Terraria"
     else:
         p = appdirs.user_data_dir('Terraria')
-    return p
+    return Path(p)
+
+
+def get_steamdir():
+    #TODO windows
+    return Path(appdirs.user_data_dir('Steam'))
+
+
+def get_remote_terraria_dirs(sub_dir = None):
+    for p in (get_steamdir() / 'userdata').iterdir():
+        r = p / '105600' / 'remote'
+        if sub_dir is not None:
+            yield r / sub_dir
+        else:
+            yield r
 
 
 def get_worlds(source = "vanilla"):
@@ -265,45 +282,26 @@ def get_worlds(source = "vanilla"):
     'vanilla'
     'tApi' # wip
     """
-    worlds = []
-
-    p = os.path.join(get_myterraria(), "Worlds")
-    for item in os.listdir(p):
-        if item[-3:] == "wld":
-            worlds.append(item)
-    return p, worlds
+    local = get_myterraria() / "Worlds"
+    remotes = [remote.iterdir() for remote in get_remote_terraria_dirs('worlds') if remote.is_dir()]
+    for item in chain(local.iterdir(), *remotes):
+        if item.is_file() and item.suffix == ".wld":
+            yield item
 
 
 def get_players():
-    players = []
-    try:
-        # get the my documents folder in windows. on other OS it will fail somewhere
-        import ctypes
-
-        dll = ctypes.windll.shell32
-        buf = ctypes.create_unicode_buffer(300)
-        dll.SHGetSpecialFolderPathW(None, buf, 0x0005, False)
-
-        p = os.path.join(buf.value, "My Games", "Terraria", "Players")
-    except:
-        p = os.path.expanduser("~/My Games/Terraria/Players")
-
-    for item in os.listdir(p):
-        if item[-3:] == "plr":
-            players.append(item)
-    return p, players
+    local = get_myterraria() / "Players"
+    remotes = [remote.iterdir() for remote in get_remote_terraria_dirs('players') if remote.is_dir()]
+    for item in chain(local.iterdir(), *remotes):
+        if item.is_file() and item.suffix == ".plr":
+            yield item
 
 
 def get_next_world(source='vanilla'):
-    path, worlds = get_worlds(source)
-
-    x = 1
-    while 1:
-        if not os.path.isfile(os.path.join(path, "world%d.wld" % x)):
-            break
-        else:
-            x += 1
-    return os.path.join(path, "world%d.wld" % x)
+    for x in count(1):
+        p = get_myterraria() / "Worlds" / "world%d.wld" % x
+        if not p.is_file():
+            return p
 
 
 def write_tiles(surface, header, walls={}, report=False, overwrite_no_mt = set(),callback = None):

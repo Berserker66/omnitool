@@ -90,8 +90,8 @@ def run(header, path, mapping, data, mappingfolder = None):
     threadpool = ThreadPoolExecutor(1)
     texture_loader = threadpool.submit(load)
     try:
-        imageloc = os.path.join(get_myterraria(), "WorldImages", os.path.basename(path).split(".")[0]+".png")
-        mapimage = pygame.image.load(imageloc)
+        imageloc = get_myterraria() / "WorldImages" / path.with_suffix('.png').name
+        mapimage = pygame.image.load(str(imageloc))
         mi_size = mapimage.get_size()
         mi_scale = 1
         if mi_size[0] > minimap_limits[0]:
@@ -110,7 +110,7 @@ def run(header, path, mapping, data, mappingfolder = None):
         mapimage = None
 
     start = time.clock()
-    f = open(path, "rb")
+    f = path.open("rb")
     f.seek(pos)
     get = get_tile_buffered_12_masked if header["version"] > 100 else get_tile_buffered
     pygame.display.set_caption("Loading World..")
@@ -212,16 +212,16 @@ def run(header, path, mapping, data, mappingfolder = None):
     print("initializing render loop...")
     if mapping:
         if mappingfolder == None:
-            mappingfolder = "superimage"
-        tilefolder = os.path.join(mappingfolder, "tiles")
+            mappingfolder = Path("superimage")
+        tilefolder = mappingfolder / "tiles"
         for folder in (mappingfolder, tilefolder):
-            if not os.path.isdir(folder):
-                os.mkdir(folder)
+            if not folder.is_dir():
+                folder.mkdir()
 
         mx = 0
         my = 0
-        index = open(os.path.join(mappingfolder, "index.html"), "wt")
-        index.write('<html><table border="0" cellspacing="0" cellpadding="0"><tr>')
+        with (mappingfolder / "index.html").open("wt") as index:
+            index.write('<html><table border="0" cellspacing="0" cellpadding="0"><tr>')
         pos = [mx * res[0], my * res[1]]
         from loadbar import Bar
         caption = "Rendering {}".format(header["name"].decode())
@@ -355,11 +355,11 @@ def run(header, path, mapping, data, mappingfolder = None):
 
 
 if __name__ == "__main__":
-    path, worlds = get_worlds(False)
+    worlds = get_worlds(False)
     b = {}
     x = 0
     for w in worlds:
-        with open(os.path.join(path, w), "rb") as f:
+        with w.open( "rb") as f:
             header = get_header(f)[0]
             b[w] = header, f.tell()
         name = header["name"]
