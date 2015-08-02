@@ -397,8 +397,8 @@ class World():
         with open(self.file, "rb") as f:
             self.header, self.multiparts = get_header(f)
             self.pos = f.tell()
-        self.name = self.header["name"].decode()
 
+        self.name = self.header["name"].decode()
         self.size = gui.Label(str(self.header["width"]) + "X" + str(self.header["height"]) + " tiles")
         self.label = gui.Label(self.header["name"])
 
@@ -481,8 +481,8 @@ class World():
             t.name = "Vanilla-Mapper-%s" % self.header["name"]
             t.start()
 
-def gen_slice(path, start, size, levels, version):
-    #import tlib
+def gen_slice(path, start, size, levels, version, multiparts):
+    #TODO : add get_tile functions with multiparts dynamic multiparts awareness
     if version > 100:
         get_tile = tlib.get_tile_buffered_12_masked
     else:
@@ -564,7 +564,7 @@ class PLoader(threading.Thread):
 
         while xi < hw:
             w = min(w, -xi + hw)
-            p, pos = pool.apply(omnitool.gen_slice, ((path, pos, (w, self.header["height"]), levels, version)))
+            p, pos = pool.apply(omnitool.gen_slice, ((path, pos, (w, self.header["height"]), levels, version, loader.world.multiparts)))
             p = pygame.image.fromstring(p, (w, self.header["height"]), "RGB")
             while self.raw.get_locked():  #if window is beeing rezized, keep waiting
                 time.sleep(0.1)
