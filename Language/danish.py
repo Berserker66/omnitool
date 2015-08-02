@@ -56,6 +56,14 @@ thumbsize = "Lille verdensbillede str.:"
 mk_backups = "Tag backups:"
 world_columns = "Verdenskolumner:"
 
+##world interaction menu
+wa_worldactionmenu = "Action for {}:"
+wa_imageopen = "Open Image"
+wa_renderopen = "Render World"
+wa_teditopen = "Open in TEdit"
+wa_update = "Update Image"
+wa_super = "Generate Super-Image"
+
 ##planetoids & terra
 pt_start = 'Start opbygning!'
 pt_name = "Navn: "

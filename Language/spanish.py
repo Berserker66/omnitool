@@ -56,6 +56,14 @@ thumbsize = "Tamaño de la Thumbnail del Mundo:"
 mk_backups = "Hacer Copias de Seguridad:"
 world_columns = "Mundo Columnas:"
 
+##world interaction menu
+wa_worldactionmenu = "Action for {}:"
+wa_imageopen = "Open Image"
+wa_renderopen = "Render World"
+wa_teditopen = "Open in TEdit"
+wa_update = "Update Image"
+wa_super = "Generate Super-Image"
+
 ##planetoids & terra
 pt_start = 'Inicie la Generación!'
 pt_name = "Nombre: "

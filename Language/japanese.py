@@ -57,6 +57,14 @@ thumbsize = "Warudosamuneiru no saizu:"
 mk_backups = "Mokeru bakkuappu:"
 world_columns = "Warudo koramuzu:"
 
+##world interaction menu
+wa_worldactionmenu = "Action for {}:"
+wa_imageopen = "Open Image"
+wa_renderopen = "Render World"
+wa_teditopen = "Open in TEdit"
+wa_update = "Update Image"
+wa_super = "Generate Super-Image"
+
 ##planetoids & terra
 pt_start = 'Kaishi Jisedai!'
 pt_name = "namae: "

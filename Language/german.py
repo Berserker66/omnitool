@@ -58,6 +58,13 @@ thumbsize = "Welt Vorschau größte:"
 mk_backups = "Erstelle Backups"
 world_columns = "Weltspalten:"
 
+##world interaction menu
+wa_worldactionmenu = "Action für {}:"
+wa_imageopen = "Bild öffnen"
+wa_renderopen = "Welt darstellen"
+wa_teditopen = "In TEdit öffnen"
+wa_update = "Bild aktualisieren"
+wa_super = "Super-Bild generieren"
 
 ##planetoids & terra
 pt_start = 'Start Generation!'

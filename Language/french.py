@@ -56,6 +56,14 @@ thumbsize = "Taille de la miniature du Monde:"
 mk_backups = "Faire des sauvegardes"
 world_columns = "Monde Colonnes:"
 
+##world interaction menu
+wa_worldactionmenu = "Action for {}:"
+wa_imageopen = "Open Image"
+wa_renderopen = "Render World"
+wa_teditopen = "Open in TEdit"
+wa_update = "Update Image"
+wa_super = "Generate Super-Image"
+
 ##planetoids & terra
 pt_start = 'Démarrer génération!'
 pt_name = "Nom: "

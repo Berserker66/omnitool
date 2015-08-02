@@ -55,6 +55,14 @@ mk_backups = "zálohy"
 thumbsize = "velikost náhledu:"
 world_columns = "sloupce:"
 
+##world interaction menu
+wa_worldactionmenu = "Action for {}:"
+wa_imageopen = "Open Image"
+wa_renderopen = "Render World"
+wa_teditopen = "Open in TEdit"
+wa_update = "Update Image"
+wa_super = "Generate Super-Image"
+
 ##planetoids & terra pt_start = 'Začni generovat!'
 pt_start = "Začít generovat!"
 pt_name = "Jméno: "

@@ -80,6 +80,9 @@ else:
     command = "import Language." + cache["lang"] + " as lang"
     exec(command)
 
+if False:
+    import Language.english as lang #IDE hook
+
 if __name__ == "__main__":
 
     global processes
@@ -174,14 +177,6 @@ if __name__ == "__main__":
     else:
         render_ext = True
 
-
-def runrender(world):
-    args = (world.header, world.file, False, (world.header, world.pos))
-    p = multiprocessing.Process(target=render.run, name="WorldRender", args=args)
-    p.start()
-    processes.append(p)
-
-
 if not os.path.exists(images):
     os.makedirs(images)
 try:
@@ -245,13 +240,6 @@ def start_proc(func, delay = False):
         p = multiprocessing.Process(target=func[0], name=func[1])  #, args = (to_self,))
     p.start()
     processes.append(p)
-
-
-class Button(gui.Button):
-    def __init__(self, name, func, world_id, width=100):
-        gui.Button.__init__(self, name, width=width)
-        self.connect(gui.CLICK, func, world_id)
-
 
 class Language(gui.Dialog):
     def __init__(self, n=None):
@@ -337,15 +325,79 @@ class Settings(gui.Dialog):
         gui.Dialog.close(self, w)
         display_worlds(change)
 
+class Button(gui.Button):
+    def __init__(self, name, func, args, width=200):
+        gui.Button.__init__(self, name, width=width)
+        self.connect(gui.CLICK, func, args)
+
+def open_image(world):
+    webbrowser.open(world.imagepath)
+
+def open_tedit(world):
+    print(cache["tedit"])
+    subprocess.Popen((cache["tedit"], world.file), cwd=os.path.split(cache["tedit"])[0])
+
+def regen_map(world):
+    world.get_worldview()
+
+def run_with_browser(func, filepath, *args):
+    func(*args)
+    webbrowser.open(filepath)
+
+def runrender(world, mapping):
+    if mapping:
+        args = (render.run, os.path.join(world.folder, world.name, "index.html"),
+                world.header, world.file, True, (world.header, world.pos), os.path.join(world.folder, world.name))
+        p = multiprocessing.Process(target=run_with_browser, name="WorldRender (mapping)", args=args)
+    else:
+        args = (world.header, world.file, False, (world.header, world.pos))
+        p = multiprocessing.Process(target=render.run, name="WorldRender", args=args)
+    p.start()
+    processes.append(p)
+
+class WorldInteraction(gui.Dialog):
+    def __init__(self, world):
+
+        main = gui.Table()
+        gui.Dialog.__init__(self, gui.Label(lang.wa_worldactionmenu.format(world.name)), main)
+
+
+        imgopen = Button(lang.wa_imageopen, self.bundle, (open_image, world))
+        renderopen = Button(lang.wa_renderopen, self.bundle, (runrender, world, False))
+        updatemap = Button(lang.wa_update, self.bundle, (regen_map, world))
+        superimg = Button(lang.wa_super, self.bundle, (runrender, world, True))
+        main.td(imgopen)
+        main.tr()
+        main.td(renderopen)
+        main.tr()
+        main.td(superimg)
+        if "tedit" in cache and os.path.exists(cache["tedit"]):
+            editopen = Button(lang.wa_teditopen, self.bundle, (open_tedit, world))
+            main.tr()
+            main.td(editopen)
+        main.tr()
+        main.td(updatemap)
+        self.open()
+
+    def close(self, w=None):
+        gui.Dialog.close(self, w)
+
+    def bundle(self, args):
+        self.close()
+        args[0](*args[1:])
+
 
 class World():
     def __init__(self, path, filename):
         self.file = os.path.join(path, filename)
+        self.folder = path
         self.filename = filename
+        self.imagepath = os.path.join(images, self.filename[:-3] + "png")
         self.path = path
         with open(self.file, "rb") as f:
             self.header, self.multiparts = get_header(f)
             self.pos = f.tell()
+        self.name = self.header["name"].decode()
 
         self.size = gui.Label(str(self.header["width"]) + "X" + str(self.header["height"]) + " tiles")
         self.label = gui.Label(self.header["name"])
@@ -365,10 +417,10 @@ class World():
         if thumbsize:
             self.get_thumb()
             self.image = gui.Image(self.thumb)
-            if render_ext:
-                self.image.connect(gui.CLICK,
-                                   runrender,
-                                   self)
+
+            self.image.connect(gui.CLICK,
+                               WorldInteraction,
+                               self)
 
             self.get_worldview()
 
@@ -428,7 +480,6 @@ class World():
             t = PLoader(self)
             t.name = "Vanilla-Mapper-%s" % self.header["name"]
             t.start()
-
 
 def gen_slice(path, start, size, levels, version):
     #import tlib
@@ -525,7 +576,7 @@ class PLoader(threading.Thread):
         self.update_thumb()
         self.image.repaint()
 
-        pygame.image.save(self.raw, os.path.join(images, self.filename[:-3] + "png"))
+        pygame.image.save(self.raw, loader.world.imagepath)
 
         self.cache["time"] = os.path.getmtime(self.file)
         save_cache()
@@ -812,12 +863,11 @@ def run():
 
     ]
 
-    if "tedit" in cache:
-        if os.path.exists(cache["tedit"]):
-            def run_tedit(n):
-                subprocess.Popen(cache["tedit"], cwd=os.path.split(cache["tedit"])[0])
+    if "tedit" in cache and os.path.exists(cache["tedit"]):
+        def run_tedit(n):
+            subprocess.Popen(cache["tedit"], cwd=os.path.split(cache["tedit"])[0])
 
-            data.append((lang.start + "/TEdit", run_tedit, None))
+        data.append((lang.start + "/TEdit", run_tedit, None))
     if "terrafirma" in cache:
         if os.path.exists(cache["terrafirma"]):
             def run_terrafirma(n):

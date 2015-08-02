@@ -83,7 +83,7 @@ def load(tiles=None, walls=None, colors=None, wallcolors=None):
 
 
 
-def run(header, path, mapping, data):
+def run(header, path, mapping, data, mappingfolder = None):
     header, pos = data
     pygame.init()
     pygame.display.init()
@@ -211,19 +211,24 @@ def run(header, path, mapping, data):
                 dirty.append(pygame.rect.Rect(0, res[1] + rel[1], res[0], -rel[1]))
     print("initializing render loop...")
     if mapping:
-        try:
-            os.mkdir("superimage")
-        except:
-            pass
-        try:
-            os.mkdir(os.path.join("superimage", "tiles"))
-        except:
-            pass
+        if mappingfolder == None:
+            mappingfolder = "superimage"
+        tilefolder = os.path.join(mappingfolder, "tiles")
+        for folder in (mappingfolder, tilefolder):
+            if not os.path.isdir(folder):
+                os.mkdir(folder)
+
         mx = 0
         my = 0
-        index = open(os.path.join("superimage", "index.html"), "wt")
+        index = open(os.path.join(mappingfolder, "index.html"), "wt")
         index.write('<html><table border="0" cellspacing="0" cellpadding="0"><tr>')
         pos = [mx * res[0], my * res[1]]
+        from loadbar import Bar
+        caption = "Rendering {}".format(header["name"].decode())
+        loadingbar = Bar(caption=caption)
+        plates_x, plates_y = header["width"] * 16 // area[0], header["height"] * 16 // area[1]
+        plates_done = 0
+        plates = plates_x*plates_y
     dirty = [pygame.rect.Rect(0, 0, res[0], res[1])]
     import render_lib
 
@@ -305,12 +310,10 @@ def run(header, path, mapping, data):
 
         if mapping:
 
-
-            print("%2dX|%2dY of %dX|%dY" % (
-            mx, my, header["width"] * 16 // area[0] - 1, header["height"] * 16 // area[1] - 1))
-            pygame.image.save(s, os.path.join("superimage", "tiles", "screen_%d_%d.png" % (mx, my)))
+            progtext = "%2dX|%2dY of %dX|%dY" % (mx, my, plates_x-1, plates_y-1)
+            loadingbar.set_progress(100*plates_done/plates, caption+" "+progtext)
+            pygame.image.save(s, os.path.join(tilefolder, "screen_%d_%d.png" % (mx, my)))
             index.write('<td><img src="' + str("tiles/screen_%d_%d.png" % (mx, my)) + '"></td>')
-            r = True
             mx += 1
             if mx * area[0] >= wi:
                 index.write("</tr><tr>")
@@ -320,9 +323,7 @@ def run(header, path, mapping, data):
                     index.write("</table></html>")
                     index.close()
                     pygame.quit()
-                    import sys
-
-                    sys.exit()
+                    return
 
             if (mx + 1) * area[0] > wi and not (mx * area[0] > wi):
 
@@ -349,6 +350,8 @@ def run(header, path, mapping, data):
 
         pygame.display.update()
         clock.tick(100)
+        plates_done += 1
+
 
 
 if __name__ == "__main__":

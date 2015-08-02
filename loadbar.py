@@ -3,7 +3,7 @@ import pygame.gfxdraw
 
 
 class Bar():
-    def __init__(self, size = (500,20), caption = "Planetoids:", bg = pygame.Color("black"), fg = pygame.Color("grey")):
+    def __init__(self, size = (500,20), caption = "Loading:", bg = pygame.Color("black"), fg = pygame.Color("grey")):
 
         pygame.display.init()#
         self.size = size
