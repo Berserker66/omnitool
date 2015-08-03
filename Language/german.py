@@ -1,3 +1,4 @@
+__author__ = "Berserker66"
 langversion = 1
 langname = "German"
 
