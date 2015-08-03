@@ -267,25 +267,28 @@ def get_steamdir():
         opened = winreg.OpenKey(winreg.HKEY_CURRENT_USER, "Software\Valve\Steam")
         path = winreg.QueryValueEx(opened, "SteamPath")[0]
     else:
-        path = appdirs.user_data_dir('Steam')
+        path = Path(os.path.expanduser('~')) / ".steam" / "steam"
+
     return Path(path)
 
 
-def get_remote_terraria_dirs(sub_dir = None):
-    for p in (get_steamdir() / 'userdata').iterdir():
-        r = p / '105600' / 'remote'
-        if sub_dir is not None:
-            yield r / sub_dir
-        else:
-            yield r
+def get_remote_terraria_dirs(sub_dir=""):
+    userdatadir = get_steamdir() / 'userdata'
+    if (userdatadir).is_dir():
+        for p in (userdatadir).iterdir():
+            r = p / '105600' / 'remote'
+            yield r / sub_dir  # (r / "") -> r
+
+    else:
+        print("Could not get online worlds from {}.".format(userdatadir))
 
 
 def get_worlds(source = "vanilla"):
     """Get World files from a certain folder,
     source locations:
-    'N'
+    'N' #not implemented
     'vanilla'
-    'tApi' # wip
+    'tApi' #not implemented
     """
     local = get_myterraria() / "Worlds"
     remotes = [remote.iterdir() for remote in get_remote_terraria_dirs('worlds') if remote.is_dir()]
@@ -302,9 +305,14 @@ def get_players():
             yield item
 
 
-def get_next_world(source='vanilla'):
+def get_next_world(name=None):
+    if name:
+        p = get_myterraria() / "Worlds" / "{}.wld".format(name)
+        if not p.is_file():
+            return p
+    # fall back to calling it worldX.wld if the specific name already exists
     for x in count(1):
-        p = get_myterraria() / "Worlds" / "world%d.wld" % x
+        p = get_myterraria() / "Worlds" / "world{}.wld".format(x)
         if not p.is_file():
             return p
 

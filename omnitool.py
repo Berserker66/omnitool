@@ -1047,7 +1047,7 @@ def plug_save(Plug):
     set_npc(f, None)
     set_npc_names(f, Plug.names)
     set_trail(f, (1, Plug.header["name"], Plug.header["ID"]))
-    with open(get_next_world(), "wb") as g:
+    with open(get_next_world(Plug.header["name"].encode()), "wb") as g:
         f.seek(0)
         g.write(f.read())
 
