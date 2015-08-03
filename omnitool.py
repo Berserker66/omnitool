@@ -746,7 +746,7 @@ if "directlaunch" in sys.argv:
         b.name = "Backup"
         b.daemon = False
         b.start()
-    launch_terraria()
+    webbrowser.open("steam://rungameid/105600")
     sys.exit()
 
 
@@ -819,7 +819,7 @@ def run():
         ("Omnitool/" + lang.settings, Settings, None),
         ("Omnitool/" + "Language", Language, None),
         ("Omnitool/" + lang.exit, exit_prog, None),
-        (lang.start + "/" + lang.terraria, os.system, "start steam://rungameid/105600"),
+        (lang.start + "/" + lang.terraria, webbrowser.open, "steam://rungameid/105600"),
 
     ]
 
