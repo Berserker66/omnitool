@@ -134,6 +134,8 @@ pl_trans_target = "Cíl"
 
 ##flatworld
 fw_size = "Velikost:"
+fw_tiny = "tiny"
+fw_square = "square"
 fw_small = "Malý"
 fw_medium = "Velký"
 fw_large = "XL"

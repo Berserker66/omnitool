@@ -142,6 +142,8 @@ pl_trans_target = "Ziel"
 
 ##flatworld
 fw_size = "Weltgröße:"
+fw_tiny = "winzig"
+fw_square = "quadratisch"
 fw_small = "klein"
 fw_medium = "mittel"
 fw_large = "groß"

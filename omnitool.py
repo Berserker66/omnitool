@@ -1,6 +1,6 @@
 #! python3.4-32
 from version import Version
-__version__ = Version(170501)
+__version__ = Version(180000)
 __author__ = "Fabian Dill"
 __credits__ = ["Ijwu", "7UR7L3", "Fabian Dill"]
 __maintainer__ = "Fabian Dill"
@@ -698,7 +698,7 @@ class Redrawer(threading.Thread):
                 print("World File Change Detected!")
 
                 for name in new:
-                    get_world(path, name, worlds)
+                    get_world(name, worlds)
                 app.queue.append((display_worlds,))
             newnames = set(get_worlds())
             new = newnames - set(worldnames)
@@ -765,7 +765,7 @@ def get_world(world, worlds):
 def open_dir(direc):
     direc = str(direc)
     if sys.platform == 'win32':
-        subprocess.Popen(['start', direc], shell=True)
+        subprocess.Popen(['explorer', direc], shell=True)
     elif sys.platform == 'darwin':
         subprocess.Popen(['open', direc])
     else:
@@ -1051,7 +1051,7 @@ def plug_save(Plug):
     set_npc(f, None)
     set_npc_names(f, Plug.names)
     set_trail(f, (1, Plug.header["name"], Plug.header["ID"]))
-    with open(get_next_world(Plug.header["name"].encode()), "wb") as g:
+    with get_next_world(Plug.header["name"]).open("wb") as g:
         f.seek(0)
         g.write(f.read())
 

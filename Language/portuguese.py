@@ -135,6 +135,8 @@ pl_trans_target = "Alvo"
 
 ##flatworld
 fw_size = "Tamanho do Mundo:"
+fw_tiny = "tiny"
+fw_square = "square"
 fw_small = "Pequeno"
 fw_medium = "Médio"
 fw_large = "Grande"

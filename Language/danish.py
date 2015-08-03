@@ -137,6 +137,8 @@ pl_trans_target = "Destination"
 
 ##flatworld
 fw_size = "Verdenstørrelse:"
+fw_tiny = "tiny"
+fw_square = "square"
 fw_small = "lille"
 fw_medium = "medium"
 fw_large = "stor"

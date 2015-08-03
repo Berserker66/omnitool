@@ -43,8 +43,9 @@ wiki = "Terraria Wiki"
 label = "Мир: "
 
 ##settings menu
+none = "None"
 warning = "Для сохранения изменений перезагрузите программу" #out of date - not all changes require a restart now
-
+world_columns = "World Columns:"
 tiny = "Крошечный"  #unused
 small = "Маленький"
 medium = "Средний"
@@ -67,7 +68,7 @@ wa_super = "Generate Super-Image"
 pt_start = 'Создать!'
 pt_name = "Имя: "
 pt_mode = "Режим: "
-
+pt_mirror = "Mirror Mode: "
 pt_small = "маленький Planetoids"
 pt_medium = "средний Planetoids"
 pt_large = "большой Planetoids"
@@ -112,3 +113,35 @@ a_light = "Освещение: "
 a_chances = "Количество комнат: "
 a_standard = "Стандарт: "
 a_cross = "Пересечения коридоров: "
+
+##torch
+at_chances = "Color chances:"
+at_full = "Full spectrum"
+at_blue = "Blue"
+at_red = "Red"
+at_green = "Green"
+at_pink = "Demon"
+at_white = "White"
+at_yellow = "Yellow"
+at_purple = "Purple"
+at_lime = "Cursed"
+
+##plugins
+pl_start = "Start plugin"
+pl_rec = "Select a world to be received"
+pl_mod = "Select a world to be modified"
+pl_trans = "Select two worlds to be used for a transfer"
+pl_trans_source = "Source"
+pl_trans_target = "Target"
+
+
+##flatworld
+fw_size = "World size:"
+fw_tiny = "tiny"
+fw_square = "square"
+fw_small = "small"
+fw_medium = "medium"
+fw_large = "large"
+fw_tile = "Tile type:"
+fw_wall = "Wall type:"
+fw_surf = "Surface type:"
