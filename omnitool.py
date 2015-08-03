@@ -125,7 +125,7 @@ outdated = False
 #for exe bundling
 t = False
 if t:
-    from Language import english, german, portuguese, czech, french, spanish, japanese, norwegian, danish
+    from Language import english, german, portuguese, czech, french, spanish, japanese, norwegian, danish, italian
 
 cache_lock = threading.Lock()
 
@@ -254,11 +254,11 @@ class Language(gui.Dialog):
         main = gui.Table()
         gui.Dialog.__init__(self, gui.Label("Language"), main)
 
-        liste = gui.List(200, 100)
-        langs = languages = ["german", "english", "portuguese", "czech",
-                             "spanish", "french", "norwegian", "japanese", "danish"]
-        langnames = languages = ["German", "English", "Portuguese (BR)", "Czech",
-                                 "Spanish", "French", "Norwegian", "Japanese", "Danish"]
+        liste = gui.List(200, 150)
+        langs = ["german", "english", "portuguese", "czech",
+                             "spanish", "french", "norwegian", "japanese", "danish", "italian"]
+        langnames = ["German", "English", "Portuguese (BR)", "Czech",
+                                 "Spanish", "French", "Norwegian", "Japanese", "Danish", "Italian"]
         for name, dire in zip(langnames, langs):
             liste.add(name, value=dire)
         self.liste = liste
@@ -704,45 +704,6 @@ class Redrawer(threading.Thread):
             if dropped:
                 for w in dropped:
                     worldnames.remove(w)
-
-
-def launch_terraria(arg=""):
-    dest = appdata / "Terraria"
-    source = get_t_path()
-    if source == False:
-        webbrowser.open(
-            "http://www.terrariaonline.com/threads/omnitool-world-mapping-backups-creation-and-more-released.61654/page-19#post-1501847")
-        raise RuntimeError("Terraria not found, opening a guide to set path")
-    if dest.is_dir():
-        print("checking Terraria for changes")
-        for root, dirs, files in os.walk(str(source)):
-            rsplit = full_split(root)
-            ssplit = full_split(source)
-            #print (rsplit, ssplit)
-            for name in ssplit:
-                rsplit.remove(name)
-            d = (os.path.join(dest, *rsplit))
-            s = (os.path.join(source, *rsplit))
-            for direc in dirs:
-                if not os.path.isdir(os.path.join(d, direc)):
-                    os.mkdir(os.path.join(d, direc))
-            for file in files:
-                so = os.path.join(s, file)
-                de = os.path.join(d, file)
-                if not os.path.isfile(de):
-                    shutil.copy2(so, de)
-                elif abs(os.path.getmtime(so) - os.path.getmtime(de)) > 1:
-                    shutil.copy2(so, de)
-
-    else:
-        print("Copying Terraria to isolated location")
-        shutil.copytree(source, dest)
-
-    print("impersonating steam")
-    shutil.copy("steam_api.dll", dest)
-    print("launching Terraria")
-    subprocess.Popen(os.path.join(dest, "Terraria.exe") + arg, cwd=dest)
-
 
 class Updater(threading.Thread):
     def __init__(self, update):
