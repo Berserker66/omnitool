@@ -617,6 +617,7 @@ Multitiles:
 149 Blue Light
 165 Large Deco
 171 Christmas Tree
+172 Sink
 173 Platinum Candelabra
 174 Platinum Candle
 178 Sapphire

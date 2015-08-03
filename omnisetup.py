@@ -8,7 +8,7 @@ is_64bits = sys.maxsize > 2**32
 
 folder = "exe.{platform}-{version}".format(platform = sysconfig.get_platform(),
                                                            version = sysconfig.get_python_version())
-
+buildfolder = os.path.join("build", folder)
 print("Outputting to: "+folder)
 EXE = cx_Freeze.Executable(
     script="omnitool.py",
@@ -33,26 +33,22 @@ else:
 not_needed = (x + ext for x in ("pygame.movie.", "pygame.mixer_music.", "pygame.mixer.",
                                 "pygame.overlay."))
 
-
 for f in not_needed:
     try:
-        os.remove(os.path.join("build", folder, f))
+        os.remove(os.path.join(buildfolder, f))
     except FileNotFoundError:
         print("Warning: {} already doesn't exist, cannot remove.".format(f))
 
-
 def installfile(name):
-    dst = os.path.join('build', folder)
+    dst = buildfolder
     print('copying', name, '->', dst)
     if os.path.isdir(name):
         dst = os.path.join(dst, name)
-        #print dst+" folder"
         if os.path.isdir(dst):
             shutil.rmtree(dst)
         shutil.copytree(name, dst)
     elif os.path.isfile(name):
         shutil.copy(name, dst)
-        #print name+" file"
     else:
         print('Warning, %s not found' % name)
 
@@ -60,3 +56,11 @@ def installfile(name):
 extra_data = ["themes", "plugins", "tImages.zip"]
 for data in extra_data:
     installfile(data)
+
+if sys.platform == "win32" and os.path.isfile("upx.exe"):
+    targets = os.listdir(buildfolder)
+    targets = filter(lambda x:x.endswith((".pyd", ".exe")), targets)
+    targets = " ".join((os.path.join(buildfolder, target) for target in targets))
+    command = "upx.exe "+targets
+    print(command)
+    os.system(command)
