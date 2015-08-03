@@ -18,7 +18,7 @@ from tlib import *
 from time import sleep
 import tempfile
 import colorsys
-from pgu_override import MyFileDialog
+import io
 
 
 class Generator():
@@ -54,15 +54,10 @@ class Generator():
                 sys.exit(1000)
             else:
 
-                def open_file_browser(arg):
-                    d = gui.FileDialog()
-                    d.connect(gui.CHANGE, handle_file_browser_closed, d)
-                    d.open()
-
                 app = gui.Desktop(theme=blue)
                 app.connect(gui.QUIT, exit_prog, None)
                 app.connect(gui.CLOSE, exit_prog, None)
-                main = MyFileDialog()
+                main = gui.dialog.FileDialog()
                 main.connect(gui.CLOSE, app.quit, main)
                 main.connect(gui.CHANGE, app.quit, main)
                 main.open()
@@ -98,6 +93,7 @@ class Generator():
         for color in colors:
             rcolors[tuple(colors[color])] = color
             #print ("%-25s %s" % ((db.tiles[color], colors[color])))
+        if imagepath == None:sys.exit()#file window was closed
         try:
             surface = pygame.image.load(imagepath)
         except:
@@ -236,59 +232,32 @@ class Generator():
 
         import time
 
-        def rgba(a, surface, rcolors, weight=None, bg=1.0):
-            w10 = w // 20
-            total = z = w
-            acolors = {}
-            for color in rcolors:
-                nc = color[0] / 255.0, color[1] / 255.0, color[2] / 255.0
-                #print nc
-                acolors[nc] = rcolors[color]
-            #print acolors
-            for x in range(w):
-                for y in range(h):
-                    color = surface.get_at((x, y))
-                    p = 1 - color[3] / 255.0
-                    b = (bg * color[3] / 255.0)
-                    color = ((p * (color[0] / 255.0)) + b * color[3] / 255.0,
-                             (p * (color[1] / 255.0)) + b * color[3] / 255.0,
-                             (p * (color[2] / 255.0)) + b * color[3] / 255.0)
-                    cdif = 100000
-                    #color = int(color[0]*255),int(color[1]*255),int(color[2]*255)
-                    for c in acolors:
-
-                        dif = (c[0] - color[0]) * (c[0] - color[0]) + (c[1] - color[1]) * (c[1] - color[1]) + (c[2] -
-                                                                                                               color[
-                                                                                                                   2]) * (
-                                                                                                              c[2] -
-                                                                                                              color[2])
-                        if dif < cdif:
-                            cdif = dif
-                            hit = acolors[c]
-                            #print dif
-                    set_tile(a, (hit, None, 0, None))
-                if z % w10 == 1:  #give lifesigns
-                    print("%6.2f%% done writing tiles") % ((total - z) * 100.0 / w)
-                z -= 1
-
         def rgb(a, surface, rcolors, weight=None):
             w10 = w // 20
             total = z = w
+            cache = {}
             for x in range(w):
                 for y in range(h):
                     color = surface.get_at((x, y))
-                    cdif = 100000
-                    #hit = None
-                    for c in rcolors:
-                        dif = (c[0] - color[0]) * (c[0] - color[0]) + (c[1] - color[1]) * (c[1] - color[1]) + (c[2] -
-                                                                                                               color[
-                                                                                                                   2]) * (
-                                                                                                              c[2] -
-                                                                                                              color[2])
-                        if dif < cdif:
-                            cdif = dif
-                            hit = rcolors[c]
-                    set_tile(a, (hit, None, 0, None))
+                    cachecolor = color[:3]
+                    if cachecolor in cache:
+                        a.write(cache[cachecolor])
+                    else:
+                        tiledata = io.BytesIO()
+                        cdif = 100000
+                        for c in rcolors:
+                            dif = (c[0] - color[0]) * (c[0] - color[0]) + (c[1] - color[1]) * (c[1] - color[1]) + (c[2] -
+                                                                                                                   color[
+                                                                                                                       2]) * (
+                                                                                                                  c[2] -
+                                                                                                                  color[2])
+                            if dif < cdif:
+                                cdif = dif
+                                hit = rcolors[c]
+                        set_tile(tiledata, (hit, None, 0, None))
+                        value = tiledata.getvalue()
+                        a.write(value)
+                        cache[cachecolor] = value
                 if z % w10 == 1:  #give lifesigns
                     n = ((total - z) * 100.0) / w
                     print("%6.2f%% done writing tiles" % n)
@@ -304,25 +273,35 @@ class Generator():
                 hcolors[nc] = rcolors[color]
             w10 = w // 20
             total = z = w
-            #print hcolors
+            cache = {}
             for x in range(w):
                 for y in range(h):
                     color = surface.get_at((x, y))
-                    color = colorsys.rgb_to_hsv(color[0] / 255.0, color[1] / 255.0, color[2] / 255.0)
-                    #print color
-                    cdif = 100
-                    for c in hcolors:
-                        p1 = min(weight[0] * (c[0] - color[0]) * (c[0] - color[0]),
-                                 weight[0] * (c[0] + 1 - color[0]) * (c[0] + 1 - color[0]),
-                                 weight[0] * (c[0] - 1 - color[0]) * (c[0] - 1 - color[0]))
+                    cachecolor = color[:3]
+                    if cachecolor in cache:
+                        a.write(cache[cachecolor])
+                    else:
+                        tiledata = io.BytesIO()
+                        color = colorsys.rgb_to_hsv(color[0] / 255.0, color[1] / 255.0, color[2] / 255.0)
+                        #print color
+                        cdif = 100
+                        for c in hcolors:
+                            p1 = min(weight[0] * (c[0] - color[0]) * (c[0] - color[0]),
+                                     weight[0] * (c[0] + 1 - color[0]) * (c[0] + 1 - color[0]),
+                                     weight[0] * (c[0] - 1 - color[0]) * (c[0] - 1 - color[0]))
 
-                        dif = p1 + weight[1] * (c[1] - color[1]) * (c[1] - color[1]) + weight[2] * (c[2] - color[2]) * (
-                        c[2] - color[2])
-                        #print dif, cdif
-                        if dif < cdif:
-                            cdif = dif
-                            hit = hcolors[c]
-                    set_tile(a, (hit, None, 0, None))
+                            dif = p1 + weight[1] * (c[1] - color[1]) * (c[1] - color[1]) + weight[2] * (c[2] - color[2]) * (
+                            c[2] - color[2])
+                            #print dif, cdif
+                            if dif < cdif:
+                                cdif = dif
+                                hit = hcolors[c]
+
+                        set_tile(tiledata, (hit, None, 0, None))
+                        value = tiledata.getvalue()
+                        a.write(value)
+                        cache[cachecolor] = value
+
                     #print hit, dif
                 if z % w10 == 1:  #give lifesigns
                     n = ((total - z) * 100.0) / w
