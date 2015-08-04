@@ -22,7 +22,7 @@ Translations
 * Italian
     * by iMenchi
 * Hungarian
-    * by Unknown
+    * by danzie
     
 Contributing
 ============
@@ -33,19 +33,21 @@ Updating a Language
 -------------------
 On Github, grab the language file from [the list of languages](https://github.com/Berserker66/omnitool/tree/master/Language), 
 save it as custom.py in your Omnitool installation.
-As long as there is a custom.py in the Omnitool root directory, it'll always use that as language.
+As long as there is a `custom.py` in the Omnitool root directory, it will always use that language.
 
-Now you can update this file, view the effect by launching Omnitool and iterate until you're satisfied.
+Now you can update this file and view the results by launching Omnitool. Iterate until you are satisfied.
 
-When sending it in, do so as an updated languagename.py in the Languages folder through a pull request, do not send it in as custom.py.
+To submit your update, make a pull request with your updated file. Please name it appropriately for the language and do not leave it as `custom.py`.
 
 Adding a Language
 -----------------
 You should start by taking the [english.py](https://github.com/Berserker66/omnitool/blob/master/Language/english.py) file, it is usually the most up to date.
-save it as custom.py in your Omnitool installation and switch english for the new language.
-Unfortunately the GUI system cannot render the full range of unicode, so please test if any special characters actually work.
 
-Otherwise proceed as in updating a language.
+Save it as `custom.py` in your Omnitool installation and edit the English phrases into your language.
+
+Unfortunately the GUI system cannot render the full range of unicode so please test if any special characters actually work.
+
+Otherwise, proceed as in updating a language.
 
 Other
 -----
