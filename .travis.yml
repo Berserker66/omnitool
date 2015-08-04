@@ -1,7 +1,12 @@
 language: python
+sudo: required
 python:
   - "3.3"
   - "3.4"
+
+before_install:
+  - sudo apt-get update -qq
+  - sudo apt-get build-dep python-pygame
 
 install:
   - pip install -r requirements.txt
