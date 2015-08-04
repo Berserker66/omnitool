@@ -11,50 +11,52 @@ if __name__ == "__main__":
 
     os.chdir("..")
     del (os)
-from tinterface import *
-import database as db
 from math import sqrt, cos, sin, pi
 from collections import defaultdict
 from random import *
 import pygame
-from tlib import *
-from binarysplit import join, cleanup
-import plugins.planetoids_lib.terragui as terragui
-from plugins.planetoids_lib.tree import make_tree
-from plugins.planetoids_lib.terradata import *
 from os.path import join as osjoin
-import loadbar
+
+from ..loadbar import Bar
+from ..database import itemlist, names, tiles, ntiles
+from ..tlib import *
+from ..tinterface import *
+from ..binarysplit import join, cleanup
+
+from .planetoids_lib import terragui
+from .planetoids_lib.tree import make_tree
+from .planetoids_lib.terradata import *
 
 
 class Generator():
     def __init__(self):
-        db.itemlist["Life Crystal"] = 1
-        db.itemlist["Fallen Star"] = 10
-        db.itemlist["Wood"] = 100
-        db.itemlist['Swiftness Potion'] = 5
-        db.itemlist['Battle Potion'] = 5
-        db.itemlist['Shine Potion'] = 5
-        db.itemlist['Gravitation Potion'] = 5
-        db.itemlist['Water Walking Potion'] = 5
-        db.itemlist['Invisibility Potion'] = 5
-        db.itemlist['Night Owl Potion'] = 5
-        db.itemlist['Magic Power Potion'] = 5
-        db.itemlist['Thorns Potion'] = 5
-        db.itemlist['Mana Regeneration Potion'] = 5
-        db.itemlist['Archery Potion'] = 5
-        db.itemlist['Hunter Potion'] = 5
-        db.itemlist['Restoration Potion'] = 5
-        db.itemlist['Lesser Healing Potion'] = 5
-        db.itemlist['Featherfall Potion'] = 5
-        db.itemlist['Obsidian Skin Potion'] = 5
-        db.itemlist['Spelunker Potion'] = 5
-        db.itemlist['Ironskin Potion'] = 5
-        db.itemlist['Gold Bar'] = 10
-        db.itemlist['Meteorite Bar'] = 10
-        db.itemlist['Silver Bar'] = 10
-        db.itemlist['Iron Bar'] = 10
-        db.itemlist['Copper Bar'] = 10
-        db.itemlist["Meteorite"] = 30
+        itemlist["Life Crystal"] = 1
+        itemlist["Fallen Star"] = 10
+        itemlist["Wood"] = 100
+        itemlist['Swiftness Potion'] = 5
+        itemlist['Battle Potion'] = 5
+        itemlist['Shine Potion'] = 5
+        itemlist['Gravitation Potion'] = 5
+        itemlist['Water Walking Potion'] = 5
+        itemlist['Invisibility Potion'] = 5
+        itemlist['Night Owl Potion'] = 5
+        itemlist['Magic Power Potion'] = 5
+        itemlist['Thorns Potion'] = 5
+        itemlist['Mana Regeneration Potion'] = 5
+        itemlist['Archery Potion'] = 5
+        itemlist['Hunter Potion'] = 5
+        itemlist['Restoration Potion'] = 5
+        itemlist['Lesser Healing Potion'] = 5
+        itemlist['Featherfall Potion'] = 5
+        itemlist['Obsidian Skin Potion'] = 5
+        itemlist['Spelunker Potion'] = 5
+        itemlist['Ironskin Potion'] = 5
+        itemlist['Gold Bar'] = 10
+        itemlist['Meteorite Bar'] = 10
+        itemlist['Silver Bar'] = 10
+        itemlist['Iron Bar'] = 10
+        itemlist['Copper Bar'] = 10
+        itemlist["Meteorite"] = 30
 
     def run(self):
         # print ("Welcome to the Planetoids & Terra World Generator V12")
@@ -187,7 +189,7 @@ class Generator():
             else:
                 merchant = True
 
-        loadingbar = loadbar.Bar(caption = "Planetoids: startup")
+        loadingbar = Bar(caption = "Planetoids: startup")
         sizetype -= 1
         starttype -= 1
         #people dont like to start counting at 0, so its decremented afterwards
@@ -309,7 +311,7 @@ class Generator():
                     #print item, fradius/superradius
                     if typ[item] > fradius / superradius:
                         break
-                content.append((randint(1, db.itemlist[item]), item))
+                content.append((randint(1, itemlist[item]), item))
             for x in range(randint(*healthperchest)):
                 content.append((1, "Life Crystal"))
             stars = randint(*starsperchest)
@@ -332,8 +334,8 @@ class Generator():
             content = []
             while targetnumber > current:
                 item = choice(tuple(items.keys()))
-                if item in db.itemlist:
-                    amount = randint(1, min(db.itemlist[item], items[item], targetnumber - current))
+                if item in itemlist:
+                    amount = randint(1, min(itemlist[item], items[item], targetnumber - current))
                 else:
                     amount = randint(1, min(3, items[item], targetnumber - current))
                 items[item] -= amount
@@ -550,7 +552,7 @@ class Generator():
                 maxradius = int(r * maxradius)
                 for x in range(int(amount * valuables)):
                     npos = get_randradrange(pos, minradius, maxradius)
-                    c = db.ntiles[name]
+                    c = ntiles[name]
                     usize = randint(size[0], size[1])
                     if usize > 1:
                         pygame.draw.circle(surface, (c, c, c), npos, usize)  #air
@@ -822,7 +824,7 @@ class Generator():
                         c[tid] += 1
             for tid in c:
                 amount = c[tid]
-                print("%-10s : %d" % (db.tiles[tid], amount))
+                print("%-10s : %d" % (tiles[tid], amount))
 
         loadingbar.set_progress(50, "Planetoids: writing tile data")
         self.tiles = write_tiles(surface, header, walls, True, callback = loadingbar)
@@ -831,7 +833,7 @@ class Generator():
 
         self.signs = [None] * 1000
 
-        self.names = db.names
+        self.names = names
         self.npcs = [('Guide', (header["spawn"][0] * 16, (header["spawn"][1] - 3) * 16), 1,
                       (header["spawn"][0], header["spawn"][1] - 3)),
                      ('Old Man', (header["spawn"][0] * 16 - 16, (header["spawn"][1] - 3) * 16), 1,

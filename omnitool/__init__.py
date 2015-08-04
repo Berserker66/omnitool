@@ -1,46 +1,41 @@
 #! python3.4-32
-import shared
-__author__ = "Fabian Dill"
-__credits__ = ["Ijwu", "7UR7L3", "Fabian Dill"]
-__maintainer__ = "Fabian Dill"
 
 import sys
-
-child = False
-if __name__ == "__main__":
-    import multiprocessing
-    multiprocessing.freeze_support()
-    multiprocessing.set_start_method("spawn")  # Prevents X11 crash on Linux - properly separates pygame internals
-    for arg in sys.argv:
-        if "multiprocessing" in arg:
-            child = True
-            break
-
 import os
-os.environ["PYGAME_FREETYPE"] = "1"
-
-
-for p in (shared.appdata, ):
-    if not os.path.isdir(p):
-        os.mkdir(p)
+import multiprocessing
 
 import zlib
 import pickle
 
+from importlib import import_module
+from urllib.request import urlretrieve
+
+from .shared import cachepath, appdata, __version__
+from .loadbar import Bar
+
+__author__ = "Fabian Dill"
+__credits__ = ["Ijwu", "7UR7L3", "Fabian Dill"]
+__maintainer__ = "Fabian Dill"
+os.environ["PYGAME_FREETYPE"] = "1"
+
+
+if not os.path.isdir(appdata):
+    os.mkdir(appdata)
+
 try:
-    with open(shared.cachepath, "rb") as f:
+    with open(cachepath, "rb") as f:
         cache = pickle.loads(zlib.decompress(f.read()))
 except IOError as e:
     print("Unable to load cache (" + e.__class__.__name__ + "), creating new cache")
 
     cache = {"worlds": {}, "backup": {}}
-    with open(shared.cachepath, "wb") as f:
+    with open(cachepath, "wb") as f:
         f.write(zlib.compress(pickle.dumps(cache, 2), 9))
 except Exception as e:
     print("Unable to load cache (" + e.__class__.__name__ + "), creating new cache")
 
     cache = {"worlds": {}, "backup": {}}
-    with open(shared.cachepath, "wb") as f:
+    with open(cachepath, "wb") as f:
         f.write(zlib.compress(pickle.dumps(cache, 2), 9))
 
 if "reset" in sys.argv:
@@ -64,50 +59,34 @@ if "columns" not in cache:
 if "lang" not in cache:
     cache["lang"] = "english"
 if "version" not in cache:
-    cache["version"] = shared.__version__
+    cache["version"] = __version__
     cache["worlds"] = {}
-elif cache["version"] < shared.__version__:
+elif cache["version"] < __version__:
     print("Newer Omnitool version, resetting world image cache.")
-    cache["version"] = shared.__version__
+    cache["version"] = __version__
     cache["worlds"] = {}
 if os.path.isfile("custom.py"):
     sys.path.append(".")
-    exec("import custom as lang")
+    import custom as lang
     sys.path.remove(".")
 else:
-    command = "import Language." + cache["lang"] + " as lang"
-    exec(command)
+    lang = import_module('.Language.' + cache['lang'], package='omnitool')
 
 if False:
-    import Language.english as lang #IDE hook
+    from .Language import english as lang #IDE hook
 
 shared.lang = lang
 shared.cache = cache
 
-
-if __name__ == "__main__":
-
-    global processes
-    processes = []
-
-    if not child:
-
-        try:
-            import splashlib
-            splashlib.splash((512, 512), "Omnitool", os.path.join("themes", themename, "Splash.png"))
-        except Exception as e:
-            print("SplashWarning: " + str(e))
-
 import pygame
 from pgu import gui
-from tinterface import *
-import colorlib
-from tlib import *
-import tlib  #multiprocessing issues when frozen
+from .tinterface import *
+from .colorlib import walldata, data as colorlib_data
+from .tlib import *
 import threading
 import time
-import pgu_override
-shared.theme = pgu_override.MyTheme(themename)
+from .pgu_override import MyTheme, MyApp
+theme = shared.theme = MyTheme(themename)
 import subprocess
 import shutil
 import sys
@@ -169,18 +148,7 @@ else:
 myterraria = get_myterraria()  #mygames-terraria path
 images = myterraria / "WorldImages"
 
-if __name__ == "__main__":
-    try:
-        import render
-    except:
-        if not child:
-            print("WorldRender extension not available:")
-            import traceback
-
-            traceback.print_exc()
-        render_ext = False
-    else:
-        render_ext = True
+processes = []
 
 def runrender(world):
     args = (world.header, world.path, False, (world.header, world.pos))
@@ -268,9 +236,9 @@ class Settings(gui.Dialog):
 
         liste = gui.List(200, 114)
         liste.value = themename
-        themes = os.listdir("themes")
-        for dire in themes:
-            liste.add(dire, value=dire)
+        themes = datadir / "themes"
+        for dire in themes.iterdir():
+            liste.add(str(dire), value=dire.name)
         self.liste = liste
 
         liste = gui.Select()
@@ -707,8 +675,8 @@ class Redrawer(threading.Thread):
 
 
 class Updater(threading.Thread):
-    ziploc = os.path.join(shared.appdata, "tImages.zip")
-    verloc = os.path.join(shared.appdata, "tImages.json")
+    ziploc = os.path.join(appdata, "tImages.zip")
+    verloc = os.path.join(appdata, "tImages.json")
     def __init__(self, update):
         threading.Thread.__init__(self)
         self.name = "Updater"
@@ -720,8 +688,8 @@ class Updater(threading.Thread):
         f = urllib.request.urlopen("http://dl.dropbox.com/u/44766482/ot_updater/ot_version.json").read()
         js = json.loads(f.decode())
         verint = js["omnitool"]
-        if verint > shared.__version__:
-            from version import Version
+        if verint > __version__:
+            from .version import Version
             text = gui.Label("Version " + Version(verint).__repr__() + lang.available, color=(255, 0, 0))
             self.update.td(text, align=-1)
             text2 = gui.Label(lang.changelog, color=(100, 100, 255))
@@ -770,8 +738,6 @@ def remote_retrieve(source, target, name, abortable = True):
     :param name: caption of pygame window
     :return:
     """
-    from urllib.request import urlretrieve
-    from loadbar import Bar
     bar = Bar(caption = name, abortable=abortable)
     def reporthook(blocknum, blocksize, totalsize):
         read = blocknum * blocksize
@@ -823,256 +789,24 @@ def open_dir(direc):
             pass
 
 
-def run():
-    global app
-    global worldnames
-    global worlds
-    global display_worlds
-
-    try:
-        loc = myterraria / "Game Launcher" / "omnitool.gli3"
-        data = {
-            "appAuthor": __author__+" (Berserker66)",
-            "appName": "Omnitool",
-            "appPath": os.path.abspath(sys.argv[0]),
-            "appVersion": shared.__version__.__repr__()
-        }
-        with loc.open("wt") as f:
-            f.write(json.dumps(data, indent=4))
-    except:
-        import traceback
-
-        print("Could not register to GameLauncher 3. Maybe it just isn't installed. Exception:")
-        traceback.print_exc()
-
-    try:
-        worldnames = list(get_worlds())
-    except FileNotFoundError:
-        worldnames = []
-        print("Omnitool has found no worlds")
-
-    use_override = True
-    if use_override:
-        app = pgu_override.MyApp(theme=shared.theme)
-    else:
-        import pgu
-        app = pgu.gui.App(theme=shared.theme)
-    worlds = []
-    ts = [threading.Thread(target=get_world, args=(world, worlds)) for world in worldnames]
-    tuple(t.start() for t in ts)
-    pad = 10
-    x = 0
-
-    data = [
-        ("Omnitool/" + lang.settings, Settings, None),
-        ("Omnitool/" + "Language", Language, None),
-        ("Omnitool/" + lang.exit, exit_prog, None),
-        (lang.start + "/" + lang.terraria, webbrowser.open, "steam://rungameid/105600"),
-
-    ]
-
-    if "tedit" in cache and os.path.exists(cache["tedit"]):
-        def run_tedit(n):
-            subprocess.Popen(cache["tedit"], cwd=os.path.split(cache["tedit"])[0])
-
-        data.append((lang.start + "/TEdit", run_tedit, None))
-    if "terrafirma" in cache:
-        if os.path.exists(cache["terrafirma"]):
-            def run_terrafirma(n):
-                subprocess.Popen(cache["terrafirma"], cwd=os.path.split(cache["terrafirma"])[0])
-
-            data.append((lang.start + "/Terrafirma", run_terrafirma, None))
-    data.extend([
-        (lang.open + "/" + lang.imagefolder, open_dir, images),
-        (lang.open + "/" + lang.backupfolder, open_dir, myterraria / "WorldsBackup"),
-        (lang.open + "/" + lang.themes, open_dir, Path.cwd() / "themes"),
-        (lang.visit + "/" + lang.donate, webbrowser.open,
-         r"https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=JBZM8LFAGDK4N"),
-        (lang.visit + "/" + lang.homepage, webbrowser.open,
-         r"http://forums.terraria.org/index.php?threads/omnitool-world-creation-mapping-backups-and-more.14664/"),
-        (lang.visit + "/" + lang.TO, webbrowser.open, "http://www.terrariaonline.com"),
-        (lang.visit + "/" + lang.wiki, webbrowser.open, "http://terraria.gamepedia.com/Terraria_Wiki"),
-        (lang.visit + "/GameLauncher GUI", webbrowser.open,
-         "http://forums.terraria.org/index.php?threads/game-launcher-3-2-1-5.1061/"),
-    ])
-    forbidden = ["flatworld", "planetoids", "worldify", "arena"]
-    for plug in plugins:
-        if plug[0] not in forbidden and plug[2] != "injector":
-            data.append(("Plugins/%s" % plug[1], start_proc, (relay.launch_plugin, [plug[1], plug])))
-    os.environ["SDL_VIDEO_WINDOW_POS"] = "20,50"
-
-    app.connect(gui.QUIT, exit_prog, None)
-    main = gui.Table()
-
-    menu = gui.Menus(data)
-    main.td(gui.Spacer(pad, pad))
-    main.td(menu, colspan=5, align=-1)
-    main.td(gui.Spacer(pad, pad))
-    main.tr()
-    update = gui.Table()
-    update.td(gui.Label(""))
-    main.td(update, col=1, colspan=5, align=-1)
-
-    main.tr()
-    width = 190
-    worldify = GenButton(lang.worldify, IMAGE, width=width)
-    planetoids = GenButton(lang.planetoids, PLANET, width=width)
-    dungeon = GenButton(lang.arena, DUNGEON, width=width)
-    flat = GenButton(lang.flat, FLAT, width=width)
-
-    tuple(t.join() for t in ts)
-    expected_h = 170 * len(worlds) // cache["columns"] + 100
-    pygame.display.init()
-    available_h = max([res[1] for res in pygame.display.list_modes()])
-    if expected_h > available_h:
-        print("GUI expected to be higher than monitor height, adding columns")
-        cache["columns"] = max(cache["columns"] + 1, 1 + (170 * len(worlds)) // (available_h - 100))
-    del (ts)
-    newworldtable = gui.Table()
-    newworldtable.td(gui.Spacer(10, 10))
-    newworldtable.td(gui.Label(lang.new), align=-1)
-    newworldtable.tr()
-    newworldtable.td(gui.Spacer(10, 10))
-    newworldtable.td(worldify)
-    newworldtable.td(gui.Spacer(10, 10))
-    newworldtable.td(planetoids)
-    newworldtable.td(gui.Spacer(10, 10))
-    newworldtable.td(dungeon)
-    newworldtable.td(gui.Spacer(10, 10))
-    newworldtable.td(flat)
-    newworldtable.tr()
-    newworldtable.td(gui.Spacer(10, 10))
-    main.td(newworldtable, colspan = 6)
-    main.tr()
-    worldtable = gui.Table()
-    main.td(worldtable, colspan = 6)
-    def display_worlds(optionchange = False):
-        worldtable.clear()
-        x = 0
-        for w in worlds:
-            if x % cache["columns"] == 0:
-                worldtable.tr()
-            wtab = gui.Table()
-            wtab.td(w.info, colspan=2)
-            wtab.tr()
-            if thumbsize:
-                wtab.td(w.image, colspan=2)
-            else:
-                wtab.td(gui.Spacer(1, 20))
-            wtab.tr()
-            wtab.td(gui.Spacer(pad, pad))
-            wtab.tr()
-
-            wtab.td(gui.Spacer(420, 25), colspan=2)
-            wtab.tr()
-
-            worldtable.td(gui.Spacer(pad, 1))
-            worldtable.td(wtab)
-
-            x += 1
-        if x % cache["columns"] == 0:
-            worldtable.tr()
-
-        worldtable.td(gui.Spacer(12, 12))
-        if app.widget:
-            print("Window Reset!")
-            app.resize()
-            app.repaint()
-            size = pygame.display.get_surface().get_size()
-            data = {"size" : size, "w" : size[0], "h" : size[1], "reload" : True if optionchange else False}
-
-            pygame.event.post(pygame.event.Event(pygame.VIDEORESIZE, data))
 
 
-    display_worlds()
-    print("GUI Matrix created, initializing..")
-    pygame.display.quit()
-    pygame.display.init()
-    pygame.display.set_caption("Terraria Omnitool V%s | %d Bit" % (shared.__version__.__repr__(), bit))
-
-    def make_resize(worlds, app, main):
-        def resize(self, ev):
-            if app.first and not app.zoomed:
-                app.first = False
-            else:
-                padding = 50
-                if hasattr(ev, "reload") and ev.reload == True:
-                    thumb_w, thumb_h = cache["thumbsize"]
-                    for w in worlds:
-                        w.override_thumb((thumb_w, thumb_h))
-                        w.info.style.width = thumb_w
-                        w.thumbsize = (thumb_w, thumb_h)
-                else:
-                    thumb_w = max((ev.w - padding) // cache["columns"], 420)
-                    thumb_h = int(thumb_w / 3.5)
-
-                    for w in worlds:
-                        w.override_thumb((thumb_w, thumb_h))
-                        w.info.style.width = thumb_w
-                        w.thumbsize = (thumb_w, thumb_h)
-
-                app.rect.size = main.rect.size = main.w, main.h = main.resize()
-                if sys.platform.startswith("win"):
-                    if windll.user32.IsZoomed(pygame.display.get_wm_info()['window']):
-                        s = pygame.display.set_mode(ev.size, pygame.RESIZABLE)
-                        app.rect.size = pygame.display.get_surface().get_size()
-                        app.zoomed = True
-                    else:
-                        s = pygame.display.set_mode((main.w, main.h), pygame.RESIZABLE)
-                        app.zoomed = False
-                else:
-                    s = pygame.display.set_mode((main.w, main.h),pygame.RESIZABLE)
-                    app.zoomed = False
-
-                app.screen = s
-                app.first = True
-
-        return resize
-
-    app.on_resize = make_resize(worlds, app, main)
-    app.init(main, None)
-
-    main.rect.h = max(main.rect.height, 250)
-    if cache["thumbsize"]:
-        pygame.display.set_mode((main.rect.size[0] - 2, main.rect.size[1] - 2), pygame.SWSURFACE | pygame.RESIZABLE)
-    else:
-        pygame.display.set_mode(main.rect.size, pygame.SWSURFACE)
-    info = Info()
-    info.name = "Info"
-    info.daemon = False
-
-    updater = Updater(update)
-    updater.daemon = False
-
-    if cache["do_backup"]:
-        b = Backupper()
-        b.name = "Backup"
-        b.start()
-    redrawer = Redrawer()
-    redrawer.start()
-    info.start()
-    updater.start()
-    app.run(main)
-
-
-plugins = []
+plugins_ = []
 
 
 def get_plugins():
     for file in os.listdir("plugins"):
         if file[-3:] == ".py" and file != "plugins.py" and file != "__init__.py":
-            s = "import plugins.%s as %s" % (file[:-3], file[:-3])
             try:
-                exec(s)
+                plugin = import_module('.plugins.' + file[:-3], package='omnitool')
             except:
                 import traceback
 
                 print("Error importing plugin %s:" % file[:-3])
                 traceback.print_exc()
             else:
-                config = eval(file[:-3] + ".config")
-                name, ptype = config["name"], config["type"]
-                plugins.append((file[:-3], name, ptype))
+                name, ptype = plugin.config["name"], plugin.config["type"]
+                plugins_.append((file[:-3], name, ptype))
 
 
 def plug_save(Plug):
@@ -1207,9 +941,9 @@ def launch_plugin(plug):
         plug_save(Plug)
     elif plug[2] == "modifier":
         worlds = list(get_worlds())
-        import plugingui
+        from .plugingui import run as run_plugingui
 
-        w = plugingui.run(worlds, Plugin, "mod")
+        w = run_plugingui(worlds, Plugin, "mod")
         with w.open("rb") as f:
             Plug = Plugin.Modifier()
             f.buffer = [0]
@@ -1244,33 +978,248 @@ def launch_plugin(plug):
     sys.exit()
 
 
+from .relay import launch_plugin as relay_launch_plugin
+
+def run():
+    global app
+    global worldnames
+    global worlds
+    global display_worlds
+
+    try:
+        loc = myterraria / "Game Launcher" / "omnitool.gli3"
+        data = {
+            "appAuthor": __author__+" (Berserker66)",
+            "appName": "Omnitool",
+            "appPath": os.path.abspath(sys.argv[0]),
+            "appVersion": __version__.__repr__()
+        }
+        with loc.open("wt") as f:
+            f.write(json.dumps(data, indent=4))
+    except:
+        import traceback
+
+        print("Could not register to GameLauncher 3. Maybe it just isn't installed. Exception:")
+        traceback.print_exc()
+
+    try:
+        worldnames = list(get_worlds())
+    except FileNotFoundError:
+        worldnames = []
+        print("Omnitool has found no worlds")
+
+    use_override = True
+    if use_override:
+        app = MyApp(theme=theme)
+    else:
+        import pgu
+        app = pgu.gui.App(theme=theme)
+    worlds = []
+    ts = [threading.Thread(target=get_world, args=(world, worlds)) for world in worldnames]
+    tuple(t.start() for t in ts)
+    pad = 10
+    x = 0
+
+    data = [
+        ("Omnitool/" + lang.settings, Settings, None),
+        ("Omnitool/" + "Language", Language, None),
+        ("Omnitool/" + lang.exit, exit_prog, None),
+        (lang.start + "/" + lang.terraria, webbrowser.open, "steam://rungameid/105600"),
+
+    ]
+
+    if "tedit" in cache and os.path.exists(cache["tedit"]):
+        def run_tedit(n):
+            subprocess.Popen(cache["tedit"], cwd=os.path.split(cache["tedit"])[0])
+
+        data.append((lang.start + "/TEdit", run_tedit, None))
+    if "terrafirma" in cache:
+        if os.path.exists(cache["terrafirma"]):
+            def run_terrafirma(n):
+                subprocess.Popen(cache["terrafirma"], cwd=os.path.split(cache["terrafirma"])[0])
+
+            data.append((lang.start + "/Terrafirma", run_terrafirma, None))
+    data.extend([
+        (lang.open + "/" + lang.imagefolder, open_dir, images),
+        (lang.open + "/" + lang.backupfolder, open_dir, myterraria / "WorldsBackup"),
+        (lang.open + "/" + lang.themes, open_dir, Path.cwd() / "themes"),
+        (lang.visit + "/" + lang.donate, webbrowser.open,
+         r"https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=JBZM8LFAGDK4N"),
+        (lang.visit + "/" + lang.homepage, webbrowser.open,
+         r"http://forums.terraria.org/index.php?threads/omnitool-world-creation-mapping-backups-and-more.14664/"),
+        (lang.visit + "/" + lang.TO, webbrowser.open, "http://www.terrariaonline.com"),
+        (lang.visit + "/" + lang.wiki, webbrowser.open, "http://terraria.gamepedia.com/Terraria_Wiki"),
+        (lang.visit + "/GameLauncher GUI", webbrowser.open,
+         "http://forums.terraria.org/index.php?threads/game-launcher-3-2-1-5.1061/"),
+    ])
+    forbidden = ["flatworld", "planetoids", "worldify", "arena"]
+    for plug in plugins_:
+        if plug[0] not in forbidden and plug[2] != "injector":
+            data.append(("Plugins/%s" % plug[1], start_proc, (relay_launch_plugin, [plug[1], plug])))
+    os.environ["SDL_VIDEO_WINDOW_POS"] = "20,50"
+
+    app.connect(gui.QUIT, exit_prog, None)
+    main = gui.Table()
+
+    menu = gui.Menus(data)
+    main.td(gui.Spacer(pad, pad))
+    main.td(menu, colspan=5, align=-1)
+    main.td(gui.Spacer(pad, pad))
+    main.tr()
+    update = gui.Table()
+    update.td(gui.Label(""))
+    main.td(update, col=1, colspan=5, align=-1)
+
+    main.tr()
+    width = 190
+    worldify = GenButton(lang.worldify, IMAGE, width=width)
+    planetoids = GenButton(lang.planetoids, PLANET, width=width)
+    dungeon = GenButton(lang.arena, DUNGEON, width=width)
+    flat = GenButton(lang.flat, FLAT, width=width)
+
+    tuple(t.join() for t in ts)
+    expected_h = 170 * len(worlds) // cache["columns"] + 100
+    pygame.display.init()
+    available_h = max([res[1] for res in pygame.display.list_modes()])
+    if expected_h > available_h:
+        print("GUI expected to be higher than monitor height, adding columns")
+        cache["columns"] = max(cache["columns"] + 1, 1 + (170 * len(worlds)) // (available_h - 100))
+    del (ts)
+    newworldtable = gui.Table()
+    newworldtable.td(gui.Spacer(10, 10))
+    newworldtable.td(gui.Label(lang.new), align=-1)
+    newworldtable.tr()
+    newworldtable.td(gui.Spacer(10, 10))
+    newworldtable.td(worldify)
+    newworldtable.td(gui.Spacer(10, 10))
+    newworldtable.td(planetoids)
+    newworldtable.td(gui.Spacer(10, 10))
+    newworldtable.td(dungeon)
+    newworldtable.td(gui.Spacer(10, 10))
+    newworldtable.td(flat)
+    newworldtable.tr()
+    newworldtable.td(gui.Spacer(10, 10))
+    main.td(newworldtable, colspan = 6)
+    main.tr()
+    worldtable = gui.Table()
+    main.td(worldtable, colspan = 6)
+    def display_worlds(optionchange = False):
+        worldtable.clear()
+        x = 0
+        for w in worlds:
+            if x % cache["columns"] == 0:
+                worldtable.tr()
+            wtab = gui.Table()
+            wtab.td(w.info, colspan=2)
+            wtab.tr()
+            if thumbsize:
+                wtab.td(w.image, colspan=2)
+            else:
+                wtab.td(gui.Spacer(1, 20))
+            wtab.tr()
+            wtab.td(gui.Spacer(pad, pad))
+            wtab.tr()
+
+            wtab.td(gui.Spacer(420, 25), colspan=2)
+            wtab.tr()
+
+            worldtable.td(gui.Spacer(pad, 1))
+            worldtable.td(wtab)
+
+            x += 1
+        if x % cache["columns"] == 0:
+            worldtable.tr()
+
+        worldtable.td(gui.Spacer(12, 12))
+        if app.widget:
+            print("Window Reset!")
+            app.resize()
+            app.repaint()
+            size = pygame.display.get_surface().get_size()
+            data = {"size" : size, "w" : size[0], "h" : size[1], "reload" : True if optionchange else False}
+
+            pygame.event.post(pygame.event.Event(pygame.VIDEORESIZE, data))
+
+
+    display_worlds()
+    print("GUI Matrix created, initializing..")
+    pygame.display.quit()
+    pygame.display.init()
+    pygame.display.set_caption("Terraria Omnitool V%s | %d Bit" % (__version__.__repr__(), bit))
+
+    def make_resize(worlds, app, main):
+        def resize(self, ev):
+            if app.first and not app.zoomed:
+                app.first = False
+            else:
+                padding = 50
+                if hasattr(ev, "reload") and ev.reload == True:
+                    thumb_w, thumb_h = cache["thumbsize"]
+                    for w in worlds:
+                        w.override_thumb((thumb_w, thumb_h))
+                        w.info.style.width = thumb_w
+                        w.thumbsize = (thumb_w, thumb_h)
+                else:
+                    thumb_w = max((ev.w - padding) // cache["columns"], 420)
+                    thumb_h = int(thumb_w / 3.5)
+
+                    for w in worlds:
+                        w.override_thumb((thumb_w, thumb_h))
+                        w.info.style.width = thumb_w
+                        w.thumbsize = (thumb_w, thumb_h)
+
+                app.rect.size = main.rect.size = main.w, main.h = main.resize()
+                if sys.platform.startswith("win"):
+                    if windll.user32.IsZoomed(pygame.display.get_wm_info()['window']):
+                        s = pygame.display.set_mode(ev.size, pygame.RESIZABLE)
+                        app.rect.size = pygame.display.get_surface().get_size()
+                        app.zoomed = True
+                    else:
+                        s = pygame.display.set_mode((main.w, main.h), pygame.RESIZABLE)
+                        app.zoomed = False
+                else:
+                    s = pygame.display.set_mode((main.w, main.h),pygame.RESIZABLE)
+                    app.zoomed = False
+
+                app.screen = s
+                app.first = True
+
+        return resize
+
+    app.on_resize = make_resize(worlds, app, main)
+    app.init(main, None)
+
+    main.rect.h = max(main.rect.height, 250)
+    if cache["thumbsize"]:
+        pygame.display.set_mode((main.rect.size[0] - 2, main.rect.size[1] - 2), pygame.SWSURFACE | pygame.RESIZABLE)
+    else:
+        pygame.display.set_mode(main.rect.size, pygame.SWSURFACE)
+    info = Info()
+    info.name = "Info"
+    info.daemon = False
+
+    updater = Updater(update)
+    updater.daemon = False
+
+    if cache["do_backup"]:
+        b = Backupper()
+        b.name = "Backup"
+        b.start()
+    redrawer = Redrawer()
+    redrawer.start()
+    info.start()
+    updater.start()
+    app.run(main)
+
+
 PLANET = 1
 DUNGEON = 2
 FLAT = 3
 IMAGE = 4
-import relay
 
-bind = {1: (relay.run_plat, "Planetoids"),
-        2: (relay.run_arena, "Arena"),
-        3: (relay.run_flat, "Flatworld"),
-        4: (relay.run_world, "Worldify")}
+from .relay import run_plat, run_arena, run_flat, run_world
 
-if __name__ == "__main__" and not child:
-
-    get_plugins()
-    p = False
-    for arg in sys.argv:
-        if arg.startswith("plugin:"):
-            p = True
-            name = arg[7:]
-            for ps in plugins:
-                if ps[0] == name:
-                    print("Launching plugin %s" % ps[1])
-                    pygame.quit()
-                    start_proc((relay.launch_plugin, [ps[1], ps]))
-                    sys.exit()
-            print("Plugin not found")
-
-    if not p:
-        run()
-        
+bind = {1: (run_plat, "Planetoids"),
+        2: (run_arena, "Arena"),
+        3: (run_flat, "Flatworld"),
+        4: (run_world, "Worldify")}

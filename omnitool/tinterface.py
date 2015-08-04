@@ -8,7 +8,7 @@ import appdirs
 from pathlib import Path
 from itertools import count, chain
 
-from tlib import *
+from .tlib import *
 
 
 is_exe = hasattr(sys, "frozen")

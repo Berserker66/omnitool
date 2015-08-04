@@ -3,12 +3,13 @@ config = {
     "type": "receiver",  #plugin type
     "description": ["counts tombstones in a world"]  #description
 }
-import database as db  # import terraria database
+
+from ..database import tiles
 
 
 class Receiver():  # required class to be called by plugin manager
     def __init__(self):  #do any initialization stuff
-        self.tile_id = db.tiles.index("Tombstone")  #we grab the ID of tombstone from database
+        self.tile_id = tiles.index("Tombstone")  #we grab the ID of tombstone from database
 
     def rec_header(self, header):  #this is called by plugin manager when the header is read
         print("Counting Tombstones for %s" % header["name"])  #so we print the name from header

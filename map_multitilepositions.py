@@ -67,7 +67,7 @@ class MultiMap():
                 "stride" : self.stride}
 
 def create_mappings(folder = "tImages"):
-    import database
+    import omnitool.database as database
     multimaps = {}
     for i in database.multitiles:
         s = pygame.image.load(os.path.join(folder, "Tiles_"+str(i)+".png"))

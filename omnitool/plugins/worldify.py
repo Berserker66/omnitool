@@ -12,13 +12,18 @@ if __name__ == "__main__":
 
     os.chdir("..")
 import pygame
-import database as db
-import colorlib
-from tlib import *
-from time import sleep
 import tempfile
 import colorsys
 import io
+from time import sleep
+
+from pgu import gui
+
+from ..colorlib import data, bad
+from ..database import multitiles
+from ..tlib import *
+from ..pgu_override import Quitbutton
+from ..shared import lang, theme, exit_prog, exit_prog, __version__
 
 
 class Generator():
@@ -27,12 +32,9 @@ class Generator():
 
 
     def run(self):
-        from shared import lang, theme, exit_prog, exit_prog, __version__
-        from pgu_override import Quitbutton
         #pygame.quit()
         if hasattr(sys, "frozen"):
             os.chdir(os.path.dirname(sys.executable))
-        from pgu import gui
 
         nogui = False
         pygame.display.init()
@@ -71,14 +73,14 @@ class Generator():
             ext = False
         pygame.display.init()
         pygame.display.set_caption("Worldify")
-        colors = colorlib.data
+        colors = data
         #bad = [4,49, 53, 32, 62, 52, 80, 19]#torch, blue candle, sand, corruption vines, wooden platform
 
         for tile in colors:
-            if tile in db.multitiles or tile > 255:
-                colorlib.bad.append(tile)
+            if tile in multitiles or tile > 255:
+                bad.append(tile)
         colors[None] = (250, 250, 250)  #air
-        for b in colorlib.bad:
+        for b in bad:
             if b in colors: del (colors[b])
         rcolors = {}
         for color in colors:

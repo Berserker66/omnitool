@@ -2,8 +2,10 @@ from __future__ import with_statement
 import time
 import pygame
 import numpy
-from tinterface import *
 from concurrent.futures import ThreadPoolExecutor
+
+from .tinterface import *
+
 minimap_limits = 0.4,0.2
 defaultres = [1024, 768]
 
