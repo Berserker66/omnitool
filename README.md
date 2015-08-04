@@ -49,8 +49,10 @@ Available Languages
 * Norwegian
 * Japanese
 * Danish
+* Italian
+* Hungarian
 
-More detailed info in the Language thread [here](http://www.terrariaonline.com/threads/omnitool-language-thread.62981/).
+More detailed info in the [Translation Readme](translation.md) and Language thread [here](http://www.terrariaonline.com/threads/omnitool-language-thread.62981/).
 
 Plugins
 -------
