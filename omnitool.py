@@ -346,7 +346,6 @@ def open_image(world):
     webbrowser.open(str(world.imagepath))
 
 def open_tedit(world):
-    print(cache["tedit"])
     subprocess.Popen((cache["tedit"], str(world.path)), cwd=os.path.split(cache["tedit"])[0])
 
 def regen_map(world):
