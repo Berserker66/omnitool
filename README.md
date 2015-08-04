@@ -3,6 +3,8 @@ Current version : 18.0.0, for Terraria 1.3.0.7 on Windows and Linux.
 On the Terraria Forums:
 [Link](http://forums.terraria.org/index.php?threads/omnitool-world-creation-mapping-backups-and-more.14664/)
 
+[![Build Status](https://travis-ci.org/Berserker66/omnitool.svg?branch=master)](https://travis-ci.org/Berserker66/omnitool)
+
 Features
 ========
 * Makes world backups on launch.
@@ -51,6 +53,7 @@ Available Languages
 * Danish
 * Italian
 * Hungarian
+* Russian
 
 More detailed info in the [Translation Readme](translation.md) and Language thread [here](http://www.terrariaonline.com/threads/omnitool-language-thread.62981/).
 
