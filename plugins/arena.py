@@ -32,7 +32,8 @@ class Generator():
 
     def run(self):
 
-        from omnitool import lang, Quitbutton, exit_prog, Theme, themename, __version__
+        from globals import lang, theme, exit_prog, exit_prog, __version__
+        from pgu_override import Quitbutton
 
         torch_chances = [lang.at_full, lang.at_blue, lang.at_red, lang.at_green,
                          lang.at_pink, lang.at_white, lang.at_yellow, lang.at_purple,
@@ -56,16 +57,7 @@ class Generator():
 
         pygame.display.init()
         pygame.display.set_caption(name)
-        try:
 
-            blue = Theme(themename)
-        except:
-            print("Error initialising GUI")
-            print(str(e))
-            import time
-
-            time.sleep(5)
-            sys.exit()
 
         def weighted(liste):
             n = uniform(0, 1)
@@ -76,7 +68,7 @@ class Generator():
             return item
 
 
-        app = gui.Desktop(theme=blue)
+        app = gui.Desktop(theme=theme)
 
         app.connect(gui.QUIT, exit_prog, None)
         main = gui.Table()

@@ -1,6 +1,6 @@
 import os
 
-from pgu.gui import Desktop, basic, container, FileDialog, surface
+from pgu.gui import Desktop, basic, container, surface, Theme, Button
 from pgu.gui.const import *
 from pygame.locals import *
 
@@ -71,6 +71,22 @@ def change_image(self, value):
     self.value = value
     self.style.width, self.style.height = value.get_width(), value.get_height()
 
+class MyTheme(Theme):
+    def __init__(self, name):
+        try:
+            Theme.__init__(self, os.path.join("themes", name))
+        except:
+            print("Warning: Unable to load selected theme")
+            themes = os.listdir("themes")
+            for name in themes:
+                try:
+                    Theme.__init__(self, os.path.join("themes", name))
+                except:
+                    pass
+                else:
+                    return
+            raise
+
 def myupdate(self, s):
     updates = []
 
@@ -117,6 +133,13 @@ def myupdate(self, s):
 
     return updates
 
+class Quitbutton(Button):
+    def __init__(self, app, value):
+        Button.__init__(self, value, width=300, height=40)
+        try:
+            self.connect(CLICK, app.quit, None)
+        except AttributeError:
+            self.connect(CLICK, app.close, None)
 
 container.Container.update = myupdate
 basic.Image.change_image = change_image

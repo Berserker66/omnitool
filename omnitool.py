@@ -1,6 +1,5 @@
 #! python3.4-32
-from version import Version
-__version__ = Version(180000)
+import globals
 __author__ = "Fabian Dill"
 __credits__ = ["Ijwu", "7UR7L3", "Fabian Dill"]
 __maintainer__ = "Fabian Dill"
@@ -18,11 +17,10 @@ if __name__ == "__main__":
             break
 
 import os
-import appdirs
-appdata = appdirs.user_config_dir('omnitool', "", roaming = True)
-cachepath = os.path.join(appdata, "cache.dill")
+os.environ["PYGAME_FREETYPE"] = "1"
 
-for p in (appdata, ):
+
+for p in (globals.appdata, ):
     if not os.path.isdir(p):
         os.mkdir(p)
 
@@ -30,19 +28,19 @@ import zlib
 import pickle
 
 try:
-    with open(cachepath, "rb") as f:
+    with open(globals.cachepath, "rb") as f:
         cache = pickle.loads(zlib.decompress(f.read()))
 except IOError as e:
     print("Unable to load cache (" + e.__class__.__name__ + "), creating new cache")
 
     cache = {"worlds": {}, "backup": {}}
-    with open(cachepath, "wb") as f:
+    with open(globals.cachepath, "wb") as f:
         f.write(zlib.compress(pickle.dumps(cache, 2), 9))
 except Exception as e:
     print("Unable to load cache (" + e.__class__.__name__ + "), creating new cache")
 
     cache = {"worlds": {}, "backup": {}}
-    with open(cachepath, "wb") as f:
+    with open(globals.cachepath, "wb") as f:
         f.write(zlib.compress(pickle.dumps(cache, 2), 9))
 
 if "reset" in sys.argv:
@@ -66,11 +64,11 @@ if "columns" not in cache:
 if "lang" not in cache:
     cache["lang"] = "english"
 if "version" not in cache:
-    cache["version"] = __version__
+    cache["version"] = globals.__version__
     cache["worlds"] = {}
-elif cache["version"] < __version__:
+elif cache["version"] < globals.__version__:
     print("Newer Omnitool version, resetting world image cache.")
-    cache["version"] = __version__
+    cache["version"] = globals.__version__
     cache["worlds"] = {}
 if os.path.isfile("custom.py"):
     sys.path.append(".")
@@ -82,6 +80,10 @@ else:
 
 if False:
     import Language.english as lang #IDE hook
+
+globals.lang = lang
+globals.cache = cache
+
 
 if __name__ == "__main__":
 
@@ -105,7 +107,7 @@ import tlib  #multiprocessing issues when frozen
 import threading
 import time
 import pgu_override
-
+globals.theme = pgu_override.MyTheme(themename)
 import subprocess
 import shutil
 import sys
@@ -137,7 +139,7 @@ cache_lock = threading.Lock()
 def save_cache():
     cache_lock.acquire()
     d = zlib.compress(pickle.dumps(cache), 9)
-    with open(cachepath, "wb") as f:
+    with open(globals.cachepath, "wb") as f:
         f.write(d)
     cache_lock.release()
 
@@ -196,33 +198,16 @@ try:
 except:
     pass
 
-
-class Theme(gui.Theme):
-    def __init__(self, name):
-        try:
-            gui.Theme.__init__(self, os.path.join("themes", name))
-        except:
-            print("Warning: Unable to load selected theme")
-            themes = os.listdir("themes")
-            for name in themes:
-                try:
-                    gui.Theme.__init__(self, os.path.join("themes", name))
-                except:
-                    pass
-                else:
-                    break
-
-
 shutdown = False
-
 
 def exit_prog(p):
     global shutdown
     shutdown = True
     pygame.quit()
     import sys
-
     sys.exit()
+
+globals.exit_prog = exit_prog
 
 
 def nothing(p):
@@ -717,7 +702,8 @@ class Updater(threading.Thread):
         import urllib.request
         f = urllib.request.urlopen("http://dl.dropbox.com/u/44766482/ot_version.txt").read()
         verint = int(f.decode("utf-8"))
-        if verint > __version__:
+        if verint > globals.__version__:
+            from version import Version
             text = gui.Label("Version " + Version(verint).__repr__() + lang.available, color=(255, 0, 0))
             self.update.td(text, align=-1)
             text2 = gui.Label(lang.changelog, color=(100, 100, 255))
@@ -785,7 +771,7 @@ def run():
             "appAuthor": __author__+" (Berserker66)",
             "appName": "Omnitool",
             "appPath": os.path.abspath(sys.argv[0]),
-            "appVersion": __version__.__repr__()
+            "appVersion": globals.__version__.__repr__()
         }
         with loc.open("wt") as f:
             f.write(json.dumps(data, indent=4))
@@ -801,13 +787,12 @@ def run():
         worldnames = []
         print("Omnitool has found no worlds")
 
-    theme = Theme(themename)
     use_override = True
     if use_override:
-        app = pgu_override.MyApp(theme=theme)
+        app = pgu_override.MyApp(theme=globals.theme)
     else:
         import pgu
-        app = pgu.gui.App(theme=theme)
+        app = pgu.gui.App(theme=globals.theme)
     worlds = []
     ts = [threading.Thread(target=get_world, args=(world, worlds)) for world in worldnames]
     tuple(t.start() for t in ts)
@@ -939,7 +924,7 @@ def run():
     print("GUI Matrix created, initializing..")
     pygame.display.quit()
     pygame.display.init()
-    pygame.display.set_caption("Terraria Omnitool V%s | %d Bit" % (__version__.__repr__(), bit))
+    pygame.display.set_caption("Terraria Omnitool V%s | %d Bit" % (globals.__version__.__repr__(), bit))
 
     def make_resize(worlds, app, main):
         def resize(self, ev):
@@ -1208,16 +1193,6 @@ bind = {1: (relay.run_plat, "Planetoids"),
         2: (relay.run_arena, "Arena"),
         3: (relay.run_flat, "Flatworld"),
         4: (relay.run_world, "Worldify")}
-
-
-class Quitbutton(gui.Button):
-    def __init__(self, app, value=lang.pt_start):
-        gui.Button.__init__(self, value, width=300, height=40)
-        try:
-            self.connect(gui.CLICK, app.quit, None)
-        except AttributeError:
-            self.connect(gui.CLICK, app.close, None)
-
 
 if __name__ == "__main__" and not child:
 

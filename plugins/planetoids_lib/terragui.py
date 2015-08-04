@@ -4,14 +4,14 @@ from pgu import gui
 
 
 def run(main=None):
-    from omnitool import lang, Theme, themename, Quitbutton, exit_prog, __version__
+    from globals import lang, theme, exit_prog, exit_prog, __version__
+    from pgu_override import Quitbutton
 
 
     pygame.display.init()
     pygame.display.set_caption("Planetoids & Terra Generator")
-    blue = Theme(themename)
     if main == None:
-        app = gui.Desktop(theme=blue)
+        app = gui.Desktop(theme=theme)
         main = gui.Table()
         app.connect(gui.QUIT, exit_prog, None)
     else:
@@ -90,7 +90,7 @@ def run(main=None):
     #main.tr()
     main.td(gui.Spacer(1, 12))
     main.tr()
-    main.td(Quitbutton(app), colspan=3)
+    main.td(Quitbutton(app, lang.pt_start), colspan=3)
     main.tr()
     main.td(gui.Spacer(1, 12))
 

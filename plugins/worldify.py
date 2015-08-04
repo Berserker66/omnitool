@@ -27,7 +27,8 @@ class Generator():
 
 
     def run(self):
-        from omnitool import themename, Theme, lang, exit_prog, Quitbutton, __version__
+        from globals import lang, theme, exit_prog, exit_prog, __version__
+        from pgu_override import Quitbutton
         #pygame.quit()
         if hasattr(sys, "frozen"):
             os.chdir(os.path.dirname(sys.executable))
@@ -37,24 +38,14 @@ class Generator():
         pygame.display.init()
         pygame.display.set_caption("Worldify")
 
-        try:
-            blue = Theme(themename)
-        except Exception as e:
-            print("Error initialising GUI, proceeding without it")
-            print(str(e))
-            nogui = True
-        else:
-            nogui = False
-
         if len(sys.argv) < 2:
             if nogui:
-                noimage = True
                 print("No Image supplied, please drag and drop an image onto the program")
                 sleep(3)
                 sys.exit(1000)
             else:
 
-                app = gui.Desktop(theme=blue)
+                app = gui.Desktop(theme=theme)
                 app.connect(gui.QUIT, exit_prog, None)
                 app.connect(gui.CLOSE, exit_prog, None)
                 main = gui.dialog.FileDialog()
@@ -66,7 +57,7 @@ class Generator():
                 imagepath = main.value
         else:
             imagepath = sys.argv[1]
-            noimage = False
+
 
         local = os.listdir(os.getcwd())
         if "db.txt" in local:
