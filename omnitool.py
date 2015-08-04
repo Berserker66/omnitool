@@ -383,9 +383,12 @@ class WorldInteraction(gui.Dialog):
         self.close()
         args[0](*args[1:])
 
-
 class World():
+    aircolor = pygame.Color(200, 200, 255)
+    groundcolor = pygame.Color(150, 75, 0)
+    rockcolor = pygame.Color(50, 50, 50)
     def __init__(self, path):
+        self.mapperrunning = threading.Event()
         self.path = path
         self.imagepath = images / self.path.with_suffix(".png").name
         with self.path.open("rb") as f:
@@ -405,7 +408,7 @@ class World():
             self.info.td(gui.Label("Hardmode", color=(250, 0, 0)), align=0)
         self.info.td(self.size, align=1)
         self.raw = pygame.surface.Surface((self.header["width"], self.header["height"]))
-        self.raw.fill((200, 200, 255))
+        self.raw.fill(self.aircolor)
         self.thumbsize = thumbsize
 
         if thumbsize:
@@ -417,6 +420,7 @@ class World():
                                self)
 
             self.get_worldview()
+
 
     def get_thumb(self, size=thumbsize):
         i_size = self.raw.get_size()
@@ -437,19 +441,32 @@ class World():
         self.thumb = pygame.transform.rotozoom(self.raw, 0, scale)
         self.image.change_image(self.thumb)
 
+    def check_change(self):
+        if not self.mapperrunning.is_set():
+            redraw = False
+            try:
+                strpath = str(self.path)
+                if strpath in cache["worlds"] and self.path.stat().st_mtime > cache["worlds"][strpath]["time"]:
+                    redraw = True
+            except FileNotFoundError:#world happened to be removed between checks
+                pass
+            else: #why is there no elif on try?
+                if redraw:
+                    self.raw.fill(self.aircolor)
+                    self.get_worldview()
+
     def get_worldview(self):
+        self.mapperrunning.set() #make sure Redrawer knows, that aquisition of this image is in progress
         needed = False
         try:
-            if self.path.name in cache["worlds"]:
-                self.cache = cache["worlds"][self.path.name]
-                if self.path.stat().st_mtime == self.cache["time"]:
+            if str(self.path) in cache["worlds"]:
+                worldcache = cache["worlds"][str(self.path)]
+                if self.path.stat().st_mtime == worldcache["time"]:
                     i = proxyload(images / self.path.with_suffix('.png').name)
                 else:
                     raise IOError("Image is outdated")
             else:
-                cache["worlds"][self.path.name] = {"time": 0}
-                self.cache = cache["worlds"][self.path.name]
-                #print("Image does not exist for "+ str(self.path))
+                cache["worlds"][str(self.path)] = {"time": 0}
                 raise IOError("Image does not exist")
 
         except IOError:
@@ -462,17 +479,19 @@ class World():
         if needed:
             size = self.raw.get_size()
             levels = self.header["groundlevel"], self.header["rocklevel"]
-            pygame.draw.rect(self.raw, (150, 75, 0),
+            pygame.draw.rect(self.raw, self.groundcolor,
                              ((0, levels[0]),
                               (size[0], size[1] - levels[0])))
 
-            pygame.draw.rect(self.raw, (50, 50, 50),
+            pygame.draw.rect(self.raw, self.rockcolor,
                              ((0, levels[1]),
                               (size[0], size[1] - levels[1])))
             self.update_thumb()
             t = PLoader(self)
             t.name = "Vanilla-Mapper-%s" % self.header["name"]
             t.start()
+        else:
+            self.mapperrunning.clear()
 
 def gen_slice(path, start, size, levels, version, multiparts):
     #TODO : add get_tile functions with multiparts dynamic multiparts awareness
@@ -539,38 +558,38 @@ class PLoader(threading.Thread):
         loader.world = world
 
     def run(loader):
-        import omnitool
 
         w = 16
-        self = loader.world
-        size = (self.header["width"], self.header["height"])
+        world = loader.world
+        size = (world.header["width"], world.header["height"])
         with processing:
             pool = multiprocessing.Pool(1)
 
-        levels = self.header["groundlevel"], self.header["rocklevel"]
+        levels = world.header["groundlevel"], world.header["rocklevel"]
         xi = 0
-        version = self.header["version"]
-        hw = self.header["width"]
-        pos = self.pos
+        version = world.header["version"]
+        hw = world.header["width"]
+        pos = world.pos
 
         while xi < hw:
             w = min(w, -xi + hw)
-            p, pos = pool.apply(omnitool.gen_slice, ((self.path, pos, (w, self.header["height"]), levels, version, loader.world.multiparts)))
-            p = pygame.image.fromstring(p, (w, self.header["height"]), "RGB")
-            while self.raw.get_locked():  #if window is beeing rezized, keep waiting
+            p, pos = pool.apply(gen_slice, ((world.path, pos, (w, world.header["height"]), levels, version, world.multiparts)))
+            p = pygame.image.fromstring(p, (w, world.header["height"]), "RGB")
+            while world.raw.get_locked():  #if window is beeing rezized, keep waiting
                 time.sleep(0.1)
-            self.raw.blit(p, (xi, 0))
-            self.update_thumb()
-            self.image.repaint()
+            world.raw.blit(p, (xi, 0))
+            world.update_thumb()
+            world.image.repaint()
             xi += w
         pool.close()
-        self.update_thumb()
-        self.image.repaint()
+        world.update_thumb()
+        world.image.repaint()
 
-        pygame.image.save(self.raw, str(loader.world.imagepath))
+        pygame.image.save(world.raw, str(loader.world.imagepath))
 
-        self.cache["time"] = self.path.stat().st_mtime
+        cache["worlds"][str(world.path)]["time"] = world.path.stat().st_mtime
         save_cache()
+        world.mapperrunning.clear()
 
 def full_split(root):
     split = list(os.path.split(root))
@@ -627,7 +646,7 @@ class Backupper(threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
 
-    def cache(self, path, dest):
+    def backup(self, path, dest):
         t = path.stat().st_mtime
         if path not in cache["backup"] or t != cache["backup"]:
             s = time.strftime("%SS_%MM_%HH_%dD_%b_%YY.", time.localtime(t))
@@ -642,7 +661,7 @@ class Backupper(threading.Thread):
         #source = os.path.join("C:\program files (x86)\\steamapps\common\Terraria")
         worlds = list(get_worlds())
         for path in worlds:
-            self.cache(path, dest)
+            self.backup(path, dest)
         if len(worlds) == 0:
             print("BackUpper has found no worlds")
 
@@ -652,7 +671,7 @@ class Backupper(threading.Thread):
         try:
             players = get_players()
             for path in players:
-                self.cache(path, dest)
+                self.backup(path, dest)
         except FileNotFoundError:
             print("BackUpper has found no player files")
 
@@ -666,6 +685,7 @@ class Redrawer(threading.Thread):
     """Thread that waits for changes in the world folder and triggers a menu redraw when necessary"""
     def __init__(self):
         threading.Thread.__init__(self)
+        self.name = "Redrawer"
         self.daemon = True
 
     def run(self):
@@ -675,23 +695,26 @@ class Redrawer(threading.Thread):
         while 1:
             time.sleep(1)
             if dropped:
-                print("World File Change Detected!")
                 worlds = list(filter(lambda world: world.path not in dropped, worlds))
-                app.queue.append((display_worlds,))
+            for world in worlds:
+                world.check_change()
             if new:
-                print("World File Change Detected!")
-
                 for name in new:
                     get_world(name, worlds)
+            if new or dropped:
+                print("World File Change Detected!")
                 app.queue.append((display_worlds,))
-            newnames = set(get_worlds())
-            new = newnames - set(worldnames)
-            dropped = set(worldnames) - newnames
+
+            names = set(get_worlds())
+            new = names - set(worldnames)
+            dropped = set(worldnames) - names
             if new:
                 worldnames.extend(new)
             if dropped:
                 for w in dropped:
                     worldnames.remove(w)
+
+
 
 class Updater(threading.Thread):
     def __init__(self, update):
@@ -765,6 +788,7 @@ def run():
     global worldnames
     global worlds
     global display_worlds
+
     try:
         loc = myterraria / "Game Launcher" / "omnitool.gli3"
         data = {
@@ -985,10 +1009,8 @@ def run():
         b = Backupper()
         b.name = "Backup"
         b.start()
-    if worldnames:
-        redrawer = Redrawer()
-        redrawer.name = "Redrawer"
-        redrawer.start()
+    redrawer = Redrawer()
+    redrawer.start()
     info.start()
     updater.start()
     app.run(main)
