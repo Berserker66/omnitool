@@ -14,4 +14,4 @@ install:
   - pip install cx_Freeze
 
 script:
-  - omnisetup.py build
+  - python omnisetup.py build
