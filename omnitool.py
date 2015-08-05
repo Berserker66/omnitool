@@ -717,14 +717,19 @@ class Redrawer(threading.Thread):
 
 
 class Updater(threading.Thread):
+    ziploc = os.path.join(globals.appdata, "tImages.zip")
+    verloc = os.path.join(globals.appdata, "tImages.json")
     def __init__(self, update):
         threading.Thread.__init__(self)
+        self.name = "Updater"
         self.update = update
 
     def run(self):
         import urllib.request
-        f = urllib.request.urlopen("http://dl.dropbox.com/u/44766482/ot_version.txt").read()
-        verint = int(f.decode("utf-8"))
+        import json
+        f = urllib.request.urlopen("http://dl.dropbox.com/u/44766482/ot_updater/ot_version.json").read()
+        js = json.loads(f.decode())
+        verint = js["omnitool"]
         if verint > globals.__version__:
             from version import Version
             text = gui.Label("Version " + Version(verint).__repr__() + lang.available, color=(255, 0, 0))
@@ -739,9 +744,53 @@ class Updater(threading.Thread):
             text.connect(gui.CLICK,
                          webbrowser.open,
                          "http://adf.ly/686481/omnitool-github-releases")
-        print("Update notifier done")
+
+        if not os.path.exists("tImages.zip"):#worldrender might lack it's textures
+            if self.check_texture_version(js["tImages"]):#newer version available
+                args = (r"http://dl.dropbox.com/u/44766482/ot_updater/tImages.zip",
+                        str(self.ziploc),
+                        "Texture Download")
+                p = multiprocessing.Process(target = remote_retrieve, name = "tImages Retriever", args = args)
+                p.start()
+                p.join()
+
+                import json
+                with open(self.verloc, "w") as f:
+                    json.dump({"version" : js["tImages"]}, f)
+        print("Updater done")
         sys.exit()
 
+    def check_texture_version(self, remote_texture_version):
+        if os.path.exists(self.ziploc) and os.path.exists(self.verloc):
+            import json
+            with open(self.verloc) as f:
+                js = json.load(f)
+            if js["version"] >= remote_texture_version:
+                return False
+
+        return True
+
+def remote_retrieve(source, target, name):
+    """
+    Retrieves remote file, showing a pygame progressbar for progress.
+    As there can only be one pygame window per progress, it is recommended to run this as a subprocess
+    :param source: URL source of file
+    :param target: local target location
+    :param name: caption of pygame window
+    :return:
+    """
+    from urllib.request import urlretrieve
+    from loadbar import Bar
+    bar = Bar(caption = name)
+    def reporthook(blocknum, blocksize, totalsize):
+        read = blocknum * blocksize
+        if totalsize > 0:
+            percent = read * 100 / totalsize
+        else: # total size is unknown
+            percent = 0
+        bar.set_progress(percent, name+" {:d}%".format(int(percent)))
+
+    urlretrieve(source, target, reporthook)
 
 def proxyload(path):
     with path.open("rb") as f:
@@ -1002,7 +1051,6 @@ def run():
     info.daemon = False
 
     updater = Updater(update)
-    updater.name = "Updater"
     updater.daemon = False
 
     if cache["do_backup"]:

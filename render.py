@@ -11,9 +11,16 @@ minimap_limits = 400,300
 # from blendmapper import *
 
 def load(tiles=None, walls=None, colors=None, wallcolors=None):
+    from globals import appdata
+    shared = os.path.join(appdata, "tImages.zip")
+    ziploc = None
     if os.path.exists("tImages.zip"):
+        ziploc = "tImages.zip"
+    elif os.path.exists(shared):
+        ziploc = shared
+    if ziploc:
         from Resources import ResourceManager
-        manager = ResourceManager("tImages.zip")
+        manager = ResourceManager(ziploc)
         def load_content(imagename):
             base, _ = os.path.splitext(imagename)
             return manager.get_pygame_image(base+".img")
