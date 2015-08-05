@@ -773,7 +773,7 @@ class Updater(threading.Thread):
 def remote_retrieve(source, target, name):
     """
     Retrieves remote file, showing a pygame progressbar for progress.
-    As there can only be one pygame window per progress, it is recommended to run this as a subprocess
+    As there can only be one pygame window per process, it is recommended to run this as a subprocess.
     :param source: URL source of file
     :param target: local target location
     :param name: caption of pygame window
