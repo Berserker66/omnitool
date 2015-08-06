@@ -493,7 +493,7 @@ class World():
         else:
             self.mapperrunning.clear()
 
-def gen_slice(path, start, size, levels, version, multiparts):
+def gen_slices(queue, imgpath, path, start, size, levels, version, multiparts, interval = 32):
     #TODO : add get_tile functions with multiparts dynamic multiparts awareness
     if version > 100:
         get_tile = tlib.get_tile_buffered_12_masked
@@ -501,9 +501,8 @@ def gen_slice(path, start, size, levels, version, multiparts):
         get_tile = tlib.get_tile_buffered
 
     with path.open("rb") as f:
-        b = [0]
         f.seek(start)
-        x, y = size  #read world size from header cache
+        xworld, yworld = size  #read world size from header cache
         s = pygame.surface.Surface(size, depth=24)
         s.fill((200, 200, 255))
         pygame.draw.rect(s, (150, 75, 0),
@@ -514,42 +513,45 @@ def gen_slice(path, start, size, levels, version, multiparts):
                          ((0, levels[1]),
                           (size[0], size[1] - levels[1])))
         buffer = pygame.PixelArray(s)
-        for xi in range(x):# for each slice
-            yi = 0
-            while yi < y:  # get the tiles
-                (tile, wall, liquid, multi, wire), b = get_tile(f)
-                color = None
-                if not liquid:  #liquid == 0 means no liquid
-                    # there could be a liquid and a tile, like a chest and water,
-                    #but I can only set one color to a pixel anyway, so I priotise the tile
-                    if tile == None:
-                        if wall:
-                            if wall in colorlib.walldata:
-                                color = colorlib.walldata[wall]
-                            else:
-                                color = (wall, wall, wall)
+        xstart = 0
+        while xstart < xworld:
+            w = min(interval, -xstart + xworld)
+            for xi in range(xstart, xstart+w):# for each slice
+                yi = 0
+                while yi < yworld:  # get the tiles
+                    (tile, wall, liquid, multi, wire), b = get_tile(f)
+                    color = None
+                    if not liquid:  #liquid == 0 means no liquid
+                        #there could be a liquid and a tile, like a chest and water,
+                        #but I can only set one color to a pixel anyway, so I priotise the tile
+                        if tile == None:
+                            if wall:
+                                if wall in colorlib.walldata:
+                                    color = colorlib.walldata[wall]
+                                else:
+                                    color = (wall, wall, wall)
 
-                    elif tile in colorlib.data:
-                        color = colorlib.data[tile]  #if colorlib has a color use it
-                    else:
-                        tile = min(255, tile)
-                        color = (tile, tile, tile)  #make a grey otherwise
-                elif liquid > 512:
-                    color = (245, 219, 27)
-                elif liquid > 256:
-                    color = (150, 35, 17)
+                        elif tile in colorlib.data:
+                            color = colorlib.data[tile]  #if colorlib has a color use it
+                        else:
+                            tile = min(255, tile)
+                            color = (tile, tile, tile)  #make a grey otherwise
+                    elif liquid > 512:
+                        color = (245, 219, 27)
+                    elif liquid > 256:
+                        color = (150, 35, 17)
 
-                else:  #0>x>256 is water, the higher x is the more water is there
-                    color = (19, 86, 134)
-                if color:
-                    buffer[xi, yi:yi+b] = color
-                yi+=b
-        del(buffer)
-        pos = f.tell()
-
-    return (pygame.image.tostring(s, "RGB"), pos)
-
-processing = threading.Lock()
+                    else:  #0>x>256 is water, the higher x is the more water is there
+                        color = (19, 86, 134)
+                    if color:
+                        buffer[xi, yi:yi+b] = color
+                    yi+=b
+            sub = buffer[xstart:xstart+w,::].make_surface()
+            queue.put([w, pygame.image.tostring(sub, "RGB")])
+            xstart += w
+    del(buffer)
+    queue.close()
+    pygame.image.save(s, imgpath)
 
 
 class PLoader(threading.Thread):
@@ -558,35 +560,29 @@ class PLoader(threading.Thread):
         loader.world = world
 
     def run(loader):
-
-        w = 16
         world = loader.world
-        size = (world.header["width"], world.header["height"])
-        with processing:
-            pool = multiprocessing.Pool(1)
-
+        wx, wy = size = (world.header["width"], world.header["height"])
         levels = world.header["groundlevel"], world.header["rocklevel"]
         xi = 0
         version = world.header["version"]
-        hw = world.header["width"]
-        pos = world.pos
 
-        while xi < hw:
-            w = min(w, -xi + hw)
-            p, pos = pool.apply(gen_slice, ((world.path, pos, (w, world.header["height"]), levels, version, world.multiparts)))
-            p = pygame.image.fromstring(p, (w, world.header["height"]), "RGB")
+        pos = world.pos
+        queue = multiprocessing.Queue()
+        p= multiprocessing.Process(target = gen_slices, args=(queue, str(loader.world.imagepath), world.path, pos, size, levels, version, world.multiparts))
+        p.start()
+        while xi < wx:
+
+            x, imgdata = queue.get()
+
+            surface = pygame.image.fromstring(imgdata, (x, wy), "RGB")
             while world.raw.get_locked():  #if window is beeing rezized, keep waiting
                 time.sleep(0.1)
-            world.raw.blit(p, (xi, 0))
+            world.raw.blit(surface, (xi, 0))
             world.update_thumb()
             world.image.repaint()
-            xi += w
-        pool.close()
-        world.update_thumb()
-        world.image.repaint()
+            xi += x
 
-        pygame.image.save(world.raw, str(loader.world.imagepath))
-
+        p.join()#wait until the image file is saved
         cache["worlds"][str(world.path)]["time"] = world.path.stat().st_mtime
         save_cache()
         world.mapperrunning.clear()
