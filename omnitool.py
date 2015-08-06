@@ -745,7 +745,8 @@ class Updater(threading.Thread):
             if self.check_texture_version(js["tImages"]):#newer version available
                 args = (r"http://dl.dropbox.com/u/44766482/ot_updater/tImages.zip",
                         str(self.ziploc),
-                        "Texture Download")
+                        "Texture Download",
+                        False)
                 p = multiprocessing.Process(target = remote_retrieve, name = "tImages Retriever", args = args)
                 p.start()
                 p.join()
@@ -766,7 +767,7 @@ class Updater(threading.Thread):
 
         return True
 
-def remote_retrieve(source, target, name):
+def remote_retrieve(source, target, name, abortable = True):
     """
     Retrieves remote file, showing a pygame progressbar for progress.
     As there can only be one pygame window per process, it is recommended to run this as a subprocess.
@@ -777,7 +778,7 @@ def remote_retrieve(source, target, name):
     """
     from urllib.request import urlretrieve
     from loadbar import Bar
-    bar = Bar(caption = name)
+    bar = Bar(caption = name, abortable=abortable)
     def reporthook(blocknum, blocksize, totalsize):
         read = blocknum * blocksize
         if totalsize > 0:
