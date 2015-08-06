@@ -568,7 +568,7 @@ class PLoader(threading.Thread):
 
         pos = world.pos
         queue = multiprocessing.Queue()
-        p= multiprocessing.Process(target = gen_slices, args=(queue, str(self.world.imagepath), world.path, pos, size, levels, version, world.multiparts))
+        p= multiprocessing.Process(target = relay.launch_gen_slices, args=(queue, str(self.world.imagepath), world.path, pos, size, levels, version, world.multiparts))
         p.start()
         while xi < wx:
 

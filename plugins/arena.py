@@ -181,7 +181,7 @@ class Generator():
         main.tr()
         main.td(gui.Spacer(1, 12))
         main.tr()
-        main.td(Quitbutton(app), colspan=3)
+        main.td(Quitbutton(app, lang.pt_start), colspan=3)
 
         app.run(main)
         pygame.display.quit()

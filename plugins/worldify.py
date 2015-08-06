@@ -123,7 +123,7 @@ class Generator():
         weight = (1, 1, 1)
         if not nogui:
 
-            app = gui.Desktop(theme=blue)
+            app = gui.Desktop(theme=theme)
             app.connect(gui.QUIT, exit_prog, None)
             c = gui.Table()
 
@@ -176,7 +176,7 @@ class Generator():
                 def update(slider, label):
                     label.set_text(str(slider.value) + "X")
 
-                app = gui.Desktop(theme=blue)
+                app = gui.Desktop(theme=theme)
                 app.connect(gui.QUIT, exit_prog, None)
                 c = gui.Table(width=250)
                 c.td(gui.Label(lang.w_priority, size=40), colspan=3)

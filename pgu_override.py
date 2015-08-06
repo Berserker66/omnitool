@@ -134,8 +134,8 @@ def myupdate(self, s):
     return updates
 
 class Quitbutton(Button):
-    def __init__(self, app, value):
-        Button.__init__(self, value, width=300, height=40)
+    def __init__(self, app, text):
+        Button.__init__(self, text, width=300, height=40)
         try:
             self.connect(CLICK, app.quit, None)
         except AttributeError:

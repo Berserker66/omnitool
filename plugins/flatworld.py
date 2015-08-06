@@ -107,7 +107,7 @@ class Generator():  # required class to be called by plugin manager
         #next row
         main.tr()
         #Generate! button
-        main.td(Quitbutton(app), colspan=4)
+        main.td(Quitbutton(app, lang.pt_start), colspan=4)
         #run the application and open the window
         app.run(main)
         #when it's done, instruct pygame to clean up
