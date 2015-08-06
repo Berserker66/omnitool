@@ -129,7 +129,7 @@ t = False
 if t:#force freezing to include all lang files
     from Language import english, german, portuguese, czech, \
         french, spanish, japanese, norwegian, danish, italian,\
-        hungarian
+        hungarian, russian
 
 
 
@@ -246,7 +246,7 @@ class Language(gui.Dialog):
         liste = gui.List(200, 150)
         langs = ["german", "english", "portuguese", "czech",
                  "spanish", "french", "norwegian", "japanese",
-                 "danish", "italian", "hungarian"]
+                 "danish", "italian", "hungarian", "russian"]
         langnames = [lang.capitalize() for lang in langs]
         for name, dire in zip(langnames, langs):
             liste.add(name, value=dire)
