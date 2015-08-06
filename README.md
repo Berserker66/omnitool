@@ -16,9 +16,9 @@ Features
 * Works with GameLauncher GUI
 * Plugin system for extensions.
 
-[![Main Menu](https://cloud.githubusercontent.com/assets/3189725/9048286/4926664e-3a38-11e5-94a3-78ea5a750c54.png)]
+![Main Menu](https://cloud.githubusercontent.com/assets/3189725/9048286/4926664e-3a38-11e5-94a3-78ea5a750c54.png)
 
-[![World Render Function](https://cloud.githubusercontent.com/assets/3189725/9121177/f7ad474c-3c80-11e5-8402-1add361a6cf0.png)]
+![World Render Function](https://cloud.githubusercontent.com/assets/3189725/9121177/f7ad474c-3c80-11e5-8402-1add361a6cf0.png)
 
 Usage
 =====
