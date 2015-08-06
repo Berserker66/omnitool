@@ -555,12 +555,12 @@ def gen_slices(queue, imgpath, path, start, size, levels, version, multiparts, i
 
 
 class PLoader(threading.Thread):
-    def __init__(loader, world):
-        threading.Thread.__init__(loader)
-        loader.world = world
+    def __init__(self, world):
+        threading.Thread.__init__(self)
+        self.world = world
 
-    def run(loader):
-        world = loader.world
+    def run(self):
+        world = self.world
         wx, wy = size = (world.header["width"], world.header["height"])
         levels = world.header["groundlevel"], world.header["rocklevel"]
         xi = 0
@@ -568,7 +568,7 @@ class PLoader(threading.Thread):
 
         pos = world.pos
         queue = multiprocessing.Queue()
-        p= multiprocessing.Process(target = gen_slices, args=(queue, str(loader.world.imagepath), world.path, pos, size, levels, version, world.multiparts))
+        p= multiprocessing.Process(target = gen_slices, args=(queue, str(self.world.imagepath), world.path, pos, size, levels, version, world.multiparts))
         p.start()
         while xi < wx:
 
