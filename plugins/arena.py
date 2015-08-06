@@ -32,7 +32,7 @@ class Generator():
 
     def run(self):
 
-        from globals import lang, theme, exit_prog, exit_prog, __version__
+        from shared import lang, theme, exit_prog, exit_prog, __version__
         from pgu_override import Quitbutton
 
         torch_chances = [lang.at_full, lang.at_blue, lang.at_red, lang.at_green,

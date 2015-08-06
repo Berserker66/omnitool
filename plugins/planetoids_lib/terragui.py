@@ -4,7 +4,7 @@ from pgu import gui
 
 
 def run(main=None):
-    from globals import lang, theme, exit_prog, exit_prog, __version__
+    from shared import lang, theme, exit_prog, exit_prog, __version__
     from pgu_override import Quitbutton
 
 

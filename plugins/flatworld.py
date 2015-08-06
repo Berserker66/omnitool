@@ -46,7 +46,7 @@ class Generator():  # required class to be called by plugin manager
 
     def gen_gui(self):
         #get theme, language and end process function from omnitool API
-        from globals import lang, theme, exit_prog, exit_prog
+        from shared import lang, theme, exit_prog, exit_prog
         from pgu_override import Quitbutton
 
         #initilize pygame renderer

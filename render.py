@@ -11,7 +11,7 @@ minimap_limits = 400,300
 # from blendmapper import *
 
 def load(tiles=None, walls=None, colors=None, wallcolors=None):
-    from globals import appdata
+    from shared import appdata
     shared = os.path.join(appdata, "tImages.zip")
     ziploc = None
     if os.path.exists("tImages.zip"):
