@@ -21,8 +21,8 @@ cx_Freeze.setup(
     description="Omnitool",
     executables=[EXE],
     options={"build_exe": {"excludes": ["OpenGL", "tkinter", "tcl"],
-                           "packages": ["multiprocessing"],
-                           "includes" : ("loadbar","colorsys")}
+                           "packages": ["Language"],
+                           "includes" : ()}
              }
 )
 

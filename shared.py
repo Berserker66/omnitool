@@ -4,7 +4,7 @@ import os
 
 __all__ = ("__version__", "appdata", "cachepath", "cache", "lang", "theme")
 
-__version__ = Version(180102)
+__version__ = Version(180200)
 appdata = appdirs.user_config_dir('omnitool', "", roaming = True)
 cachepath = os.path.join(appdata, "cache.dill")
 #filled in by omnitool.py:

@@ -4,7 +4,8 @@ import pygame
 import numpy
 from tinterface import *
 from concurrent.futures import ThreadPoolExecutor
-minimap_limits = 400,300
+minimap_limits = 0.4,0.2
+defaultres = [1024, 768]
 
 
 
@@ -89,6 +90,19 @@ def load(tiles=None, walls=None, colors=None, wallcolors=None):
     return tex, walltex, npc_tex, air, gborder, rborder, gfill, rfill
 
 
+def adjust_minimap(target_rel_size, resolution, base_image):
+    mi_size = base_image.get_size()
+    mi_scale = 1
+    scaled_limits = [x*y for x,y in zip(minimap_limits, resolution)]
+    if mi_size[0] > scaled_limits[0]:
+        mi_scale = 1/(mi_size[0]/scaled_limits[0])
+    if mi_size[1] > scaled_limits[1]:
+        mi_scale = min(1/(mi_size[1]/scaled_limits[1]), mi_scale)
+    if mi_scale != 1:
+        print("Scaling minimap with factor "+str(mi_scale))
+        mapimage = pygame.transform.rotozoom(base_image, 0, mi_scale)
+
+    return mapimage, mi_scale
 
 def run(header, path, mapping, data, mappingfolder = None):
     header, pos = data
@@ -98,16 +112,8 @@ def run(header, path, mapping, data, mappingfolder = None):
     texture_loader = threadpool.submit(load)
     try:
         imageloc = get_myterraria() / "WorldImages" / path.with_suffix('.png').name
-        mapimage = pygame.image.load(str(imageloc))
-        mi_size = mapimage.get_size()
-        mi_scale = 1
-        if mi_size[0] > minimap_limits[0]:
-            mi_scale = 1/(mi_size[0]/minimap_limits[0])
-        if mi_size[1] > minimap_limits[1]:
-            mi_scale = min(1/(mi_size[1]/minimap_limits[1]), mi_scale)
-            print("Scaling minimap with factor "+str(mi_scale))
-        if mi_scale != 1:
-            mapimage = pygame.transform.rotozoom(mapimage, 0, mi_scale)
+        base_image = pygame.image.load(str(imageloc))
+        mapimage, mi_scale = adjust_minimap(minimap_limits, defaultres, base_image)
         mi_size = mapimage.get_size()
 
     except:
@@ -121,7 +127,7 @@ def run(header, path, mapping, data, mappingfolder = None):
     f.seek(pos)
     get = get_tile_buffered_12_masked if header["version"] > 100 else get_tile_buffered
     pygame.display.set_caption("Loading World..")
-    loadbar_width = minimap_limits[0]
+    loadbar_width = 200
     if mapimage:
         if mi_size[0] > 200:loadbar_width = mi_size[0]
         surface = pygame.display.set_mode((loadbar_width, 20+mi_size[1]))
@@ -132,9 +138,7 @@ def run(header, path, mapping, data, mappingfolder = None):
     if not skip:
         print("loading and converting world data")
 
-        b = [0]
         rect = pygame.Rect(0, 0, 0, 20)
-        nw = 0
         tup = (rect,)
         tiles = numpy.empty((header["width"], header["height"]), dtype=tuple)
         w, h = header["width"], header["height"]
@@ -144,9 +148,8 @@ def run(header, path, mapping, data, mappingfolder = None):
                 data, b = get(f)
                 tiles[xi, yi:yi+b] = (data,)*b
                 yi+=b
-            nw = int(minimap_limits[0] * xi / w)
-            if nw != rect.w:
-                rect.w = nw
+            if xi % 16 == 0:
+                rect.w = int(xi*loadbar_width/w)
                 pygame.draw.rect(surface, (200, 200, 200), rect)
                 pygame.display.update(tup)
 
@@ -156,21 +159,8 @@ def run(header, path, mapping, data, mappingfolder = None):
                         import sys
                         sys.exit()
 
-                #chests = [get_chest(f) for x in range(1000)]
-                #signs = [get_sign(f) for x in range(1000)]
-                #print (chests)
         npcs = []
-        #while 1:
-        #    npc = get_npc(f)
-        #    if not npc: break
-        #    else: npcs.append(npc)
-        #names = get_npc_names(f)
-        #print (names, npcs)
-        #trail = get_trail(f)
-        #if trail[0] and trail[1] == header["name"] and trail[2] == header["ID"]:
-        #    print ("World Signature test passed")
-        #else:
-        #    print ("World Signature test failed, information possibly corrupted")
+
     f.close()
 
     rmap = numpy.random.randint(3, size=(header["width"], header["height"]))
@@ -194,7 +184,7 @@ def run(header, path, mapping, data, mappingfolder = None):
         area = [1600, 1600]
         os.chdir("..")
     else:
-        res = [1024, 768]
+        res = list(defaultres)
         dis = pygame.display.set_mode(res, pygame.RESIZABLE)
     s = pygame.surface.Surface(res)
     def relmove(rel):
@@ -263,6 +253,8 @@ def run(header, path, mapping, data, mappingfolder = None):
                 res = event.size
                 dis = pygame.display.set_mode(res, pygame.RESIZABLE)
                 s = pygame.surface.Surface(res)
+                mapimage, mi_scale = adjust_minimap(minimap_limits, res, base_image)
+                mi_size = mapimage.get_size()
                 dirty.append(pygame.rect.Rect(0, 0, res[0], res[1]))
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if mapimage and event.button == 1:
@@ -333,10 +325,8 @@ def run(header, path, mapping, data, mappingfolder = None):
                     return
 
             if (mx + 1) * area[0] > wi and not (mx * area[0] > wi):
-
                 res[0] = -mx * area[0] + wi
             if (my + 1) * area[1] > he and not (my * area[1] > he):
-
                 res[1] = -my * area[1] + he
 
             dirty = [pygame.rect.Rect(0, 0, res[0], res[1])]
@@ -349,7 +339,7 @@ def run(header, path, mapping, data, mappingfolder = None):
             dirty = []
             dis.blit(s, (0,0))
             if mapimage:
-                dis.blit(mapimage, (res[0]-mi_size[0], 1))
+                dis.blit(mapimage, (res[0]-mi_size[0], 0))
                 #draw minimap viewport borders:
                 bpos = pos[0]//16, pos[1]//16
                 topleft = bpos[0]*mi_scale+res[0]-mi_size[0], bpos[1]*mi_scale
@@ -363,14 +353,14 @@ def run(header, path, mapping, data, mappingfolder = None):
 
 
 if __name__ == "__main__":
-    worlds = get_worlds(False)
+    worlds = list(get_worlds(False))
     b = {}
     x = 0
     for w in worlds:
         with w.open( "rb") as f:
             header = get_header(f)[0]
             b[w] = header, f.tell()
-        name = header["name"]
+        name = header["name"].decode()
 
         print(x, ":", name)
         x += 1
@@ -381,4 +371,4 @@ if __name__ == "__main__":
         image = True
     else:
         image = False
-    run(os.path.join(path, world), image, b[world])
+    run(str(world), image, b[world])
