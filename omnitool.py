@@ -127,9 +127,7 @@ outdated = False
 #for exe bundling
 t = False
 if t:#force freezing to include all lang files
-    from Language import english, german, portuguese, czech, \
-        french, spanish, japanese, norwegian, danish, italian,\
-        hungarian, russian
+    pass
 
 
 
@@ -336,16 +334,12 @@ def open_tedit(world):
 def regen_map(world):
     world.get_worldview()
 
-def run_with_browser(func, filepath, *args):
-    func(*args)
-    webbrowser.open(str(filepath))
-
 def runrender(world, mapping):
     if mapping:
         megaimage_dir = world.path.with_suffix('')
         args = (render.run, megaimage_dir / "index.html",
                 world.header, world.path, True, (world.header, world.pos), megaimage_dir)
-        p = multiprocessing.Process(target=run_with_browser, name="WorldRender (mapping)", args=args)
+        p = multiprocessing.Process(target=relay.run_with_browser, name="WorldRender (mapping)", args=args)
     else:
         args = (world.header, world.path, False, (world.header, world.pos))
         p = multiprocessing.Process(target=render.run, name="WorldRender", args=args)

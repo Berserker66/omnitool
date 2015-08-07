@@ -1,3 +1,8 @@
+"""Moves functions out of __main__.py for frozen multiprocessing to work"""
+
+import webbrowser
+
+
 def run_flat():
     launch_plugin(('flatworld', 'Flatworld', 'generator'))
 
@@ -23,3 +28,15 @@ def launch_plugin(*args, **kwargs):
 
 def launch_gen_slices(*args, **kwargs):#freezing relay
     gen_slices(*args, **kwargs)
+
+
+def run_with_browser(func, filepath, *args):
+    """
+    Run func with *args, then open filepath in browser
+    :param func: function, that accepts *args
+    :param filepath: filepath to open in browser
+    :param args: arguments to func
+    :return:
+    """
+    func(*args)
+    webbrowser.open(str(filepath))
