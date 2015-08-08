@@ -63,7 +63,6 @@ Source: "E:\Dropbox\PyTerraria\build\Omnitool Errorlog.bat"; DestDir: "{app}"; F
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
-Name: "{group}\{#MyAppName} Cmod"; Filename: "{app}\Omnitool Cmod.bat"
 Name: "{group}\{#MyAppName} Reset"; Filename: "{app}\Omnitool Reset.bat"
 Name: "{group}\{#MyAppName} Errorlog"; Filename: "{app}\Omnitool Errorlog.bat"
 Name: "{group}\{cm:ProgramOnTheWeb,{#MyAppName}}"; Filename: "{#MyAppURL}"
