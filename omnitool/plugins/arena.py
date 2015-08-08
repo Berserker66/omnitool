@@ -35,8 +35,8 @@ class Generator():
 
     def run(self):
 
-        from shared import lang, theme, exit_prog, exit_prog, __version__
-        from pgu_override import Quitbutton
+        from ..shared import lang, theme, exit_prog, __version__
+        from ..pgu_override import Quitbutton
 
         torch_chances = [lang.at_full, lang.at_blue, lang.at_red, lang.at_green,
                          lang.at_pink, lang.at_white, lang.at_yellow, lang.at_purple,

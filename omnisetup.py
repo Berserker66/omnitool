@@ -47,7 +47,7 @@ for f in not_needed:
 def installfile(path):
     dst = buildfolder
 
-    print('copying', path, '→', dst)
+    print('copying', path, '->', dst)
     if path.is_dir():
         dst /= path.name
         if dst.is_dir():
@@ -64,9 +64,10 @@ for data in extra_data:
     installfile(Path(data))
 
 if sys.platform == "win32" and os.path.isfile("upx.exe"):
-    targets = os.listdir(buildfolder)
+    strbuild = str(buildfolder)
+    targets = os.listdir(strbuild)
     targets = filter(lambda x:x.endswith((".pyd", ".exe")), targets)
-    targets = " ".join((os.path.join(buildfolder, target) for target in targets))
+    targets = " ".join((os.path.join(strbuild, target) for target in targets))
     command = "upx.exe "+targets
     print(command)
     os.system(command)

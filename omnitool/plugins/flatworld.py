@@ -47,8 +47,8 @@ class Generator():  # required class to be called by plugin manager
 
     def gen_gui(self):
         #get theme, language and end process function from omnitool API
-        from shared import lang, theme, exit_prog, exit_prog
-        from pgu_override import Quitbutton
+        from ..shared import lang, theme, exit_prog, exit_prog
+        from ..pgu_override import Quitbutton
 
         #initilize pygame renderer
         pygame.display.init()
@@ -100,11 +100,11 @@ class Generator():  # required class to be called by plugin manager
         #add wall label to table
         main.td(gui.Label(lang.fw_wall))
         #create wall list
-        walls = gui.List(300, 150)
+        guiwalls = gui.List(300, 150)
         for wall in walls:
-            walls.add(gui.Label(wall), value=walls.index(wall))
+            guiwalls.add(gui.Label(wall), value=walls.index(wall))
         #add wall list to table
-        main.td(walls)
+        main.td(guiwalls)
         #next row
         main.tr()
         #Generate! button

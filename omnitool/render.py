@@ -10,11 +10,8 @@ minimap_limits = 0.4,0.2
 defaultres = [1024, 768]
 
 
-
-# from blendmapper import *
-
 def load(tiles=None, walls=None, colors=None, wallcolors=None):
-    from shared import appdata
+    from .shared import appdata
     shared = os.path.join(appdata, "tImages.zip")
     ziploc = None
     if os.path.exists("tImages.zip"):
@@ -22,7 +19,7 @@ def load(tiles=None, walls=None, colors=None, wallcolors=None):
     elif os.path.exists(shared):
         ziploc = shared
     if ziploc:
-        from Resources import ResourceManager
+        from .Resources import ResourceManager
         manager = ResourceManager(ziploc)
         def load_content(imagename):
             base, _ = os.path.splitext(imagename)
@@ -222,14 +219,14 @@ def run(header, path, mapping, data, mappingfolder = None):
         index = (mappingfolder / "index.html").open("wt")
         index.write('<html><table border="0" cellspacing="0" cellpadding="0"><tr>')
         pos = [mx * res[0], my * res[1]]
-        from loadbar import Bar
+        from .loadbar import Bar
         caption = "Rendering {}".format(header["name"].decode())
         loadingbar = Bar(caption=caption)
         plates_x, plates_y = header["width"] * 16 // area[0], header["height"] * 16 // area[1]
         plates_done = 0
         plates = plates_x*plates_y
     dirty = [pygame.rect.Rect(0, 0, res[0], res[1])]
-    import render_lib
+    from . import render_lib
 
     render_lib.walltex = walltex
     render_lib.tex = tex

@@ -236,9 +236,9 @@ class Settings(gui.Dialog):
 
         liste = gui.List(200, 114)
         liste.value = themename
-        themes = datadir / "themes"
-        for dire in themes.iterdir():
-            liste.add(str(dire), value=dire.name)
+        themes = "themes"
+        for dire in os.listdir(themes):
+            liste.add(str(dire), value=dire)
         self.liste = liste
 
         liste = gui.Select()
@@ -837,12 +837,11 @@ def plug_save(Plug):
 
 def launch_plugin(plug):
     import importlib
-
-    Plugin = importlib.__import__("plugins." + plug[0], fromlist=[plug[0]])
+    Plugin = importlib.import_module(".plugins." + plug[0], "omnitool")
     if plug[2] == "receiver":
         #print(dir(Plugin))
         worlds = list(get_worlds())
-        import plugingui
+        from . import plugingui
 
         w = plugingui.run(worlds, Plugin, "rec")
         if w:

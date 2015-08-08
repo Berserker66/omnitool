@@ -1,14 +1,10 @@
 import sys
 
-import multiprocessing
-
 from . import themename, get_plugins, plugins, run
 from .relay import launch_plugin
 
 child = False
 
-multiprocessing.freeze_support()
-multiprocessing.set_start_method("spawn")  # Prevents X11 crash on Linux - properly separates pygame internals
 for arg in sys.argv:
     if "multiprocessing" in arg:
         child = True
@@ -17,6 +13,7 @@ for arg in sys.argv:
 if not child:
     try:
         from .splashlib import splash
+        import os
         splash((512, 512), "Omnitool", os.path.join("themes", themename, "Splash.png"))
     except Exception as e:
         print("SplashWarning: " + str(e))
