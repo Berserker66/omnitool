@@ -20,7 +20,7 @@ from time import sleep
 from pgu import gui
 
 from ..colorlib import data, bad
-from ..database import multitiles
+from ..database import multitiles, names
 from ..tlib import *
 from ..pgu_override import Quitbutton
 from ..shared import lang, theme, exit_prog, exit_prog, __version__

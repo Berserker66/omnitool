@@ -12,6 +12,7 @@ from urllib.request import urlretrieve
 
 from .shared import cachepath, appdata, __version__
 from .loadbar import Bar
+from . import render
 
 __author__ = "Fabian Dill"
 __credits__ = ["Ijwu", "7UR7L3", "Fabian Dill"]
@@ -149,13 +150,6 @@ myterraria = get_myterraria()  #mygames-terraria path
 images = myterraria / "WorldImages"
 
 processes = []
-
-def runrender(world):
-    args = (world.header, world.path, False, (world.header, world.pos))
-    p = multiprocessing.Process(target=render.run, name="WorldRender", args=args)
-    p.start()
-    processes.append(p)
-
 
 if not images.is_dir():
     images.mkdir(parents=True)
@@ -837,6 +831,8 @@ def plug_save(Plug):
 
 def launch_plugin(plug):
     import importlib
+    if "plugins" not in sys.path:
+        sys.path = ["plugins"]+sys.path#use plugins in the folder, instead of library.zip - if accidentally included
     Plugin = importlib.import_module(".plugins." + plug[0], "omnitool")
     if plug[2] == "receiver":
         #print(dir(Plugin))

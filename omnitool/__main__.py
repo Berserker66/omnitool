@@ -42,6 +42,8 @@ if not child:
             for ps in plugins:
                 if ps[0] == name:
                     print("Launching plugin %s" % ps[1])
+                    from . import start_proc
+                    import pygame
                     pygame.quit()
                     start_proc((launch_plugin, [ps[1], ps]))
                     sys.exit()

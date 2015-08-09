@@ -25,7 +25,7 @@ cx_Freeze.setup(
     options={
         "build_exe": {
             "excludes": ["OpenGL", "tkinter", "tcl"],
-            "packages": ["Language", "omnitool"],
+            "packages": ["omnitool"],
             "includes" : (),
         },
     },
