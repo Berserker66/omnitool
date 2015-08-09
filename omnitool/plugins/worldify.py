@@ -157,7 +157,7 @@ class Generator():
             method.add(lang.w_rgb, "RGB")
             method.add(lang.w_hsv, "HSV")
             method.value = lang.w_rgb
-            e = Quitbutton(app)
+            e = Quitbutton(app, lang.pt_start)
             method.connect(gui.CHANGE, change, method, e)
             c.td(gui.Label(lang.w_method))
             c.td(method)
@@ -204,7 +204,7 @@ class Generator():
                 V.connect(gui.CHANGE, update, V, vl)
                 c.td(vl)
                 c.tr()
-                e = Quitbutton(app)
+                e = Quitbutton(app, lang.pt_start)
                 c.td(e, colspan=3)
                 app.run(c)
                 pygame.display.quit()
