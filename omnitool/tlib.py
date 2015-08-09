@@ -2,7 +2,7 @@
 from struct import unpack, pack, Struct
 import sys
 
-import database as db
+from .database import items, rev_items, multitiles
 
 
 is_exe = hasattr(sys, "frozen")
@@ -156,7 +156,7 @@ for name, form, l in formats:
 def get_item(f):
     amount = get_gbyte(f)
     if amount:
-        return amount, db.items[get_int(f)], get_gbyte(f)
+        return amount, items[get_int(f)], get_gbyte(f)
     else:
         return 0, None
 
@@ -165,7 +165,7 @@ def set_items(f, items):
     for item in items:
         f.write(set_byte(item[0]))  #amount
         if item[0]:
-            f.write(set_int(db.rev_items[item[1]]))  #itemid
+            f.write(set_int(rev_items[item[1]]))  #itemid
             if len(item) > 2:
                 f.write(set_byte(item[2]))  #prefix
             else:
@@ -285,7 +285,7 @@ def get_header(f):
         #get sections
         sectiondata = {"sections" : get_uint(f, get_gshort(f)),
                        "tiletypes" : get_gshort(f)}
-        multitiles = set()
+        multitiles_ = set()
         mask = 0x80
         for x in range(sectiondata["tiletypes"]):
             if mask == 0x80:
@@ -293,10 +293,10 @@ def get_header(f):
                 mask = 0x01
             else: mask <<=1
             if flags & mask == mask:
-                multitiles.add(x)
+                multitiles_.add(x)
 
     else:
-        multitiles = db.multitiles
+        multitiles_ = multitiles
 
     if version <= 36:
         d = {"name": get_string(f),
@@ -531,7 +531,7 @@ def get_header(f):
              }
     d["version"] = version
 
-    return d, multitiles
+    return d, multitiles_
 
 def set_header(f, h):
     f.write(set_uint(h["version"]))
@@ -577,7 +577,7 @@ def set_tile_detail(f, tile, amount):
     if tile[0] != None:
         f.write(one)
         f.write(set_byte(tile[0]))
-        if tile[0] in db.multitiles:
+        if tile[0] in multitiles:
             f.write(set_ushort(tile[3][0]) + set_ushort(tile[3][1]))
     else:
         f.write(zero)
@@ -635,7 +635,7 @@ def set_tile(f, tile):
     if tile[0] != None:
         f.write(one)
         f.write(set_byte(tile[0]))
-        if tile[0] in db.multitiles:
+        if tile[0] in multitiles:
             f.write(set_ushort(tile[3][0]) + set_ushort(tile[3][1]))
     else:
         f.write(zero)
@@ -668,7 +668,7 @@ def set_tile_no_amount(f, tile, mt_override = False):
     if tile[0] != None:
         f.write(one)
         f.write(set_byte(tile[0]))
-        if tile[0] in db.multitiles and not mt_override:
+        if tile[0] in multitiles and not mt_override:
             f.write(set_ushort(tile[3][0]) + set_ushort(tile[3][1]))
     else:
         f.write(zero)
@@ -699,7 +699,7 @@ def get_tile_buffered(f):
 
     if get_byte(f):  #if exists
         ttype = get_byte(f)
-        if ttype in db.multitiles:
+        if ttype in multitiles:
             multi = get_ushort(f, 2)
         else:
             multi = None
@@ -741,7 +741,7 @@ def get_tile_buffered_12_masked(f):  #Terraria 1.2 bitmask
             ttype = get_gbyte(f)
         else:
             ttype = get_gushort(f)
-        if ttype in db.multitiles:
+        if ttype in multitiles:
             multi = get_ushort(f, 2)
         else:
             multi = None

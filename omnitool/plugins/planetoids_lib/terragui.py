@@ -4,8 +4,8 @@ from pgu import gui
 
 
 def run(main=None):
-    from shared import lang, theme, exit_prog, exit_prog, __version__
-    from pgu_override import Quitbutton
+    from ...shared import lang, theme, exit_prog, __version__
+    from ...pgu_override import Quitbutton
 
 
     pygame.display.init()

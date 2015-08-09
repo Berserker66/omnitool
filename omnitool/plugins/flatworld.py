@@ -5,8 +5,9 @@ config = {
 }
 import pygame
 
-import database as db  # import terraria database
 from pgu import gui
+
+from ..database import tiles, multitiles, walls, names, version
 
 
 class Generator():  # required class to be called by plugin manager
@@ -23,14 +24,14 @@ class Generator():  # required class to be called by plugin manager
                        'dungeon_xy': spawn, 'worldrect': (0, size[0] * 16, 0, size[1] * 16),
                        'is_meteor_spawned': 0, 'gob_inv_time': 0, 'rocklevel': rock,
                        'gob_inv_x': 0.0, 'is_day': 1, 'shadow_orbs_broken': 0,
-                       'width': size[0], 'version': db.version, 'gob_inv_type': 0,
+                       'width': size[0], 'version': version, 'gob_inv_type': 0,
                        'bosses_slain': (0, 0, 0), "npcs_saved": (0, 0, 0), "special_slain": (0, 0, 0),
                        'gob_inv_size': 0, 'height': size[1],
                        'ID': 1394000079, 'moonphase': 0, 'name': "Flatworld", "hardmode": 0,
                        "altars_broken": 0,
                        'is_a_shadow_orb_broken': 0, 'time': 13000.0}
         self.npcs = []
-        self.names = db.names
+        self.names = names
         self.signs = [None] * 1000
         self.chests = [None] * 1000
         sur = spawn[1]
@@ -46,8 +47,8 @@ class Generator():  # required class to be called by plugin manager
 
     def gen_gui(self):
         #get theme, language and end process function from omnitool API
-        from shared import lang, theme, exit_prog, exit_prog
-        from pgu_override import Quitbutton
+        from ..shared import lang, theme, exit_prog, exit_prog
+        from ..pgu_override import Quitbutton
 
         #initilize pygame renderer
         pygame.display.init()
@@ -80,7 +81,7 @@ class Generator():  # required class to be called by plugin manager
         sur = gui.Select(width=300)
         sur.add("None", None)
         for grass in surf:
-            sur.add(grass, db.tiles.index(grass))
+            sur.add(grass, tiles.index(grass))
         sur.value = None
         #add surface selection to table
         main.td(sur)
@@ -90,20 +91,20 @@ class Generator():  # required class to be called by plugin manager
         #add tile label to table
         main.td(gui.Label(lang.fw_tile))
         #create tile list
-        tiles = gui.List(300, 150)
-        for tile in db.tiles:
-            if db.tiles.index(tile) not in db.multitiles:
-                tiles.add(gui.Label(tile), value=db.tiles.index(tile))
+        tiles_ = gui.List(300, 150)
+        for tile in tiles:
+            if tiles.index(tile) not in multitiles:
+                tiles_.add(gui.Label(tile), value=tiles.index(tile))
         #add tile list to table
-        main.td(tiles)
+        main.td(tiles_)
         #add wall label to table
         main.td(gui.Label(lang.fw_wall))
         #create wall list
-        walls = gui.List(300, 150)
-        for wall in db.walls:
-            walls.add(gui.Label(wall), value=db.walls.index(wall))
+        guiwalls = gui.List(300, 150)
+        for wall in walls:
+            guiwalls.add(gui.Label(wall), value=walls.index(wall))
         #add wall list to table
-        main.td(walls)
+        main.td(guiwalls)
         #next row
         main.tr()
         #Generate! button

@@ -1,7 +1,7 @@
 import numpy
 
-from blend import *
-from blend_detail import *
+from .blend import *
+from .blend_detail import *
 
 
 blend = {1: 0,

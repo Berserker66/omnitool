@@ -1,8 +1,8 @@
 import pygame
 import pygame.gfxdraw
 
-import database as db
-from blendmapper import *
+from . import database as db
+from .blendmapper import *
 
 
 def render(s, pos, header, tiles, blendmap, wblendmap, rmap):

@@ -3,8 +3,8 @@ import os
 import pygame
 
 from pgu import gui
-from tlib import get_name
-from tinterface import get_worlds
+from .tlib import get_name
+from .tinterface import get_worlds
 
 
 def exit_prog(p):
@@ -16,9 +16,8 @@ def exit_prog(p):
 
 def run(worlds, Plugin, ptype):
     # pygame.quit()
-    from omnitool import lang, Theme, themename
+    from .shared import lang, theme
 
-    blue = Theme(themename)
 
     class Quitbutton(gui.Button):
         def __init__(self, value=lang.pl_start):
@@ -31,7 +30,7 @@ def run(worlds, Plugin, ptype):
     pygame.display.init()
     pygame.display.set_caption("Plugin World Selector")
 
-    app = gui.Desktop(theme=blue)
+    app = gui.Desktop(theme=theme)
     trans = False
     colspan = 1
     if ptype == "rec":

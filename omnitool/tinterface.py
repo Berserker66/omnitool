@@ -8,7 +8,8 @@ import appdirs
 from pathlib import Path
 from itertools import count, chain
 
-from tlib import *
+from .database import multitiles, multitilestrides
+from .tlib import *
 
 
 is_exe = hasattr(sys, "frozen")
@@ -190,7 +191,7 @@ def get_multis():
     import pygame
 
     def set_multi_2x2(tid, f):
-        stride = db.multitilestrides[tid]
+        stride = multitilestrides[tid]
         surf = pygame.surface.Surface((2, 2))
         surf.set_at((0, 0), (tid, f * 2, 0))
         surf.set_at((0, 1), (tid, f * 2, 1))
@@ -198,7 +199,7 @@ def get_multis():
         surf.set_at((1, 1), (tid, 1 + f * 2, 1))
         return surf
     def set_multi_generic(x,y, tid, x_entry, y_entry):
-        stride = db.multitilestrides[tid]
+        stride = multitilestrides[tid]
         surf = pygame.surface.Surface((x, y))
         for xi in range(x):
             for yi in range(y):
@@ -357,8 +358,8 @@ def write_tiles(surface, header, walls={}, report=False, overwrite_no_mt = set()
                     set_tile_no_amount(tiledata, (None, c[1], 0, None))
                 elif c[0] > 230:  #only have a wall
                     set_tile_no_amount(tiledata, (None, c[0] - 230, 0, None))
-                elif c[0] in db.multitiles and c[0] not in overwrite_no_mt:  #if it has multitiledata.. i hate those
-                    stride = db.multitilestrides[c[0]]
+                elif c[0] in multitiles and c[0] not in overwrite_no_mt:  #if it has multitiledata.. i hate those
+                    stride = multitilestrides[c[0]]
                     set_tile_no_amount(tiledata, (c[0], walls[c[0]], 0, (c[1]*stride, c[2]*stride)))
                 elif c[0] in walls:  #put down background walls if we want them
                     set_tile_no_amount(tiledata, (c[0], walls[c[0]], 0, None), c[0] in overwrite_no_mt)

@@ -1,8 +1,12 @@
 import os
 
+from pathlib import Path
+
 from pgu.gui import Desktop, basic, container, surface, Theme, Button
 from pgu.gui.const import *
 from pygame.locals import *
+
+from .shared import datadir
 
 
 class MyApp(Desktop):
@@ -71,16 +75,17 @@ def change_image(self, value):
     self.value = value
     self.style.width, self.style.height = value.get_width(), value.get_height()
 
+theme_path = datadir / 'themes'
+
 class MyTheme(Theme):
     def __init__(self, name):
         try:
-            Theme.__init__(self, os.path.join("themes", name))
+            Theme.__init__(self, str(theme_path / name))
         except:
-            print("Warning: Unable to load selected theme")
-            themes = os.listdir("themes")
-            for name in themes:
+            print("Warning: Unable to load selected theme", theme_path / name)
+            for name in theme_path.iterdir():
                 try:
-                    Theme.__init__(self, os.path.join("themes", name))
+                    Theme.__init__(self, str(theme_path / name))
                 except:
                     pass
                 else:

@@ -14,16 +14,19 @@ if __name__ == "__main__":
 
     os.chdir("..")
     del (os)
+
 from pgu import gui
-from tinterface import *
-import database as db
 from math import sqrt, cos, sin, pi
 from random import *
 import pygame
-from tlib import *
-from binarysplit import join, cleanup
-from plugins.arena_lib.arenaitems import items as arenaitems
 from os.path import join as osjoin
+
+from ..database import version, tiles, names
+from ..tlib import *
+from ..tinterface import *
+from ..binarysplit import join, cleanup
+
+from .arena_lib.arenaitems import items as arenaitems
 
 
 class Generator():
@@ -32,8 +35,8 @@ class Generator():
 
     def run(self):
 
-        from shared import lang, theme, exit_prog, exit_prog, __version__
-        from pgu_override import Quitbutton
+        from ..shared import lang, theme, exit_prog, __version__
+        from ..pgu_override import Quitbutton
 
         torch_chances = [lang.at_full, lang.at_blue, lang.at_red, lang.at_green,
                          lang.at_pink, lang.at_white, lang.at_yellow, lang.at_purple,
@@ -240,7 +243,7 @@ class Generator():
                   'dungeon_xy': spawn, 'worldrect': (0, size[0] * 16, 0, size[1] * 16),
                   'is_meteor_spawned': 0, 'gob_inv_time': 0, 'rocklevel': size[1] // 2 + 0.4,
                   'gob_inv_x': 0.0, 'is_day': 1, 'shadow_orbs_broken': 0,
-                  'width': size[0], 'version': db.version, 'gob_inv_type': 0,
+                  'width': size[0], 'version': version, 'gob_inv_type': 0,
                   'bosses_slain': (0, 0, 1), "npcs_saved": (0, 0, 0), "special_slain": (0, 0, 0), 'gob_inv_size': 0,
                   'height': size[1],
                   'ID': 1394008880, 'moonphase': 0, "hardmode": 0,
@@ -377,7 +380,7 @@ class Generator():
                         c[tid] += 1
             for tid in c:
                 amount = c[tid]
-                print("%-10s : %d" % (db.tiles[tid], amount))
+                print("%-10s : %d" % (tiles[tid], amount))
 
         self.header = header
         #wooden platforms used to not be multitiles, so overwrite that
@@ -388,7 +391,7 @@ class Generator():
 
         self.npcs = [('Guide', (header["spawn"][0] * 16, (header["spawn"][1] - 3) * 16), 1,
                       (header["spawn"][0], header["spawn"][1] - 3))]
-        self.names = db.names
+        self.names = names
 
 
 if __name__ == "__main__":
