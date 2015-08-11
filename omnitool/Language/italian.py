@@ -19,6 +19,7 @@ new = "Nuovo Mondo:"
 
 #omnitool
 settings = "Impostazioni"
+report_issue = "Report Issue"
 exit = "Esci"
 
 #start

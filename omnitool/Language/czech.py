@@ -17,6 +17,7 @@ new = "Nový:"
 
 #omnitool
 settings = "Nastavení"
+report_issue = "Report Issue"
 exit = "Odejít"
 
 #start

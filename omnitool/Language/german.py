@@ -20,6 +20,7 @@ new = "Neue Welt:"
 
 #omnitool
 settings = "Einstellungen"
+report_issue = "Problem melden"
 exit = "Verlassen"
 
 #start

@@ -20,6 +20,7 @@ new = "New world:"
 
 #omnitool
 settings = "Settings"
+report_issue = "Report Issue"
 exit = "Exit"
 
 #start
@@ -31,7 +32,7 @@ steamfree = "Terraria Steamfree"
 open = "Open"
 imagefolder = "World Images"
 backupfolder = "World Backups"
-themes = "Omnitool themes"
+themes = "Omnitool Themes"
 
 #visit
 visit = "Visit"

@@ -18,6 +18,7 @@ new = "arawarudo:"
 
 #omnitool
 settings = "Settei"
+report_issue = "Report Issue"
 exit = "Deguchi"
 
 #start

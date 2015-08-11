@@ -19,6 +19,7 @@ new = "Új világ:"
 
 #omnitool
 settings = "Beállítások"
+report_issue = "Report Issue"
 exit = "Kilépés"
 
 #start

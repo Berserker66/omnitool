@@ -20,6 +20,7 @@ new = "Новый мир:"
 
 #omnitool
 settings = "Настройки"
+report_issue = "Report Issue"
 exit = "Выход"
 
 #start

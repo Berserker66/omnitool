@@ -18,6 +18,7 @@ new = "Ny verden:"
 
 #omnitool
 settings = "Innstillinger"
+report_issue = "Report Issue"
 exit = "Avslutt"
 
 #start

@@ -1018,6 +1018,7 @@ def run():
     data = [
         ("Omnitool/" + lang.settings, Settings, None),
         ("Omnitool/" + "Language", Language, None),
+        ("Omnitool/" + lang.report_issue, webbrowser.open, "https://github.com/Berserker66/omnitool/issues"),
         ("Omnitool/" + lang.exit, exit_prog, None),
         (lang.start + "/" + lang.terraria, webbrowser.open, "steam://rungameid/105600"),
 
