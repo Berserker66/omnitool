@@ -69,6 +69,7 @@ You can also check out the [documentation](http://www.terrariaonline.com/threads
 Dependencies
 ============
 
+This is only needed, if you want to run Omnitool from source code.
 The dependencies can be grabbed through pip using the requirements.txt file.
 That is "pip install -r requirements.txt".
 Depending on your Python installation, you may need to run one of these instead:
