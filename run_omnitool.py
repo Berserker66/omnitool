@@ -21,7 +21,3 @@ if __name__ == "__main__":
 if False:
     import omnitool  # freeze hook
 
-print("Done - exiting")
-import sys
-
-print(sys.argv, __name__)
