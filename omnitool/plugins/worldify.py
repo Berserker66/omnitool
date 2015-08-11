@@ -15,6 +15,7 @@ import pygame
 import tempfile
 import colorsys
 import io
+from random import randint
 from time import sleep
 
 from pgu import gui
@@ -183,18 +184,18 @@ class Generator():
                 c = gui.Table(width=250)
                 c.td(gui.Label(lang.w_priority, size=40), colspan=3)
                 c.tr()
-                H = gui.HSlider(value=1, min=0, max=9, size=20, height=16, width=120)
-                S = gui.HSlider(value=1, min=0, max=9, size=20, height=16, width=120)
+                H = gui.HSlider(value=3, min=0, max=9, size=20, height=16, width=120)
+                S = gui.HSlider(value=2, min=0, max=9, size=20, height=16, width=120)
                 V = gui.HSlider(value=1, min=0, max=9, size=20, height=16, width=120)
                 c.td(gui.Label(lang.w_hue))
                 c.td(H)
-                hl = gui.Label("1X")
+                hl = gui.Label("3X")
                 H.connect(gui.CHANGE, update, H, hl)
                 c.td(hl)
                 c.tr()
                 c.td(gui.Label(lang.w_saturation))
                 c.td(S)
-                sl = gui.Label("1X")
+                sl = gui.Label("2X")
                 S.connect(gui.CHANGE, update, S, sl)
                 c.td(sl)
                 c.tr()
@@ -212,15 +213,15 @@ class Generator():
 
         ###GUI END###
 
-        self.header = {'spawn': (w // 2, h // 2), 'groundlevel': h + 0.4, 'is_bloodmoon': 0,
+        self.header = {'spawn': (w // 2, h // 2), 'groundlevel': h + 0.0, 'is_bloodmoon': 0,
                        'dungeon_xy': (w, h), 'worldrect': (0, w * 16, 0, h * 16),
-                       'is_meteor_spawned': 0, 'gob_inv_time': 0, 'rocklevel': h + 100.4,
+                       'is_meteor_spawned': 0, 'gob_inv_time': 0, 'rocklevel': h + 100.0,
                        'gob_inv_x': 0.0, 'is_day': 1, 'shadow_orbs_broken': 0,
                        'width': w, 'version': 39, 'gob_inv_type': 0,
                        'bosses_slain': (0, 0, 0), "npcs_saved": (0, 0, 0), "special_slain": (0, 0, 0),
                        'gob_inv_size': 0, 'height': h,
-                       'ID': 1394008880, 'moonphase': 0, 'name': name,
-                       'is_a_shadow_orb_broken': 0, 'time': 13500,
+                       'ID': randint(10, 10000000), 'moonphase': 0, 'name': name,
+                       'is_a_shadow_orb_broken': 0, 'time': 13500.0,
                        "hardmode": 0, "altars_broken": 0, }
 
         import time
@@ -229,9 +230,16 @@ class Generator():
             w10 = w // 20
             total = z = w
             cache = {}
+            tiledata = io.BytesIO()
+            set_tile(tiledata, (None, None, 0, None))
+            air = tiledata.getvalue()
+
             for x in range(w):
                 for y in range(h):
                     color = surface.get_at((x, y))
+                    if color[3] == 0:
+                        a.write(air)
+                        continue
                     cachecolor = color[:3]
                     if cachecolor in cache:
                         a.write(cache[cachecolor])
@@ -267,9 +275,16 @@ class Generator():
             w10 = w // 20
             total = z = w
             cache = {}
+            tiledata = io.BytesIO()
+            set_tile(tiledata, (None, None, 0, None))
+            air = tiledata.getvalue()
+
             for x in range(w):
                 for y in range(h):
                     color = surface.get_at((x, y))
+                    if color[3] == 0:
+                        a.write(air)
+                        continue
                     cachecolor = color[:3]
                     if cachecolor in cache:
                         a.write(cache[cachecolor])
@@ -315,9 +330,10 @@ class Generator():
         print("%5f seconds taken, that is %0.10f seconds per pixel" % n)
         self.chests = [None] * 1000
         self.signs = [None] * 1000
-        self.names = db.names
-        self.npcs = [('Guide', (self.header["spawn"][0] * 16, (self.header["spawn"][1] - 3) * 16), 1,
-                      (self.header["spawn"][0], self.header["spawn"][1] - 3))]
+        self.names = names
+        self.npcs = []
+        print("Test done")
+
 
 
 if __name__ == "__main__":

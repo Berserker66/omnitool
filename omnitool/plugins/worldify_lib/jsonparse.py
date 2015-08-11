@@ -51,7 +51,7 @@ def load(path="db.txt"):
     version = 22
     dbversion = 1
     with open(path, "r") as f:
-        database = json.load(f, encoding="ascii")
+        database = json.load(f)
     try:
         database[0]
         version = database[0]
