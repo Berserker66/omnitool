@@ -11,17 +11,14 @@ if __name__ == "__main__":
 
     os.chdir("..")
     del (os)
-from math import sqrt, cos, sin, pi
+from math import cos, sin, pi
 from collections import defaultdict
 from random import *
 import pygame
-from os.path import join as osjoin
 
-from ..loadbar import Bar
-from ..database import itemlist, names, tiles, ntiles
-from ..tlib import *
-from ..tinterface import *
-from ..binarysplit import join, cleanup
+from omnitool.loadbar import Bar
+from omnitool.database import itemlist, names, tiles, ntiles
+from omnitool.tinterface import *
 
 from .planetoids_lib import terragui
 from .planetoids_lib.tree import make_tree

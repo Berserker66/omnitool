@@ -4,7 +4,7 @@ config = {
     "description": ["counts tombstones in a world"]  #description
 }
 
-from ..database import tiles
+from omnitool.database import tiles
 
 
 class Receiver():  # required class to be called by plugin manager

@@ -1,6 +1,7 @@
 import sys
 
-from . import themename, get_plugins, plugins, run
+from . import themename, get_plugins, run
+import plugins
 from .relay import launch_plugin
 
 child = False

@@ -7,7 +7,7 @@ import pygame
 
 from pgu import gui
 
-from ..database import tiles, multitiles, walls, names, version
+from omnitool.database import tiles, multitiles, walls, names, version
 
 
 class Generator():  # required class to be called by plugin manager

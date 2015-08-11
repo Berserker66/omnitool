@@ -21,10 +21,10 @@ from random import *
 import pygame
 from os.path import join as osjoin
 
-from ..database import version, tiles, names
-from ..tlib import *
-from ..tinterface import *
-from ..binarysplit import join, cleanup
+from omnitool.database import version, tiles, names
+from omnitool.tlib import *
+from omnitool.tinterface import *
+from omnitool.binarysplit import join, cleanup
 
 from .arena_lib.arenaitems import items as arenaitems
 
@@ -35,8 +35,8 @@ class Generator():
 
     def run(self):
 
-        from ..shared import lang, theme, exit_prog, __version__
-        from ..pgu_override import Quitbutton
+        from omnitool.shared import lang, theme, exit_prog, __version__
+        from omnitool.pgu_override import Quitbutton
 
         torch_chances = [lang.at_full, lang.at_blue, lang.at_red, lang.at_green,
                          lang.at_pink, lang.at_white, lang.at_yellow, lang.at_purple,

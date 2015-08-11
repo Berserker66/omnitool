@@ -19,7 +19,6 @@ __credits__ = ["Ijwu", "7UR7L3", "Fabian Dill"]
 __maintainer__ = "Fabian Dill"
 os.environ["PYGAME_FREETYPE"] = "1"
 
-
 if not os.path.isdir(appdata):
     os.mkdir(appdata)
 
@@ -102,17 +101,7 @@ import json
 
 bit = struct.calcsize("P") * 8
 
-outdated = False
-
-#for exe bundling
-t = False
-if t:#force freezing to include all lang files
-    pass
-
-
-
 cache_lock = threading.Lock()
-
 
 def save_cache():
     cache_lock.acquire()
@@ -121,8 +110,6 @@ def save_cache():
         f.write(d)
     cache_lock.release()
 
-
-cmod = False
 if len(sys.argv) > 1:  #user wants something
     def savequit():
         import time
@@ -140,11 +127,6 @@ if len(sys.argv) > 1:  #user wants something
         cache["terrafirma"] = sys.argv[1]
         print("Learned terrafirma path: " + sys.argv[1])
         savequit()
-
-if getattr(sys, 'frozen', False):
-    os.chdir(os.path.dirname(sys.executable))
-else:
-    os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 myterraria = get_myterraria()  #mygames-terraria path
 images = myterraria / "WorldImages"
@@ -789,10 +771,12 @@ plugins_ = []
 
 
 def get_plugins():
+    if "." not in sys.path:
+        sys.path = ["."] + sys.path  # use plugins in the folder, instead of library.zip - if accidentally included
     for file in os.listdir("plugins"):
         if file[-3:] == ".py" and file != "plugins.py" and file != "__init__.py":
             try:
-                plugin = import_module('.plugins.' + file[:-3], package='omnitool')
+                plugin = import_module('plugins.' + file[:-3], package="omnitool")
             except:
                 import traceback
 
@@ -831,9 +815,9 @@ def plug_save(Plug):
 
 def launch_plugin(plug):
     import importlib
-    if "plugins" not in sys.path:
-        sys.path = ["plugins"]+sys.path#use plugins in the folder, instead of library.zip - if accidentally included
-    Plugin = importlib.import_module(".plugins." + plug[0], "omnitool")
+    if "." not in sys.path:
+        sys.path = ["."] + sys.path  # use plugins in the folder, instead of library.zip - if accidentally included
+    Plugin = importlib.import_module("plugins." + plug[0], "omnitool")
     if plug[2] == "receiver":
         #print(dir(Plugin))
         worlds = list(get_worlds())

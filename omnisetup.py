@@ -59,7 +59,7 @@ def installfile(path):
         print('Warning,', path, 'not found')
 
 
-extra_data = ["omnitool/themes", "omnitool/plugins", "tImages.zip"]
+extra_data = ["omnitool/themes", "plugins", "tImages.zip"]
 for data in extra_data:
     installfile(Path(data))
 

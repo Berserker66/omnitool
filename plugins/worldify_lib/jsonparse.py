@@ -1,7 +1,7 @@
 import json
 
-import database as db
-import colorlib
+import omnitool.database as db
+import omnitool.colorlib
 
 
 json_db_version = 2
