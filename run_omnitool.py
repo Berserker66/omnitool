@@ -5,7 +5,7 @@ import runpy
 from multiprocessing import freeze_support, set_start_method
 if __name__ == "__main__":
     freeze_support()
-    set_start_method("forkserver")  # Prevents X11 crash on Linux - properly separates pygame internals
+    set_start_method("spawn")  # Prevents X11 crash on Linux - properly separates pygame internals
 
     text = """ ██████╗ ███╗   ███╗███╗   ██╗██╗████████╗ ██████╗  ██████╗ ██╗     
 ██╔═══██╗████╗ ████║████╗  ██║██║╚══██╔══╝██╔═══██╗██╔═══██╗██║     
