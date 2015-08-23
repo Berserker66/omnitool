@@ -121,7 +121,7 @@ class Generator():
             terramode = 0
             while terramode not in valid:
                 try:
-                    terramode = int(raw_input("World type:"))
+                    terramode = int(input("World type:"))
                 except:
                     pass
                 if terramode not in valid:
