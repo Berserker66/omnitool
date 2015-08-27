@@ -269,7 +269,7 @@ def set_npc(f, npc):
 
 def get_name(f):
     get_gint(f)
-    return get_string(f)
+    return get_string(f).decode()
 
 
 def get_header(f):
