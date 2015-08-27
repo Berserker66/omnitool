@@ -118,7 +118,7 @@ nwalls = {}
 
 
 def get_custom_db(txt):
-    import colorlib
+    from omnitool import colorlib
 
     colors = colorlib.data.copy()
     wallcolors = colorlib.walldata.copy()
@@ -603,7 +603,7 @@ itemlist = {
     "Molten Helmet": 1,
     "Life Crystal": 99,
     "Hellfire Arrow": 250,
-    "Orb of Light": 1,
+    "Shadow Orb": 1,
     "Trident": 1,
     "Wooden Hammer": 1,
     "Handgun": 1,
