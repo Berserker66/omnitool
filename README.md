@@ -66,6 +66,8 @@ Plugins
 More plugins to add features to Omnitool can be found [here](http://www.terrariaonline.com/threads/omnitool-plugin-compendium.82677/#post-1625952).
 You can also check out the [documentation](http://www.terrariaonline.com/threads/omnitool-plugin-system-documentation.80960/) to make your own.
 
+Currently the plugin system is unstable, as updating of all systems to Terraria 1.3 continues. Plugins may or may not work.
+
 Dependencies
 ============
 
