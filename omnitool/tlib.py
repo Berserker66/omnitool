@@ -268,8 +268,9 @@ def set_npc(f, npc):
 
 
 def get_name(f):
-    get_gint(f)
-    return get_string(f).decode()
+    header = get_header(f)[0]
+
+    return header["name"].decode()
 
 
 def get_header(f):
