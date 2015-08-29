@@ -432,11 +432,7 @@ class World():
             self.mapperrunning.clear()
 
 def gen_slices(queue, imgpath, path, start, size, levels, version, multiparts, interval = 32):
-    #TODO : add get_tile functions with multiparts dynamic multiparts awareness
-    if version > 100:
-        get_tile = tlib.get_tile_buffered_12_masked
-    else:
-        get_tile = tlib.get_tile_buffered
+    get_tile = select_tile_getter(version)
 
     with path.open("rb") as f:
         f.seek(start)
@@ -812,14 +808,13 @@ def plug_save(Plug):
         f.seek(0)
         g.write(f.read())
 
-
 def launch_plugin(plug):
     import importlib
     if "." not in sys.path:
         sys.path = ["."] + sys.path  # use plugins in the folder, instead of library.zip - if accidentally included
     Plugin = importlib.import_module("plugins." + plug[0], "omnitool")
+
     if plug[2] == "receiver":
-        #print(dir(Plugin))
         worlds = list(get_worlds())
         from . import plugingui
 
@@ -831,9 +826,10 @@ def launch_plugin(plug):
                 header = get_header(f)[0]
                 print("sending header")
                 if Plug.rec_header(header) != False:
+                    get_tile = iter_get_tile(select_tile_getter(header["version"]))(f)
                     tiles = []
                     for xi in range(header["width"]):  # for each slice
-                        tiles.append([get_tile(f) for tile in range(header["height"])])
+                        tiles.append([next(get_tile) for _ in range(header["height"])])
                     print("sending tiles")
                     if Plug.rec_tiles(tiles) != False:
                         if Plug.rec_chests(chests=[get_chest(f) for x in range(1000)]) != False:
@@ -853,17 +849,17 @@ def launch_plugin(plug):
                                 Plug.run()
         else:
             print("No world selected, aborting execution")
+
     elif plug[2] == "generator":
         Plug = Plugin.Generator()
         Plug.run()
         plug_save(Plug)
 
     elif plug[2] == "program":
-
         Plug = Plugin.Program()
         Plug.run()
-    elif plug[2] == "transplant":
 
+    elif plug[2] == "transplant":
         worlds = list(get_worlds())
         import plugingui
 
@@ -873,9 +869,10 @@ def launch_plugin(plug):
             f.buffer = [0]
             header = get_header(f)[0]
             Plug.rec_header(header)
+            get_tile = iter_get_tile(select_tile_getter(header["version"]))(f)
             tiles = []
             for xi in range(header["width"]):  # for each slice
-                tiles.append([get_tile(f) for tile in range(header["height"])])
+                tiles.append([next(get_tile) for _ in range(header["height"])])
             Plug.rec_tiles(tiles)
             Plug.rec_chests(chests=[get_chest(f) for x in range(1000)])
             Plug.rec_signs(signs=[get_sign(f) for x in range(1000)])
@@ -918,6 +915,7 @@ def launch_plugin(plug):
                             Plug.rec_npcs(npcs, names)
                             Plug.run()
         plug_save(Plug)
+
     elif plug[2] == "modifier":
         worlds = list(get_worlds())
         from .plugingui import run as run_plugingui
@@ -928,9 +926,10 @@ def launch_plugin(plug):
             f.buffer = [0]
             header = get_header(f)[0]
             Plug.rec_header(header)
+            get_tile = iter_get_tile(select_tile_getter(header["version"]))(f)
             tiles = []
             for xi in range(header["width"]):  # for each slice
-                tiles.append([get_tile(f) for tile in range(header["height"])])
+                tiles.append([next(get_tile) for _ in range(header["height"])])
             Plug.rec_tiles(tiles)
             Plug.rec_chests(chests=[get_chest(f) for x in range(1000)])
             Plug.rec_signs(signs=[get_sign(f) for x in range(1000)])
@@ -947,11 +946,11 @@ def launch_plugin(plug):
                 print("Warning, World signature test not passed")
             Plug.rec_npcs(npcs, names)
             Plug.run()
-
         plug_save(Plug)
 
     else:
         print("Unrecognized plugin type, aborting execution")
+
     print()
     print(plug[1] + " is done")
     sys.exit()

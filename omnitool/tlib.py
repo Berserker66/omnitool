@@ -269,7 +269,6 @@ def set_npc(f, npc):
 
 def get_name(f):
     header = get_header(f)[0]
-
     return header["name"].decode()
 
 
@@ -781,6 +780,16 @@ def get_tile_buffered_12_masked(f):  #Terraria 1.2 bitmask
 ### content parser end ###
 
 
+def select_tile_getter(version):
+    #TODO : add get_tile functions with multiparts dynamic multiparts awareness
+    return get_tile_buffered_12_masked if version > 100 else get_tile_buffered
+
+def iter_get_tile(tile_getter):
+    def iter_tile_getter(f):
+        while 1:#careful not to call more often than there are tiles in the world
+            tile, count = tile_getter(f)
+            yield from (tile,)*count
+    return iter_tile_getter
 
 zero = set_byte(0)
 one = set_byte(1)
