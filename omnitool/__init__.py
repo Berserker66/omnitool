@@ -1024,6 +1024,8 @@ def run():
         (lang.open + "/" + lang.themes, open_dir, Path.cwd() / "themes"),
         (lang.visit + "/" + lang.donate, webbrowser.open,
          r"https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=JBZM8LFAGDK4N"),
+        (lang.visit + "/Patreon", webbrowser.open,
+         r"https://www.patreon.com/Berserker55"),
         (lang.visit + "/" + lang.homepage, webbrowser.open,
          r"http://forums.terraria.org/index.php?threads/omnitool-world-creation-mapping-backups-and-more.14664/"),
         (lang.visit + "/" + lang.TO, webbrowser.open, "http://www.terrariaonline.com"),

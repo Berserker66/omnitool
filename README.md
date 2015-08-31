@@ -94,4 +94,4 @@ Credits for Omnitool
 
 Other
 =====
-[![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=JBZM8LFAGDK4N) or [Steam Wishlist](http://steamcommunity.com/profiles/76561198041949197/wishlist/)
+[![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=JBZM8LFAGDK4N), [Patreon](https://www.patreon.com/Berserker55) or [Steam Wishlist](http://steamcommunity.com/profiles/76561198041949197/wishlist/)
