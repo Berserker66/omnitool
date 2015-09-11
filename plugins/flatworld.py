@@ -47,8 +47,8 @@ class Generator():  # required class to be called by plugin manager
 
     def gen_gui(self):
         #get theme, language and end process function from omnitool API
-        from ..shared import lang, theme, exit_prog, exit_prog
-        from ..pgu_override import Quitbutton
+        from omnitool.shared import lang, theme, exit_prog, exit_prog
+        from omnitool.pgu_override import Quitbutton
 
         #initilize pygame renderer
         pygame.display.init()
@@ -115,8 +115,8 @@ class Generator():  # required class to be called by plugin manager
         pygame.display.quit()
         #attach data to plugin, to be used in run()
         self.surface = sur.value
-        self.wall = walls.value
-        self.tile = tiles.value
+        self.wall = guiwalls.value
+        self.tile = tiles_.value
         self.size = size.value
         if self.wall == 0:
             self.wall = None
