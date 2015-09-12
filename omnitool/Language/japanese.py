@@ -89,6 +89,8 @@ pt_sun = "Taiyo: "
 pt_atlantis = "Atoranchisu: "
 pt_merchant = "Machanto: "
 pt_lloot = "Chisai hoshu: "
+pt_mirror = "Mirror Mode: "
+pt_pre = "Item Prefixes: "
 
 ##worldify
 w_start = "Kaishi worldification!"

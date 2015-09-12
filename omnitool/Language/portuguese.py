@@ -87,6 +87,7 @@ pt_atlantis = "Atlantis: "
 pt_merchant = "Merchant: "
 pt_lloot = "Menos Loot: "
 pt_mirror = "Mirror Mode: "
+pt_pre = "Item Prefixes: "
 
 ##worldify
 w_start = "Começar Mundificação!"

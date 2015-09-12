@@ -65,12 +65,9 @@ elif cache["version"] < __version__:
     print("Newer Omnitool version, resetting world image cache.")
     cache["version"] = __version__
     cache["worlds"] = {}
-if os.path.isfile("custom.py"):
-    sys.path.append(".")
-    import custom as lang
-    sys.path.remove(".")
-else:
-    lang = import_module('.Language.' + cache['lang'], package='omnitool')
+
+from .Language import load_language
+lang = load_language(cache['lang'])
 
 if False:
     from .Language import english as lang #IDE hook

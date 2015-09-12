@@ -87,6 +87,7 @@ pt_atlantis = "Atlantis: "
 pt_merchant = "Obchodník: "
 pt_lloot = "Zmenšit lup: "
 pt_mirror = "Zrcadlově: "
+pt_pre = "Item Prefixes: "
 
 ##worldify
 w_start = "Začít!"

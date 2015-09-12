@@ -89,6 +89,7 @@ pt_atlantis = "Atlantis: "
 pt_merchant = "Handelsmann: "
 pt_lloot = "Mindre skatter: "
 pt_mirror = "Speilet modus: "
+pt_pre = "Item Prefixes: "
 
 ##worldify
 w_start = "Start verdensskaping!"

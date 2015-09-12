@@ -92,6 +92,7 @@ pt_atlantis = "Atlantis: "
 pt_merchant = "Händler: "
 pt_lloot = "Weniger Loot: "
 pt_mirror = "Gespiegelt: "
+pt_pre = "Item Prefixes: "
 
 ##worldify
 w_start = "Start Weltifizierung!"
