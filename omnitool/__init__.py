@@ -781,7 +781,7 @@ def get_plugins():
             else:
                 name, ptype = plugin.config["name"], plugin.config["type"]
                 plugins_.append((file[:-3], name, ptype))
-
+    return plugins_
 
 def plug_save(Plug):
     if hasattr(Plug, "loadingbar"):

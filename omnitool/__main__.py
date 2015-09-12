@@ -32,7 +32,7 @@ else:
 
 
 if not child:
-    get_plugins()
+    plugins = get_plugins()
     p = False
     for arg in sys.argv:
         if arg.startswith("plugin:"):
