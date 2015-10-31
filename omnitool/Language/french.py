@@ -5,117 +5,117 @@ langname = "Français"
 # text construct: "Version "+version+available+changelog
 #example: Version 3 available, click here to download, or for changelog click here
 available = "disponibles, cliquez pour télécharger"
-changelog = ", ou pour des changelog cliquez ici"
+changelog = ", ou pour la liste des changements cliquez ici"
 
 ##world gen
-worldify = "monde du l'image"
-planetoids = "Planetoids & Terra"
-arena = "Donjon Aréna"
-flat = "Flatworld"
-new = "Nouveau Monde:"
+worldify = "depuis l'image"
+planetoids = "Planetoïds & Terra"
+arena = "Donjon Arena"
+flat = "Monde plat"
+new = "Nouveau monde :"
 
 ##mainmenu
 
 #omnitool
 settings = "Réglages"
-report_issue = "Report Issue"
+report_issue = "Reporter un bug"
 exit = "Sortir"
 
 #start
 start = "Démarrer"
 terraria = "Terraria"
-steamfree = "Terraria Steamfree"
+steamfree = "Terraria sans-Steam"
 
 #open
 open = "Ouvrez"
 imagefolder = "Images du monde"
 backupfolder = "Les sauvegardes du Monde"
-themes = "Omnitool thèmes"
+themes = "Thèmes Omnitool"
 
 #visit
-visit = "Visite"
+visit = "Visiter"
 donate = "Faire un don"
 homepage = "Omnitool"
-TO = "Terraria en ligne"
+TO = "Terraria Online"
 wiki = "Terraria Wiki"
 
 ##world thumbnail
-label = "Monde: "
+label = "Monde : "
 
 ##settings menu
 warning = "Toutes les modifications nécessitent un redémarrage pour prendre effet" #out of date - not all changes require a restart now
 
 none = "Aucune"
-tiny = "Minuscules"  #unused
+tiny = "Minuscule"  #unused
 small = "Petite"
 medium = "Medium"
 large = "Grand"
 very_large = "XXL"
 
-theme_select = "Sélectionner un thème:"
-thumbsize = "Taille de la miniature du Monde:"
-mk_backups = "Faire des sauvegardes"
-world_columns = "Monde Colonnes:"
+theme_select = "Sélectionner un thème :"
+thumbsize = "Taille de la miniature du monde :"
+mk_backups = "Faire des sauvegardes :"
+world_columns = "Monde Colonnes :"
 
 ##world interaction menu
-wa_worldactionmenu = "Action for {}:"
-wa_imageopen = "Open Image"
-wa_renderopen = "Render World"
-wa_teditopen = "Open in TEdit"
-wa_update = "Update Image"
-wa_super = "Generate Super-Image"
+wa_worldactionmenu = "Action pour {} :"
+wa_imageopen = "Ouvrir l'image"
+wa_renderopen = "Faire le rendu du monde"
+wa_teditopen = "Ouvrir dans TEdit"
+wa_update = "Mette à jour l'image"
+wa_super = "Generer une Super-Image"
 
 ##planetoids & terra
-pt_start = 'Démarrer génération!'
-pt_name = "Nom: "
-pt_mode = "Mode: "
+pt_start = 'Démarrer génération !'
+pt_name = "Nom : "
+pt_mode = "Mode : "
 
-pt_small = "petit Planetoids"
-pt_medium = "medium Planetoids"
-pt_large = "grand Planetoids"
-pt_square = "carrés Planetoids"
-pt_both = "grand Planetoids & Terra"
-pt_square_terra = "carrés Terra"
+pt_small = "petites planetoïdes"
+pt_medium = "planetoïdes moyennes"
+pt_large = "grandes planetoïdes"
+pt_square = " planetoïdes carrées"
+pt_both = "grandes planetoïdes & Terra"
+pt_square_terra = "Terra carrés"
 
-pt_start_sel = "Début: "
+pt_start_sel = "Démarrer : "
 pt_morning = "Matin"
 pt_day = "Jour"
 pt_night = "Nuit"
-pt_bloodmoon = "Lune Sanglante"
+pt_bloodmoon = "Lune de Sang"
 
-pt_extras = "Extras: "
-pt_sun = "Soleil: "
-pt_atlantis = "Atlantis: "
-pt_merchant = "Marchand: "
-pt_lloot = "Moins Butin: "
-pt_mirror = "Mirror Mode: "
-pt_pre = "Item Prefixes: "
+pt_extras = "Extras : "
+pt_sun = "Soleil : "
+pt_atlantis = "Atlantis : "
+pt_merchant = "Marchand : "
+pt_lloot = "Moins de butin : "
+pt_mirror = " Mode miroir : "
+pt_pre = "Préfixes des objets : "
 
 ##worldify
-w_start = "Démarrer la construction du monde!"
+w_start = "Démarrer la construction du monde !"
 w_cont = "Continuer"
 w_name = "Nom: "
 w_rgb = "RGB"
-w_hsv = "pondérée HSV"
-w_method = "Méthode: "
+w_hsv = "HSV pondéré"
+w_method = "Méthode : "
 
 w_priority = "Choix prioritaire"
-w_hue = "Hue: "
-w_saturation = "Saturation: "
-w_brightness = "Luminosité: "
+w_hue = "Teinte : "
+w_saturation = "Saturation : "
+w_brightness = "Luminosité : "
 
 ##arena
 a_start = "Démarrer génération!"
-a_name = "Nom: "
-a_rooms = "Chambres: "
-a_sidelen = "Longueur des côtés de chambre: "
-a_corlen = "Longueur Corridor: "
-a_chest = "Poitrine: "
-a_itemchest = "Des objets par la poitrine: "
-a_light = "Eclairage: "
-a_chances = "Chances de chambre: "
-a_standard = "Standard: "
-a_cross = "Couloir de la croix: "
+a_name = "Nom : "
+a_rooms = "Cabines : "
+a_sidelen = "Longueur des côtés de cabines : "
+a_corlen = "Longueur corridor : "
+a_chest = "Coffre : "
+a_itemchest = "Objet par coffre : "
+a_light = "Eclairage : "
+a_chances = "Chances de cabine : "
+a_standard = "Standard : "
+a_cross = "Couloir de la croix : "
 
 ##torch
 at_chances = "Changement de couleur:"
@@ -125,26 +125,26 @@ at_red = "Rouge"
 at_green = "Vert"
 at_pink = "Rose"
 at_white = "Blanc"
-at_yellow = "June"
+at_yellow = "Jaune"
 at_purple = "Mauve"
-at_lime = "Lime"
+at_lime = "Citron"
 
 ##plugins
-pl_start = "Start plugin"
-pl_rec = "Select a world to be received"
-pl_mod = "Select a world to be modified"
-pl_trans = "Select two worlds to be used for a transfer"
+pl_start = "Démarrer le plugin"
+pl_rec = "Sélectionnez un monde qui sera reçu"
+pl_mod = "Sélectionnez un monde qui sera modifié"
+pl_trans = "Sélectionnez deux mondes pour le transfert"
 pl_trans_source = "Source"
-pl_trans_target = "Target"
+pl_trans_target = "Cible"
 
 ##flatworld
-fw_size = "World size:"
-fw_tiny = "tiny"
-fw_square = "square"
-fw_small = "small"
-fw_medium = "medium"
-fw_large = "large"
-fw_tile = "Tile type:"
-fw_wall = "Wall type:"
-fw_surf = "Surface type:"
+fw_size = "Taille du monde :"
+fw_tiny = "minuscule"
+fw_square = "carré"
+fw_small = "petit"
+fw_medium = "moyen"
+fw_large = "grand"
+fw_tile = "Type de bloc :"
+fw_wall = "Type de mur :"
+fw_surf = "Type de surface :"
 
