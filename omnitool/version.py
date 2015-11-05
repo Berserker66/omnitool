@@ -15,6 +15,11 @@ class Version():
             else:
                 raise TypeError("Version accepts int or str, not "+str(type(integer)))
 
+        @staticmethod
+        def from_name(name):
+            major, minor, micro = name.split(".")
+            return Version(major*10000, minor *100, micro)
+
         def get_version_tuple(self):
             major, minor = divmod(self.int,10000)
             minor, micro = divmod(minor, 100)
