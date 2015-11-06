@@ -8,7 +8,7 @@ from .version import Version
 
 __all__ = ("__version__", "appdata", "cachepath", "cache", "lang", "theme")
 
-__version__ = Version(180300)
+__version__ = Version(180301)
 appdata = user_config_dir('omnitool', "", roaming = True)
 cachepath = os.path.join(appdata, "cache.dill")
 #filled in by omnitool.py:
