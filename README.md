@@ -1,4 +1,4 @@
-Current version : 18.3.0, for Terraria 1.3.0.7 on Windows and Linux.
+Current version : 18.3.1, for Terraria 1.3.0.7 on Windows and Linux.
 
 On the Terraria Forums:
 [Link](http://forums.terraria.org/index.php?threads/omnitool-world-creation-mapping-backups-and-more.14664/)
