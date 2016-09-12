@@ -67,10 +67,11 @@ elif cache["version"] < __version__:
     cache["worlds"] = {}
 
 from .Language import load_language
+
 lang = load_language(cache['lang'])
 
 if False:
-    from .Language import english as lang #IDE hook
+    from .Language import english as lang  # IDE hook
 
 shared.lang = lang
 shared.cache = cache
@@ -83,6 +84,7 @@ from .tlib import *
 import threading
 import time
 from .pgu_override import MyTheme, MyApp
+
 theme = shared.theme = MyTheme(themename)
 import subprocess
 import shutil
@@ -100,6 +102,7 @@ bit = struct.calcsize("P") * 8
 
 cache_lock = threading.Lock()
 
+
 def save_cache():
     cache_lock.acquire()
     d = zlib.compress(pickle.dumps(cache), 9)
@@ -107,7 +110,8 @@ def save_cache():
         f.write(d)
     cache_lock.release()
 
-if len(sys.argv) > 1:  #user wants something
+
+if len(sys.argv) > 1:  # user wants something
     def savequit():
         import time
         time.sleep(3)
@@ -115,17 +119,18 @@ if len(sys.argv) > 1:  #user wants something
         pygame.quit()
         sys.exit()
 
-    if sys.argv[1].split("\\")[-1] == "TEditXna.exe":  #install tedit
+
+    if sys.argv[1].split("\\")[-1] == "TEditXna.exe":  # install tedit
         cache["tedit"] = sys.argv[1]
         print("Learned TEdit path: " + sys.argv[1])
         savequit()
 
-    elif sys.argv[1].split("\\")[-1] == "Terrafirma.exe":  #install tedit
+    elif sys.argv[1].split("\\")[-1] == "Terrafirma.exe":  # install tedit
         cache["terrafirma"] = sys.argv[1]
         print("Learned terrafirma path: " + sys.argv[1])
         savequit()
 
-myterraria = get_myterraria()  #mygames-terraria path
+myterraria = get_myterraria()  # mygames-terraria path
 images = myterraria / "WorldImages"
 
 processes = []
@@ -139,12 +144,14 @@ except:
 
 shutdown = False
 
+
 def exit_prog(p):
     global shutdown
     shutdown = True
     pygame.quit()
     import sys
     sys.exit()
+
 
 shared.exit_prog = exit_prog
 
@@ -161,21 +168,25 @@ class GenButton(gui.Button):
         self.disabled = disabled
         self.blur()
 
+
 last_gen_start = 0
-def start_proc(func, delay = False):
+
+
+def start_proc(func, delay=False):
     global last_gen_start
     if delay:
         now = time.time()
-        if now-last_gen_start < 0.1:
+        if now - last_gen_start < 0.1:
             return
         last_gen_start = time.time()
     if func[1].__class__.__name__ == "list":
         p = multiprocessing.Process(target=func[0], name=func[1][0],
                                     args=(func[1][1],))
     else:
-        p = multiprocessing.Process(target=func[0], name=func[1])  #, args = (to_self,))
+        p = multiprocessing.Process(target=func[0], name=func[1])  # , args = (to_self,))
     p.start()
     processes.append(p)
+
 
 class Language(gui.Dialog):
     def __init__(self, n=None):
@@ -261,19 +272,24 @@ class Settings(gui.Dialog):
         gui.Dialog.close(self, w)
         display_worlds(change)
 
+
 class Button(gui.Button):
     def __init__(self, name, func, args, width=200):
         gui.Button.__init__(self, name, width=width)
         self.connect(gui.CLICK, func, args)
 
+
 def open_image(world):
     webbrowser.open(str(world.imagepath))
+
 
 def open_tedit(world):
     subprocess.Popen((cache["tedit"], str(world.path)), cwd=os.path.split(cache["tedit"])[0])
 
+
 def regen_map(world):
     world.get_worldview()
+
 
 def runrender(world, mapping):
     if mapping:
@@ -287,12 +303,11 @@ def runrender(world, mapping):
     p.start()
     processes.append(p)
 
+
 class WorldInteraction(gui.Dialog):
     def __init__(self, world):
-
         main = gui.Table()
         gui.Dialog.__init__(self, gui.Label(lang.wa_worldactionmenu.format(world.name)), main)
-
 
         imgopen = Button(lang.wa_imageopen, self.bundle, (open_image, world))
         renderopen = Button(lang.wa_renderopen, self.bundle, (runrender, world, False))
@@ -318,17 +333,22 @@ class WorldInteraction(gui.Dialog):
         self.close()
         args[0](*args[1:])
 
+
 class World():
     aircolor = pygame.Color(200, 200, 255)
     groundcolor = pygame.Color(150, 75, 0)
     rockcolor = pygame.Color(50, 50, 50)
+
     def __init__(self, path):
         self.mapperrunning = threading.Event()
         self.path = path
         self.imagepath = images / self.path.with_suffix(".png").name
         with self.path.open("rb") as f:
-            self.header, self.multiparts = get_header(f)
-            self.pos = f.tell()
+            self.header, self.multiparts, self.sectiondata = get_header(f)
+            if self.sectiondata:
+                self.pos = self.sectiondata["sections"][1]
+            else:
+                self.pos = f.tell()
 
         self.name = self.header["name"].decode()
         self.size = gui.Label(str(self.header["width"]) + "X" + str(self.header["height"]) + " tiles")
@@ -356,7 +376,6 @@ class World():
 
             self.get_worldview()
 
-
     def get_thumb(self, size=thumbsize):
         i_size = self.raw.get_size()
         scale = min(size[0] / i_size[0], size[1] / i_size[1])
@@ -383,15 +402,15 @@ class World():
                 strpath = str(self.path)
                 if strpath in cache["worlds"] and self.path.stat().st_mtime > cache["worlds"][strpath]["time"]:
                     redraw = True
-            except FileNotFoundError:#world happened to be removed between checks
+            except FileNotFoundError:  # world happened to be removed between checks
                 pass
-            else: #why is there no elif on try?
+            else:  # why is there no elif on try?
                 if redraw:
                     self.raw.fill(self.aircolor)
                     self.get_worldview()
 
     def get_worldview(self):
-        self.mapperrunning.set() #make sure Redrawer knows, that aquisition of this image is in progress
+        self.mapperrunning.set()  # make sure Redrawer knows, that aquisition of this image is in progress
         needed = False
         try:
             if str(self.path) in cache["worlds"]:
@@ -428,12 +447,13 @@ class World():
         else:
             self.mapperrunning.clear()
 
-def gen_slices(queue, imgpath, path, start, size, levels, version, multiparts, interval = 32):
+
+def gen_slices(queue, imgpath, path, start, size, levels, version, multiparts, interval=32):
     get_tile = select_tile_getter(version)
 
     with path.open("rb") as f:
         f.seek(start)
-        xworld, yworld = size  #read world size from header cache
+        xworld, yworld = size  # read world size from header cache
         s = pygame.surface.Surface(size, depth=24)
         s.fill((200, 200, 255))
         pygame.draw.rect(s, (150, 75, 0),
@@ -447,14 +467,14 @@ def gen_slices(queue, imgpath, path, start, size, levels, version, multiparts, i
         xstart = 0
         while xstart < xworld:
             w = min(interval, -xstart + xworld)
-            for xi in range(xstart, xstart+w):# for each slice
+            for xi in range(xstart, xstart + w):  # for each slice
                 yi = 0
                 while yi < yworld:  # get the tiles
                     (tile, wall, liquid, multi, wire), b = get_tile(f)
                     color = None
-                    if not liquid:  #liquid == 0 means no liquid
-                        #there could be a liquid and a tile, like a chest and water,
-                        #but I can only set one color to a pixel anyway, so I priotise the tile
+                    if not liquid:  # liquid == 0 means no liquid
+                        # there could be a liquid and a tile, like a chest and water,
+                        # but I can only set one color to a pixel anyway, so I priotise the tile
                         if tile == None:
                             if wall:
                                 if wall in colorlib.walldata:
@@ -463,24 +483,24 @@ def gen_slices(queue, imgpath, path, start, size, levels, version, multiparts, i
                                     color = (wall, wall, wall)
 
                         elif tile in colorlib.data:
-                            color = colorlib.data[tile]  #if colorlib has a color use it
+                            color = colorlib.data[tile]  # if colorlib has a color use it
                         else:
                             tile = min(255, tile)
-                            color = (tile, tile, tile)  #make a grey otherwise
+                            color = (tile, tile, tile)  # make a grey otherwise
                     elif liquid > 512:
                         color = (245, 219, 27)
                     elif liquid > 256:
                         color = (150, 35, 17)
 
-                    else:  #0>x>256 is water, the higher x is the more water is there
+                    else:  # 0>x>256 is water, the higher x is the more water is there
                         color = (19, 86, 134)
                     if color:
-                        buffer[xi, yi:yi+b] = color
-                    yi+=b
-            sub = buffer[xstart:xstart+w,::].make_surface()
+                        buffer[xi, yi:yi + b] = color
+                    yi += b
+            sub = buffer[xstart:xstart + w, ::].make_surface()
             queue.put([w, pygame.image.tostring(sub, "RGB")])
             xstart += w
-    del(buffer)
+    del (buffer)
     queue.close()
     pygame.image.save(s, imgpath)
 
@@ -499,24 +519,26 @@ class PLoader(threading.Thread):
 
         pos = world.pos
         queue = multiprocessing.Queue()
-        p= multiprocessing.Process(target = relay.launch_gen_slices, args=(queue, str(self.world.imagepath), world.path, pos, size, levels, version, world.multiparts))
+        p = multiprocessing.Process(target=relay.launch_gen_slices, args=(
+        queue, str(self.world.imagepath), world.path, pos, size, levels, version, world.multiparts))
         p.start()
         while xi < wx:
 
             x, imgdata = queue.get()
 
             surface = pygame.image.fromstring(imgdata, (x, wy), "RGB")
-            while world.raw.get_locked():  #if window is beeing rezized, keep waiting
+            while world.raw.get_locked():  # if window is beeing rezized, keep waiting
                 time.sleep(0.1)
             world.raw.blit(surface, (xi, 0))
             world.update_thumb()
             world.image.repaint()
             xi += x
 
-        p.join()#wait until the image file is saved
+        p.join()  # wait until the image file is saved
         cache["worlds"][str(world.path)]["time"] = world.path.stat().st_mtime
         save_cache()
         world.mapperrunning.clear()
+
 
 def full_split(root):
     split = list(os.path.split(root))
@@ -555,11 +577,11 @@ class Info(threading.Thread):
                     print("All important threads have exited, full shutdown in 15 seconds")
                     time.sleep(15)
                 sys.exit()
-            #print ("alive")
+            # print ("alive")
             dead = []
             for p in processes:
-                #print (p.exitcode, p.is_alive())
-                #print (p)
+                # print (p.exitcode, p.is_alive())
+                # print (p)
                 if not p.is_alive(): dead.append(p)
             for d in dead:
                 d.join()
@@ -570,6 +592,7 @@ class Info(threading.Thread):
 
 class Backupper(threading.Thread):
     """Thread handling background backups - quits when everything is backed up"""
+
     def __init__(self):
         threading.Thread.__init__(self)
 
@@ -585,7 +608,7 @@ class Backupper(threading.Thread):
         if not dest.is_dir():
             dest.mkdir()
 
-        #source = os.path.join("C:\program files (x86)\\steamapps\common\Terraria")
+        # source = os.path.join("C:\program files (x86)\\steamapps\common\Terraria")
         worlds = list(get_worlds())
         for path in worlds:
             self.backup(path, dest)
@@ -607,9 +630,9 @@ class Backupper(threading.Thread):
         save_cache()
 
 
-
 class Redrawer(threading.Thread):
     """Thread that waits for changes in the world folder and triggers a menu redraw when necessary"""
+
     def __init__(self):
         threading.Thread.__init__(self)
         self.name = "Redrawer"
@@ -642,10 +665,10 @@ class Redrawer(threading.Thread):
                     worldnames.remove(w)
 
 
-
 class Updater(threading.Thread):
     ziploc = os.path.join(appdata, "tImages.zip")
     verloc = os.path.join(appdata, "tImages.json")
+
     def __init__(self, update):
         threading.Thread.__init__(self)
         self.name = "Updater"
@@ -672,19 +695,19 @@ class Updater(threading.Thread):
                          webbrowser.open,
                          "http://adf.ly/686481/omnitool-github-releases")
 
-        if not os.path.exists("tImages.zip"):#worldrender might lack it's textures
-            if self.check_texture_version(js["tImages"]):#newer version available
+        if not os.path.exists("tImages.zip"):  # worldrender might lack it's textures
+            if self.check_texture_version(js["tImages"]):  # newer version available
                 args = (r"http://dl.dropbox.com/u/44766482/ot_updater/tImages.zip",
                         str(self.ziploc),
                         "Texture Download",
                         False)
-                p = multiprocessing.Process(target = remote_retrieve, name = "tImages Retriever", args = args)
+                p = multiprocessing.Process(target=remote_retrieve, name="tImages Retriever", args=args)
                 p.start()
                 p.join()
 
                 import json
                 with open(self.verloc, "w") as f:
-                    json.dump({"version" : js["tImages"]}, f)
+                    json.dump({"version": js["tImages"]}, f)
         print("Updater done")
         sys.exit()
 
@@ -698,7 +721,8 @@ class Updater(threading.Thread):
 
         return True
 
-def remote_retrieve(source, target, name, abortable = True):
+
+def remote_retrieve(source, target, name, abortable=True):
     """
     Retrieves remote file, showing a pygame progressbar for progress.
     As there can only be one pygame window per process, it is recommended to run this as a subprocess.
@@ -707,21 +731,24 @@ def remote_retrieve(source, target, name, abortable = True):
     :param name: caption of pygame window
     :return:
     """
-    bar = Bar(caption = name, abortable=abortable)
+    bar = Bar(caption=name, abortable=abortable)
+
     def reporthook(blocknum, blocksize, totalsize):
         read = blocknum * blocksize
         if totalsize > 0:
             percent = read * 100 / totalsize
-        else: # total size is unknown
+        else:  # total size is unknown
             percent = 0
-        bar.set_progress(percent, name+" {:d}%".format(int(percent)))
+        bar.set_progress(percent, name + " {:d}%".format(int(percent)))
 
     urlretrieve(source, target, reporthook)
+
 
 def proxyload(path):
     with path.open("rb") as f:
         d = pygame.image.load(f, path.suffix[1:])
     return d
+
 
 if "directlaunch" in sys.argv:
     if cache["do_backup"]:
@@ -758,8 +785,6 @@ def open_dir(direc):
             pass
 
 
-
-
 plugins_ = []
 
 
@@ -780,13 +805,14 @@ def get_plugins():
                 plugins_.append((file[:-3], name, ptype))
     return plugins_
 
+
 def plug_save(Plug):
     if hasattr(Plug, "loadingbar"):
-        #we have a loadingbar to attend to
+        # we have a loadingbar to attend to
         loadcallback = Plug.loadingbar
     else:
         loadcallback = None
-    f = tempfile.SpooledTemporaryFile(10000000)  #10 megabyte ram file
+    f = tempfile.SpooledTemporaryFile(10000000)  # 10 megabyte ram file
     set_header(f, Plug.header)
     try:
         Plug.tiles[0]
@@ -804,6 +830,7 @@ def plug_save(Plug):
     with get_next_world(Plug.header["name"]).open("wb") as g:
         f.seek(0)
         g.write(f.read())
+
 
 def launch_plugin(plug):
     import importlib
@@ -888,7 +915,7 @@ def launch_plugin(plug):
             Plug.run()
 
         with w1.open("rb") as f:
-            #Plug = Plugin.Transplant()
+            # Plug = Plugin.Transplant()
             f.buffer = [0]
             header = get_header(f)[0]
             if Plug.rec_header(header) != False:
@@ -955,6 +982,7 @@ def launch_plugin(plug):
 
 from .relay import launch_plugin as relay_launch_plugin
 
+
 def run():
     global app
     global worldnames
@@ -964,7 +992,7 @@ def run():
     try:
         loc = myterraria / "Game Launcher" / "omnitool.gli3"
         data = {
-            "appAuthor": __author__+" (Berserker66)",
+            "appAuthor": __author__ + " (Berserker66)",
             "appName": "Omnitool",
             "appPath": os.path.abspath(sys.argv[0]),
             "appVersion": __version__.__repr__()
@@ -1077,11 +1105,12 @@ def run():
     newworldtable.td(flat)
     newworldtable.tr()
     newworldtable.td(gui.Spacer(10, 10))
-    main.td(newworldtable, colspan = 6)
+    main.td(newworldtable, colspan=6)
     main.tr()
     worldtable = gui.Table()
-    main.td(worldtable, colspan = 6)
-    def display_worlds(optionchange = False):
+    main.td(worldtable, colspan=6)
+
+    def display_worlds(optionchange=False):
         worldtable.clear()
         x = 0
         for w in worlds:
@@ -1114,10 +1143,9 @@ def run():
             app.resize()
             app.repaint()
             size = pygame.display.get_surface().get_size()
-            data = {"size" : size, "w" : size[0], "h" : size[1], "reload" : True if optionchange else False}
+            data = {"size": size, "w": size[0], "h": size[1], "reload": True if optionchange else False}
 
             pygame.event.post(pygame.event.Event(pygame.VIDEORESIZE, data))
-
 
     display_worlds()
     print("GUI Matrix created, initializing..")
@@ -1156,7 +1184,7 @@ def run():
                         s = pygame.display.set_mode((main.w, main.h), pygame.RESIZABLE)
                         app.zoomed = False
                 else:
-                    s = pygame.display.set_mode((main.w, main.h),pygame.RESIZABLE)
+                    s = pygame.display.set_mode((main.w, main.h), pygame.RESIZABLE)
                     app.zoomed = False
 
                 app.screen = s
