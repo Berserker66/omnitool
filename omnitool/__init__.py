@@ -695,19 +695,19 @@ class Updater(threading.Thread):
                          webbrowser.open,
                          "http://adf.ly/686481/omnitool-github-releases")
 
-        if not os.path.exists("tImages.zip"):  # worldrender might lack it's textures
-            if self.check_texture_version(js["tImages"]):  # newer version available
-                args = (r"http://dl.dropbox.com/u/44766482/ot_updater/tImages.zip",
-                        str(self.ziploc),
-                        "Texture Download",
-                        False)
-                p = multiprocessing.Process(target=remote_retrieve, name="tImages Retriever", args=args)
-                p.start()
-                p.join()
 
-                import json
-                with open(self.verloc, "w") as f:
-                    json.dump({"version": js["tImages"]}, f)
+        if  not os.path.exists("tImages.zip") or self.check_texture_version(js["tImages"]):  # newer version available
+            args = (r"http://dl.dropbox.com/u/44766482/ot_updater/tImages.zip",
+                    str(self.ziploc),
+                    "Texture Download",
+                    False)
+            p = multiprocessing.Process(target=remote_retrieve, name="tImages Retriever", args=args)
+            p.start()
+            p.join()
+
+            import json
+            with open(self.verloc, "w") as f:
+                json.dump({"version": js["tImages"]}, f)
         print("Updater done")
         sys.exit()
 
