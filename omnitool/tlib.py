@@ -276,9 +276,10 @@ def get_header(f):
     """ returns a dict of header data"""
     sectiondata = None
     version = get_gint(f)
-    if version >= 100:
+    if version >= 87:
         if version > 140:
-            get_long(f)
+            if get_long(f) != 172097103742133618:
+                raise Exception("Invalid world header. (Typecheck number mismatch)")
             rev = get_uint(f)
             get_long(f)
 
@@ -295,6 +296,9 @@ def get_header(f):
             else: mask <<=1
             if flags & mask == mask:
                 multitiles_.add(x)
+        if f.tell() != sectiondata["sections"][0]:
+            print("Warning: SectionHeader for world", self.header["name"].decode(),
+                  "of different size than expected, errors may occur.")
 
     else:
         multitiles_ = multitiles
@@ -583,7 +587,7 @@ def get_header(f):
              "mobkills" : get_uint(f, get_ushort(f)),
              "fastforward" : get_gbyte(f),
              "extra_flags" : get_byte(f, 19),
-             "sandstorm_timeleft" : get_gint(f),
+             "sandstorm_timeleft" : get_guint(f),
              "sandstorm_severity" : get_gbyte(f),
              "sandstorm_target_severity" : get_gbyte(f),
 

@@ -288,7 +288,8 @@ def open_tedit(world):
 
 
 def regen_map(world):
-    world.get_worldview()
+    if not world.get_worldview():
+        print("No changes found in world file, rendering skipped.")
 
 
 def runrender(world, mapping):
@@ -347,6 +348,8 @@ class World():
             self.header, self.multiparts, self.sectiondata = get_header(f)
             if self.sectiondata:
                 self.pos = self.sectiondata["sections"][1]
+                if f.tell() != self.pos:
+                    print("Warning: Header for world",self.header["name"].decode(),"of different size than expected, errors may occur.")
             else:
                 self.pos = f.tell()
 
@@ -446,7 +449,7 @@ class World():
             t.start()
         else:
             self.mapperrunning.clear()
-
+        return needed
 
 def gen_slices(queue, imgpath, path, start, size, levels, version, multiparts, interval=32):
     get_tile = select_tile_getter(version)
