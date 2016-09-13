@@ -80,7 +80,7 @@ Depending on your Python installation, you may need to run one of these instead:
 
 For some of the modules, additional packages are required for download.
 
-That is subversion for PGU and mercurial for Pygame.
+That is git for PGU and mercurial for Pygame.
 In Ubuntu this can be satisfied with:
 * `sudo apt-get install mercurial`
 * `sudo apt-get install git`
