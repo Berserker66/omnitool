@@ -293,7 +293,7 @@ def regen_map(world):
 
 def runrender(world, mapping):
     if mapping:
-        megaimage_dir = world.path.with_suffix('')
+        megaimage_dir = images / Path(str(world.name))
         args = (render.run, megaimage_dir / "index.html",
                 world.header, world.path, True, (world.header, world.pos), megaimage_dir)
         p = multiprocessing.Process(target=relay.run_with_browser, name="WorldRender (mapping)", args=args)
