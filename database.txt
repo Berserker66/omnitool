@@ -418,6 +418,50 @@ Tiledata:
 416 Lunar Block Vortex
 417 Lunar Block Nebula
 418 Lunar Block Stardust
+419 Logic Lamp
+420 Logic Gate
+421 Conveyor Belt (CW)
+422 Conveyor Belt (CCW)
+423 Logic Sensor
+424 Junction Box
+425 Announcement Box
+426 Red Team Block
+427 Red Team Platform
+428 Weighted Pressure Plate
+429 Wire Bulb
+430 Green Team Block
+431 Blue Team Block
+432 Yellow Team Block
+433 Pink Team Block
+434 White Team Block
+435 Green Team Platform
+436 Blue Team Platform
+437 Yellow Team Platform
+438 Pink Team Platform
+439 White Team Platform
+440 Gem Locks
+441 Trapped Chests
+442 Teal Pressure Pad
+443 Geyser
+444 Bee Hive
+445 Pixel Box
+446 Silly Pink Balloon
+447 Silly Purple Balloon
+448 Silly Green Balloon
+449 Blue Streamer
+450 Green Streamer
+451 Pink Streamer
+452 Silly Balloon Machine
+453 Silly Tied Balloon
+454 Pigronata
+455 Party Center
+456 Silly Tied Bundle of Balloons
+457 Party Present
+458 Sandfall
+459 Snowfall
+460 Snow Cloud
+461 Sand Drip
+462 Desert Spirit Lamp
 
 Walldata:
  0 WallNone
@@ -741,3 +785,30 @@ Multitiles:
 412 Lunar Crafting Station
 413 Red Squirrel Cage
 414 Gold Squirrel Cage
+419 Logic Lamp
+420 Logic Gate
+423 Logic Sensor
+424 Junction Box
+425 Announcement Box
+427 Red Team Platform
+428 Weighted Pressure Plate
+429 Wire Bulb
+435 Green Team Platform
+436 Blue Team Platform
+437 Yellow Team Platform
+438 Pink Team Platform
+439 White Team Platform
+440 Gem Locks
+441 Trapped Chests
+442 Teal Pressure Pad
+443 Geyser
+444 Bee Hive
+445 Pixel Box
+452 Silly Balloon Machine
+453 Silly Tied Balloon
+454 Pigronata
+455 Party Center
+456 Silly Tied Bundle of Balloons
+457 Party Present
+461 Sand Drip
+462 Desert Spirit Lamp
