@@ -228,6 +228,7 @@ def run(path, mapping, data = None, mappingfolder=None):
         tempfiles = {}
         if mappingfolder == None:
             mappingfolder = Path("superimage")
+        print("Mapping into folder",mappingfolder)
         tilefolder = mappingfolder / "tiles"
         for folder in (mappingfolder, tilefolder):
             if not folder.is_dir():
