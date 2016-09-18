@@ -297,10 +297,10 @@ def runrender(world, mapping):
     if mapping:
         megaimage_dir = images / Path(str(world.name))
         args = (render.run, megaimage_dir / "index.html",
-                world.header, world.path, True, (world.header, world.pos), megaimage_dir)
+                world.path, True, (world.header, world.pos), megaimage_dir)
         p = multiprocessing.Process(target=relay.run_with_browser, name="WorldRender (mapping)", args=args)
     else:
-        args = (world.header, world.path, False, (world.header, world.pos))
+        args = (world.path, False, (world.header, world.pos))
         p = multiprocessing.Process(target=render.run, name="WorldRender", args=args)
     p.start()
     processes.append(p)

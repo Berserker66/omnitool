@@ -112,8 +112,16 @@ def adjust_minimap(target_rel_size, resolution, base_image):
     return mapimage, mi_scale
 
 
-def run(header, path, mapping, data, mappingfolder=None):
-    header, pos = data
+def run(path, mapping, data = None, mappingfolder=None):
+    if data:header, pos = data
+    else:
+        with path.open("rb") as f:
+            header, _, sectiondata = get_header(f)
+            if sectiondata:
+                pos = sectiondata["sections"][1]
+            else:
+                pos = f.tell()
+
     pygame.init()
     pygame.display.init()
     threadpool = ThreadPoolExecutor(cores)
@@ -449,7 +457,6 @@ def splice_gmaps(threadpool, tilefolder, tempfiles, name):
                 loadingbar.set_progress(done * fraction, caption + " %4d of %4d" % (done, total))
             current_area //= 2
 
-
 if __name__ == "__main__":
     worlds = list(get_worlds(False))
     b = {}
@@ -465,8 +472,4 @@ if __name__ == "__main__":
 
     x = input("World Number:")
     world = worlds[int(x) - 1]
-    if "super" in sys.argv:
-        image = True
-    else:
-        image = False
-    run(str(world), image, b[world])
+    run(world, True)
