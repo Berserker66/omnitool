@@ -341,6 +341,7 @@ def run(path, mapping, data = None, mappingfolder=None):
                     lasttask.result()
 
                     splice_gmaps(threadpool, tilefolder, tempfiles, header["name"].decode())
+                    threadpool.shutdown()
                     pygame.quit()
                     return
 
@@ -457,7 +458,7 @@ def splice_gmaps(threadpool, tilefolder, tempfiles, name):
                 done += 1
                 loadingbar.set_progress(done * fraction, caption + " %4d of %4d" % (done, total))
             current_area //= 2
-
+    processpool.shutdown()
 if __name__ == "__main__":
     worlds = list(get_worlds(False))
     b = {}
