@@ -471,5 +471,5 @@ if __name__ == "__main__":
         x += 1
 
     x = input("World Number:")
-    world = worlds[int(x) - 1]
+    world = worlds[int(x)]
     run(world, True)
