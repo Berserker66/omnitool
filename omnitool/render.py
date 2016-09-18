@@ -2,11 +2,18 @@ from __future__ import with_statement
 import time
 import pygame
 import numpy
-from concurrent.futures import ThreadPoolExecutor
+import zlib
+from . import googlemapindex
+from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
+from .Resources.header import imgheader
+from . import render_lib
+from .loadbar import Bar
+from .shared import cores
+import collections
 
 from .tinterface import *
 
-minimap_limits = 0.4,0.2
+minimap_limits = 0.4, 0.2
 defaultres = [1024, 768]
 
 
@@ -21,9 +28,10 @@ def load(tiles=None, walls=None, colors=None, wallcolors=None):
     if ziploc:
         from .Resources import ResourceManager
         manager = ResourceManager(ziploc)
+
         def load_content(imagename):
             base, _ = os.path.splitext(imagename)
-            return manager.get_pygame_image(base+".img")
+            return manager.get_pygame_image(base + ".img")
     else:
         def load_content(imagename):
             return pygame.image.load(os.path.join("tImages", imagename))
@@ -50,7 +58,7 @@ def load(tiles=None, walls=None, colors=None, wallcolors=None):
     x = 0
     while 1:
         try:
-            tex[x] = load_content("Tiles_" + str(x) + ".png")#.convert_alpha()
+            tex[x] = load_content("Tiles_" + str(x) + ".png")  # .convert_alpha()
         except pygame.error:
             break
         except KeyError:
@@ -82,7 +90,7 @@ def load(tiles=None, walls=None, colors=None, wallcolors=None):
                 walltex[w] = s
 
     air = load_content("Background_0.png")
-    gborder =load_content("Background_1.png")
+    gborder = load_content("Background_1.png")
     rborder = load_content("Background_4.png")
     gfill = load_content("Background_2.png")
     rfill = load_content("Background_3.png")
@@ -92,22 +100,23 @@ def load(tiles=None, walls=None, colors=None, wallcolors=None):
 def adjust_minimap(target_rel_size, resolution, base_image):
     mi_size = base_image.get_size()
     mi_scale = 1
-    scaled_limits = [x*y for x,y in zip(minimap_limits, resolution)]
+    scaled_limits = [x * y for x, y in zip(minimap_limits, resolution)]
     if mi_size[0] > scaled_limits[0]:
-        mi_scale = 1/(mi_size[0]/scaled_limits[0])
+        mi_scale = 1 / (mi_size[0] / scaled_limits[0])
     if mi_size[1] > scaled_limits[1]:
-        mi_scale = min(1/(mi_size[1]/scaled_limits[1]), mi_scale)
+        mi_scale = min(1 / (mi_size[1] / scaled_limits[1]), mi_scale)
     if mi_scale != 1:
-        print("Scaling minimap with factor "+str(mi_scale))
+        print("Scaling minimap with factor " + str(mi_scale))
         mapimage = pygame.transform.rotozoom(base_image, 0, mi_scale)
 
     return mapimage, mi_scale
 
-def run(header, path, mapping, data, mappingfolder = None):
+
+def run(header, path, mapping, data, mappingfolder=None):
     header, pos = data
     pygame.init()
     pygame.display.init()
-    threadpool = ThreadPoolExecutor(1)
+    threadpool = ThreadPoolExecutor(cores)
     texture_loader = threadpool.submit(load)
     try:
         imageloc = get_myterraria() / "WorldImages" / path.with_suffix('.png').name
@@ -128,8 +137,8 @@ def run(header, path, mapping, data, mappingfolder = None):
     pygame.display.set_caption("Loading World..")
     loadbar_width = 200
     if mapimage:
-        if mi_size[0] > 200:loadbar_width = mi_size[0]
-        surface = pygame.display.set_mode((loadbar_width, 20+mi_size[1]))
+        if mi_size[0] > 200: loadbar_width = mi_size[0]
+        surface = pygame.display.set_mode((loadbar_width, 20 + mi_size[1]))
         pygame.display.update(surface.blit(mapimage, (0, 20)))
     else:
         surface = pygame.display.set_mode((loadbar_width, 20))
@@ -145,10 +154,10 @@ def run(header, path, mapping, data, mappingfolder = None):
             yi = 0
             while yi < h:  # get the tiles
                 data, b = get(f)
-                tiles[xi, yi:yi+b] = (data,)*b
-                yi+=b
+                tiles[xi, yi:yi + b] = (data,) * b
+                yi += b
             if xi % 16 == 0:
-                rect.w = int(xi*loadbar_width/w)
+                rect.w = int(xi * loadbar_width / w)
                 pygame.draw.rect(surface, (200, 200, 200), rect)
                 pygame.display.update(tup)
 
@@ -172,7 +181,6 @@ def run(header, path, mapping, data, mappingfolder = None):
 
     tex, walltex, npc_tex, air, gborder, rborder, gfill, rfill = texture_loader.result()
 
-
     spawn = header["spawn"]
     clock = pygame.time.Clock()
     pos = [spawn[0] * 16 - 256, spawn[1] * 16 - 256]
@@ -186,6 +194,7 @@ def run(header, path, mapping, data, mappingfolder = None):
         res = list(defaultres)
         dis = pygame.display.set_mode(res, pygame.RESIZABLE)
     s = pygame.surface.Surface(res)
+
     def relmove(rel):
         nonlocal s
         nonlocal pos
@@ -194,7 +203,7 @@ def run(header, path, mapping, data, mappingfolder = None):
         pos[1] -= rel[1]
 
         s.blit(s, rel)
-        if abs(rel[0]) > res[0] or abs(rel[1])> res[1]:
+        if abs(rel[0]) > res[0] or abs(rel[1]) > res[1]:
             dirty = [pygame.rect.Rect(0, 0, res[0], res[1])]
         else:
             if rel[0] > 0:
@@ -205,8 +214,10 @@ def run(header, path, mapping, data, mappingfolder = None):
                 dirty.append(pygame.rect.Rect(0, 0, res[0], rel[1]))
             elif rel[1] < 0:
                 dirty.append(pygame.rect.Rect(0, res[1] + rel[1], res[0], -rel[1]))
+
     print("initializing render loop...")
     if mapping:
+        tempfiles = {}
         if mappingfolder == None:
             mappingfolder = Path("superimage")
         tilefolder = mappingfolder / "tiles"
@@ -217,16 +228,17 @@ def run(header, path, mapping, data, mappingfolder = None):
         mx = 0
         my = 0
         index = (mappingfolder / "index.html").open("wt")
-        index.write('<html><table border="0" cellspacing="0" cellpadding="0"><tr>')
+        index.write(googlemapindex.index)
+        index.write(header["name"].decode())
+        index.write(googlemapindex.index2)
+        index.close()
         pos = [mx * res[0], my * res[1]]
-        from .loadbar import Bar
         caption = "Rendering {}".format(header["name"].decode())
         loadingbar = Bar(caption=caption)
         plates_x, plates_y = header["width"] * 16 // area[0], header["height"] * 16 // area[1]
         plates_done = 0
-        plates = plates_x*plates_y
+        plates = plates_x * plates_y
     dirty = [pygame.rect.Rect(0, 0, res[0], res[1])]
-    from . import render_lib
 
     render_lib.walltex = walltex
     render_lib.tex = tex
@@ -236,7 +248,7 @@ def run(header, path, mapping, data, mappingfolder = None):
     render_lib.rfill = rfill
     wi, he = header["width"] * 16 - 64, header["height"] * 16 - 64
     movemode = None
-    #movemodes:
+    # movemodes:
     MAP = 2
     CURSOR = 1
     while 1:
@@ -257,7 +269,7 @@ def run(header, path, mapping, data, mappingfolder = None):
                 dirty.append(pygame.rect.Rect(0, 0, res[0], res[1]))
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if mapimage and event.button == 1:
-                    if event.pos[0]>(res[0]-mi_size[0]) and event.pos[1] < mi_size[1]:
+                    if event.pos[0] > (res[0] - mi_size[0]) and event.pos[1] < mi_size[1]:
                         movemode = MAP
                     else:
                         movemode = CURSOR
@@ -282,21 +294,20 @@ def run(header, path, mapping, data, mappingfolder = None):
                     relmove(rel)
                 else:
                     mpos = pygame.mouse.get_pos()
-                    mpos = (mpos[0]-res[0]+mi_size[0])*16/mi_scale,mpos[1]*16/mi_scale
-                    rel = (pos[0]-mpos[0], pos[1]-mpos[1])
-                    if any(rel):relmove(rel)
-
-        for rect in dirty:
-            try:
-                b = render_lib.render(pygame.surface.Surface(rect.size),
-                                      (pos[0] + rect.x, pos[1] + rect.y),
-                                      header, tiles, blendmap, wblendmap, rmap)
-            except IndexError:
-                print("Out of bounds rendering attempt.")
-            else:
-                s.blit(b, rect.topleft)
+                    mpos = (mpos[0] - res[0] + mi_size[0]) * 16 / mi_scale, mpos[1] * 16 / mi_scale
+                    rel = (pos[0] - mpos[0], pos[1] - mpos[1])
+                    if any(rel): relmove(rel)
 
         if len(dirty):
+            for rect in dirty:
+                try:
+                    b = render_lib.render(pygame.surface.Surface(rect.size),
+                                          (pos[0] + rect.x, pos[1] + rect.y),
+                                          header, tiles, blendmap, wblendmap, rmap)
+                except IndexError:
+                    print("Out of bounds rendering attempt.")
+                else:
+                    s.blit(b, rect.topleft)
             rect = pygame.rect.Rect(pos, res)
             for npc in npcs:
                 if rect.collidepoint(npc[1]):
@@ -308,18 +319,19 @@ def run(header, path, mapping, data, mappingfolder = None):
 
         if mapping:
 
-            progtext = "%2dX|%2dY of %dX|%dY" % (mx, my, plates_x-1, plates_y-1)
-            loadingbar.set_progress(100*plates_done/plates, caption+" "+progtext)
-            pygame.image.save(s, str(tilefolder / "screen_{}_{}.png".format(mx, my)))
-            index.write('<td><img src="tiles/screen_%d_%d.png"></td>' % (mx, my))
+            progtext = "%2dX|%2dY of %dX|%dY" % (mx, my, plates_x - 1, plates_y - 1)
+            loadingbar.set_progress(100 * plates_done / plates, caption + " " + progtext)
+            lasttask = threadpool.submit(store_surface, s, tempfiles, mx, my)
+
             mx += 1
             if mx * area[0] >= wi:
-                index.write("</tr><tr>")
+                # index.write("</tr><tr>")
                 my += 1
                 mx = 0
                 if my * area[1] >= he:
-                    index.write("</table></html>")
-                    index.close()
+                    lasttask.result()
+
+                    splice_gmaps(threadpool, tilefolder, tempfiles, header["name"].decode())
                     pygame.quit()
                     return
 
@@ -327,28 +339,115 @@ def run(header, path, mapping, data, mappingfolder = None):
                 res[0] = -mx * area[0] + wi
             if (my + 1) * area[1] > he and not (my * area[1] > he):
                 res[1] = -my * area[1] + he
-
             dirty = [pygame.rect.Rect(0, 0, res[0], res[1])]
             if s.get_size() != res: s = pygame.surface.Surface(res)
             res = [area[0], area[1]]
             pos = [mx * res[0], my * res[1]]
             plates_done += 1
-
+            lasttask.result()
         else:
             dirty = []
-            dis.blit(s, (0,0))
+            dis.blit(s, (0, 0))
             if mapimage:
-                dis.blit(mapimage, (res[0]-mi_size[0], 0))
-                #draw minimap viewport borders:
-                bpos = pos[0]//16, pos[1]//16
-                topleft = bpos[0]*mi_scale+res[0]-mi_size[0], bpos[1]*mi_scale
-                viewsize = (mi_scale*res[0])//16, (res[1]*mi_scale)//16
-                pygame.gfxdraw.rectangle(dis, (topleft, viewsize), (127,30,30, 127))
+                dis.blit(mapimage, (res[0] - mi_size[0], 0))
+                # draw minimap viewport borders:
+                bpos = pos[0] // 16, pos[1] // 16
+                topleft = bpos[0] * mi_scale + res[0] - mi_size[0], bpos[1] * mi_scale
+                viewsize = (mi_scale * res[0]) // 16, (res[1] * mi_scale) // 16
+                pygame.gfxdraw.rectangle(dis, (topleft, viewsize), (127, 30, 30, 127))
 
-        pygame.display.update()
+            pygame.display.update()
         clock.tick(100)
 
 
+def store_surface(surface: pygame.Surface, tempfiles: dict, mx: int, my: int):
+    tfp = tempfile.SpooledTemporaryFile()
+    string = zlib.compress(pygame.image.tostring(surface, "RGB"))
+    data = imgheader.pack(1, *surface.get_size()) + string
+    tfp.write(data)
+    tempfiles[(mx, my)] = tfp
+
+
+def generate_plate_coords(side: int, tempfiles: dict):
+    mapping = collections.defaultdict(set)
+    for x, y in tempfiles:
+        outside_xy = x // side, y // side
+        mapping[outside_xy].add((x, y))
+    return mapping
+
+
+def unpack(tempfiles, x, y, loc):
+    tfp = tempfiles[(x, y)]
+    tfp.seek(0)
+    data = tfp.read()
+    tfp.close()
+    _, width, height = imgheader.unpack(data[:imgheader.size])
+    imgdata = zlib.decompress(data[imgheader.size:])
+    return imgdata, (width, height), loc
+
+
+def render_plate(data, tilefolder, current_area, side, fname):
+    temp = pygame.image.frombuffer(data, current_area, "RGB")
+    targetsurf = pygame.transform.smoothscale(temp, (side, side))
+    pygame.image.save(targetsurf, str(tilefolder / fname))
+
+
+def splice_gmaps(threadpool, tilefolder, tempfiles, name):
+    processpool = ProcessPoolExecutor()
+    caption = "Rendering Zoom Layers {}".format(name)
+    loadingbar = Bar(caption=caption)
+    loadingbar.set_progress(0, caption)
+    pygame.display.update()
+
+    side = 1600
+    zoom_levels = 4
+    factor = 2 ** (zoom_levels - 1)
+    masterside = side * factor
+    plates = generate_plate_coords(factor, tempfiles)
+
+    master_surface = pygame.Surface((masterside, masterside))
+
+    done = 0
+    total = len(tempfiles) + len(plates) * sum((4 ** x for x in range(zoom_levels)))
+    fraction = 100 / total
+
+    def render_base_to_master(task):
+        imgdata, size, location = task.result()
+        tempsurf = pygame.image.frombuffer(imgdata, size, "RGB")
+        master_surface.blit(tempsurf, location)
+
+    tasks = []
+    for masterpos, pieces in plates.items():
+        master_surface.fill((132, 170, 248))
+
+        for x, y in pieces:
+            task = processpool.submit(unpack, tempfiles, x, y, ((x % factor) * side, (y % factor) * side))
+            tasks.append(threadpool.submit(render_base_to_master, task))
+            tasks.append(task)
+        current_area = masterside
+
+        for task in tasks:
+            task.result()
+            done += 0.5
+            loadingbar.set_progress(done * fraction, caption + " %4d of %4d" % (done, total))
+        for z in range(zoom_levels):
+            tasks = []
+            pieces = masterside // current_area
+            x_off = masterpos[0] * pieces
+            y_off = masterpos[1] * pieces
+            for xp in range(pieces):
+                for yp in range(pieces):
+                    temp = pygame.Surface.subsurface(master_surface,
+                                                     (xp * current_area, yp * current_area, current_area, current_area))
+                    filename = "screen_{}_{}_{}.png".format(z + 1, x_off + xp, y_off + yp)
+                    data = pygame.image.tostring(temp, "RGB")
+                    tasks.append(processpool.submit(render_plate, data, tilefolder, temp.get_size(), side, filename))
+
+            for task in tasks:
+                task.result()
+                done += 1
+                loadingbar.set_progress(done * fraction, caption + " %4d of %4d" % (done, total))
+            current_area //= 2
 
 
 if __name__ == "__main__":
@@ -356,7 +455,7 @@ if __name__ == "__main__":
     b = {}
     x = 0
     for w in worlds:
-        with w.open( "rb") as f:
+        with w.open("rb") as f:
             header = get_header(f)[0]
             b[w] = header, f.tell()
         name = header["name"].decode()

@@ -75,6 +75,7 @@ if False:
 
 shared.lang = lang
 shared.cache = cache
+shared.cores = multiprocessing.cpu_count()
 
 import pygame
 from pgu import gui
