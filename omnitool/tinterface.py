@@ -272,16 +272,18 @@ def get_steamdir():
 
     return Path(path)
 
-
+cloud_warning_flag = 0
 def get_remote_terraria_dirs(sub_dir=""):
+    global cloud_warning_flag
     userdatadir = get_steamdir() / 'userdata'
     if (userdatadir).is_dir():
         for p in (userdatadir).iterdir():
             r = p / '105600' / 'remote'
             yield r / sub_dir  # (r / "") -> r
 
-    else:
+    elif not cloud_warning_flag:
         print("Could not get online worlds from {}.".format(userdatadir))
+        cloud_warning_flag = 1
 
 
 def get_worlds(source = "vanilla"):
