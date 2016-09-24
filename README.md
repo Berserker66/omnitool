@@ -90,7 +90,7 @@ Credits for Omnitool
 * 7UR7L3: testing and ideas
 * Ijwu: translation overseer, testing, ideas & skins (Oasis, Underworld, Overworld)
 * Berserker66: programming, testing, bundling, setup, ....
-* Translation credits in translation thread: [Link](http://www.terrariaonline.com/threads/omnitool-language-thread.62981/)
+* Translation credits in translation readme: [Link](https://github.com/Berserker66/omnitool/blob/master/translation.md)
 
 Other
 =====
