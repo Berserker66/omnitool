@@ -534,7 +534,7 @@ def get_header(f):
              "fastforward" : get_gbyte(f),
              "extra_flags" : get_byte(f, 18)
              }
-    else:#version 175 (1.3.3) and 176 (1.3.3.1)
+    elif version < 179:#version 175 (1.3.3) and 176 (1.3.3.1)
         d = {"name": get_string(f),
              "ID": get_gint(f),
              "worldrect": get_uint(f, 4),
@@ -593,6 +593,71 @@ def get_header(f):
 
              }
 
+    else:
+        name = get_string(f)
+        if version == 179:
+            seed = get_gint(f)
+        else:
+            seed = get_string(f)
+        worldgenversion = get_glong(f)
+        guid = get_glong(f)+get_glong(f)
+        d = {"name": name,
+             "ID": get_gint(f),
+             "worldrect": get_uint(f, 4),
+             "height": get_gint(f),
+             "width": get_gint(f),
+             "expert" : get_gbyte(f),
+             "creationtime" : get_glong(f),
+             "moontype": get_gbyte(f),
+             "treedata": get_uint(f, 7),
+             "cavedata": get_uint(f, 10),
+             "spawn": get_uint(f, 2),
+             "groundlevel": get_gdouble(f),
+             "rocklevel": get_gdouble(f),
+             "time": get_gdouble(f),
+             "is_day": get_gbyte(f),
+             "moonphase": get_gint(f),
+             "is_bloodmoon": get_gbyte(f),
+             "is_eclipse": get_gbyte(f),
+             "dungeon_xy": get_uint(f, 2),
+             "is_crimson": get_gbyte(f),
+             "bosses_slain": get_byte(f, 11),
+             "npcs_saved": get_byte(f, 3),
+             "special_slain": get_byte(f, 4),
+             "is_a_shadow_orb_broken": get_gbyte(f),
+             "is_meteor_spawned": get_gbyte(f),
+             "shadow_orbs_broken": get_gbyte(f),
+             "altars_broken": get_gint(f),
+             "hardmode": get_gbyte(f),
+             "gob_inv_time": get_gint(f),
+             "gob_inv_size": get_gint(f),
+             "gob_inv_type": get_gint(f),
+             "gob_inv_x": get_gdouble(f),
+             "slime_rain_time" : get_gdouble(f),
+             "sundial_cooldown" : get_gbyte(f),
+             "raining": get_gbyte(f),
+             "raintime": get_gint(f),
+             "maxrain": get_float(f),
+             "oretiers": get_int(f, 3),
+             "background_styles": get_byte(f, 8),
+             "clouds": get_uint(f),
+             "cloudcount": get_gushort(f),
+             "windspeed": get_float(f),
+             "anglerstrings" : [get_string(f) for _ in range(get_gint(f))],
+             "angler_saved" : get_gbyte(f),
+             "angler_quest" : get_gint(f),
+             "saved_stylist" : get_gbyte(f),
+             "saved_collector" : get_gbyte(f),
+             "invasionsize" : get_gint(f),
+             "cultist_delay" : get_gint(f),
+             "mobkills" : get_uint(f, get_ushort(f)),
+             "fastforward" : get_gbyte(f),
+             "extra_flags" : get_byte(f, 19),
+             "sandstorm_timeleft" : get_guint(f),
+             "sandstorm_severity" : get_gbyte(f),
+             "sandstorm_target_severity" : get_gbyte(f),
+
+             }
     d["version"] = version
 
     return d, multitiles_, sectiondata
