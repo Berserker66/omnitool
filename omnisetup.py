@@ -15,7 +15,6 @@ EXE = cx_Freeze.Executable(
     script="run_omnitool.py",
     targetName="Omnitool" if sys.platform == "linux" else "Omnitool.exe",
     icon="Icon128.ico",
-    compress=True,
 )
 cx_Freeze.setup(
     name="Omnitool",
