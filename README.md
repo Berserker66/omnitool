@@ -1,4 +1,4 @@
-Current version : 18.5.0, for Terraria 1.3.3.1 on Windows and Linux.
+Current version : 18.5.1, for Terraria 1.3.3.1 on Windows and Linux.
 
 On the Terraria Forums:
 [Link](http://forums.terraria.org/index.php?threads/omnitool-world-creation-mapping-backups-and-more.14664/)
@@ -33,7 +33,7 @@ FAQ
 Is there a better way to view my world as a map?
 ------------------------------------------------
 You can render a world similar to how Terraria shows them by clicking on a world's image.
-This also allows you to create a super image of the world as [website](https://dl.dropboxusercontent.com/u/44766482/superimage/index.html).
+This also allows you to create a super image of the world as [website](http://fabiandill.me/mapper_example/).
 
 Do I need admin rights to use Omnitool?
 ---------------------------------------
