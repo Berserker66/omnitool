@@ -874,7 +874,7 @@ def launch_plugin(plug):
                                 if trail[1] != header["name"] or trail[2] != header["ID"]:
                                     print("Warning, World signature test not passed")
                                 Plug.rec_npcs(npcs, names)
-                                Plug.run()
+            if hasattr(Plug, "run"):Plug.run()
         else:
             print("No world selected, aborting execution")
 
@@ -941,7 +941,7 @@ def launch_plugin(plug):
                             if trail[1] != header["name"] or trail[2] != header["ID"]:
                                 print("Warning, World signature test not passed")
                             Plug.rec_npcs(npcs, names)
-                            Plug.run()
+            if hasattr(Plug, "run"): Plug.run()
         plug_save(Plug)
 
     elif plug[2] == "modifier":
@@ -973,13 +973,12 @@ def launch_plugin(plug):
             if trail[1] != header["name"] or trail[2] != header["ID"]:
                 print("Warning, World signature test not passed")
             Plug.rec_npcs(npcs, names)
-            Plug.run()
+        Plug.run()
         plug_save(Plug)
 
     else:
         print("Unrecognized plugin type, aborting execution")
 
-    print()
     print(plug[1] + " is done")
     sys.exit()
 
