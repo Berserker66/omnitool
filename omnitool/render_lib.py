@@ -11,13 +11,20 @@ def render(s, pos, header, tiles, blendmap, wblendmap, rmap):
     left = pos[0] // 16  # +10
     w = res[0] // 16 + 2
     right = left + w
+    if right > header["width"]:
+        #out of bounds to the right
+        right = header["width"]-1
+        w = right-left
     top = pos[1] // 16  # +10
     h = res[1] // 16 + 2
     bottom = top + h
+    if bottom > header["height"]:
+        #out of bounds to the bottom
+        bottom = header["height"]-1
+        h = bottom-top
     xp = pos[0] % 16
     yp = pos[1] % 16
     xb = pos[0] % 96  # for background
-    yb = pos[1] % 96  # for background
 
     if bottom > header["groundlevel"]:
         if top - 1 < header["groundlevel"]:  # if top over ground

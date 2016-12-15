@@ -10,7 +10,7 @@ from . import render_lib
 from .loadbar import Bar
 from .shared import cores
 import collections
-
+import traceback
 from .tinterface import *
 
 minimap_limits = 0.4, 0.2
@@ -134,7 +134,7 @@ def run(path, mapping, data = None, mappingfolder=None):
 
     except:
         print("Cannot load minimap:")
-        import traceback
+
         traceback.print_exc()
         mapimage = None
 
@@ -210,10 +210,11 @@ def run(path, mapping, data = None, mappingfolder=None):
         pos[0] -= rel[0]
         pos[1] -= rel[1]
 
-        s.blit(s, rel)
+
         if abs(rel[0]) > res[0] or abs(rel[1]) > res[1]:
             dirty = [pygame.rect.Rect(0, 0, res[0], res[1])]
         else:
+            s.blit(s, rel)
             if rel[0] > 0:
                 dirty.append(pygame.rect.Rect(0, 0, rel[0], res[1]))
             elif rel[0] < 0:
@@ -299,7 +300,6 @@ def run(path, mapping, data = None, mappingfolder=None):
                         rel = rel[0], pos[1]
                     elif -rel[1] + pos[1] + res[1] > header["height"] * 16 - 64:
                         rel = rel[0], header["height"] * 16 - 64 - pos[1] - res[1]
-
                     relmove(rel)
                 else:
                     mpos = pygame.mouse.get_pos()
@@ -313,18 +313,24 @@ def run(path, mapping, data = None, mappingfolder=None):
                     b = render_lib.render(pygame.surface.Surface(rect.size),
                                           (pos[0] + rect.x, pos[1] + rect.y),
                                           header, tiles, blendmap, wblendmap, rmap)
-                except IndexError:
-                    print("Out of bounds rendering attempt.")
+                except Exception as e:
+                    print("Rendering Problem. Likely out of bounds.")
+                    traceback.print_exc()
                 else:
                     s.blit(b, rect.topleft)
-            rect = pygame.rect.Rect(pos, res)
-            for npc in npcs:
-                if rect.collidepoint(npc[1]):
-                    try:
-                        target = (-pos[0] + npc[1][0], -pos[1] + npc[1][1] - 12)
-                        s.blit(npc_tex[npc[0]], target, area=(0, 0, 40, 56))
-                    except:
-                        print("Warning: NPC of ID %d could not be rendered" % npc[0])
+
+            try:
+                rect = pygame.rect.Rect(pos, res)
+            except TypeError:
+                print("Out of bounds NPC rendering attempt.")
+            else:
+                for npc in npcs:
+                    if rect.collidepoint(npc[1]):
+                        try:
+                            target = (-pos[0] + npc[1][0], -pos[1] + npc[1][1] - 12)
+                            s.blit(npc_tex[npc[0]], target, area=(0, 0, 40, 56))
+                        except:
+                            print("Warning: NPC of ID %d could not be rendered" % npc[0])
 
         if mapping:
 
