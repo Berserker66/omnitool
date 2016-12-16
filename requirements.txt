@@ -1,5 +1,5 @@
 appdirs>=1.4.0
 numpy>=1.8.1
-hg+http://bitbucket.org/pygame/pygame
+pygame>=1.9.2
 git+git://github.com/parogers/pgu.git
 
