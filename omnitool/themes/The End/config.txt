@@ -1,6 +1,6 @@
 desktop background desktop.png
 
-input font DejaVuSans.ttf 16 
+input font Cyberbit.ttf 16 
 input background input.normal.png
 input color #000000
 input:focus background input.focus.png
@@ -9,42 +9,42 @@ input padding_right 6
 input padding_top 3
 input padding_bottom 3
 
-link font DejaVuSans.ttf 24
+link font Cyberbit.ttf 24
 link color #0000FF
 link:hover color #FF0000
 link:down color #00FF00
 
-label font DejaVuSans.ttf 16
+label font Cyberbit.ttf 16
 label color #AAAAAA
 
-document font DejaVuSans.ttf 16
+document font Cyberbit.ttf 16
 document color #AAAAAA
-div font DejaVuSans.ttf 16
+div font Cyberbit.ttf 16
 div color #000000
 
-td font DejaVuSans.ttf 16
+td font Cyberbit.ttf 16
 td color #000000
-th font DejaVuSans.ttf 16
+th font Cyberbit.ttf 16
 th color #000000
 
-h1 font DejaVuSans.ttf 24
+h1 font Cyberbit.ttf 24
 h1 color #000000
-h2 font DejaVuSans.ttf 20
+h2 font Cyberbit.ttf 20
 h2 color #000000
-h3 font DejaVuSans.ttf 16
+h3 font Cyberbit.ttf 16
 h3 color #000000
-h4 font DejaVuSans.ttf 14
+h4 font Cyberbit.ttf 14
 h4 color #000000
-h5 font DejaVuSans.ttf 12
+h5 font Cyberbit.ttf 12
 h5 color #000000
-h6 font DejaVuSans.ttf 10
+h6 font Cyberbit.ttf 10
 h6 color #000000
 
-ul font DejaVuSans.ttf 16
+ul font Cyberbit.ttf 16
 ul color #000000
-ol font DejaVuSans.ttf 16
+ol font Cyberbit.ttf 16
 ol color #000000
-li font DejaVuSans.ttf 16
+li font Cyberbit.ttf 16
 li color #000000
 li padding_left 32
 
@@ -81,7 +81,7 @@ button padding_left 8
 button padding_right 8
 button padding_top 1
 button padding_bottom 1
-button.label font DejaVuSans.ttf 16
+button.label font Cyberbit.ttf 16
 button.label color #000000
 
 slider background slider.tga
@@ -159,7 +159,7 @@ select.option padding_bottom 1
 #select.option border_bottom 1
 #select.option border_left 1
 
-select.option.label font DejaVuSans.ttf 16
+select.option.label font Cyberbit.ttf 16
 select.option.label color #000000
 select.options padding_left 1
 select.options padding_right 1
@@ -183,7 +183,7 @@ dialog.main padding_right 8
 dialog.main padding_top 4
 dialog.main padding_bottom 4
 
-keysym font DejaVuSans.ttf 16
+keysym font Cyberbit.ttf 16
 keysym background input.normal.png
 keysym color #000000
 keysym:focus background input.focus.png
@@ -199,7 +199,7 @@ tool padding_left 4
 tool padding_right 4
 tool padding_top 1
 tool padding_bottom 1
-tool.label font DejaVuSans.ttf 16
+tool.label font Cyberbit.ttf 16
 tool.label color #000000
 
 menu background menu.normal.tga
@@ -209,7 +209,7 @@ menu padding_left 6
 menu padding_right 6
 menu padding_top 3
 menu padding_bottom 3
-menu.label font DejaVuSans.ttf 16
+menu.label font Cyberbit.ttf 16
 menu.label color #AAAAAA
 
 menu-open background menu.down.tga
@@ -228,7 +228,7 @@ menu.option padding_left 6
 menu.option padding_right 6
 menu.option padding_top 1
 menu.option padding_bottom 1
-menu.option.label font DejaVuSans.ttf 16
+menu.option.label font Cyberbit.ttf 16
 menu.option.label color #000000
 menu.options padding_left 1
 menu.options padding_right 1
@@ -253,7 +253,7 @@ list.item padding_top 2
 list.item padding_bottom 2
 list.item margin_bottom 1
 list.item align -1
-list.item.label font DejaVuSans.ttf 14
+list.item.label font Cyberbit.ttf 14
 list.item.label color #000000
 
 list background list.png
@@ -268,11 +268,11 @@ list.content padding_top 1
 list.content padding_bottom 1
 
 filedialog.folder image filebrowser.folder.png
-filedialog.label font DejaVuSans.ttf 14
+filedialog.label font Cyberbit.ttf 14
 filedialog.label color #000000
-filedialog.title.label font DejaVuSans.ttf 16
+filedialog.title.label font Cyberbit.ttf 16
 filedialog.title.label color #000000
-filedialog.input font DejaVuSans.ttf 14
+filedialog.input font Cyberbit.ttf 14
 filedialog.input background input.normal.png
 filedialog.input color #000000
 filedialog.input:focus background input.focus.png
@@ -281,7 +281,7 @@ filedialog.input padding_right 6
 filedialog.input padding_top 3
 filedialog.input padding_bottom 3
 
-dialog.title.label font DejaVuSans.ttf 16
+dialog.title.label font Cyberbit.ttf 16
 dialog.title.label color #000000
 
 

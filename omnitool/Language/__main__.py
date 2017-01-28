@@ -10,10 +10,11 @@ import hungarian
 import russian
 import italian
 import japanese
+import chinese
 
 from __init__ import check
 
-langs = german, portuguese, czech, french, spanish, danish, norwegian, hungarian, russian, italian, japanese
+langs = german, portuguese, czech, french, spanish, danish, norwegian, hungarian, russian, italian, japanese, chinese
 
 complete = True
 for lang in langs:

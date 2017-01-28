@@ -197,7 +197,8 @@ class Language(gui.Dialog):
         liste = gui.List(200, 150)
         langs = ["german", "english", "portuguese", "czech",
                  "spanish", "french", "norwegian", "japanese",
-                 "danish", "italian", "hungarian", "russian"]
+                 "danish", "italian", "hungarian", "russian",
+                 "chinese"]
         langnames = [lang.capitalize() for lang in langs]
         for name, dire in zip(langnames, langs):
             liste.add(name, value=dire)
